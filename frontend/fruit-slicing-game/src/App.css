@@ -36,3 +36,69 @@
     transform: rotate(360deg);
   }
 }
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0; /* Arka plan rengini biraz farklı yaptık */
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 1000px;
+  width: 100%;
+  max-width: 600px; /* Maksimum genişlik 600px */
+  background-color: #f0f0f0; /* Arka plan rengi ekledik */
+  border: 5px solid #000; /* Kalın, siyah bir sınır ekledik */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Hafif bir gölge ekledik */
+  position: relative; /* Konumlandırma için relative yapıldı */
+}
+
+.score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  color: black;
+}
+
+.timer {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  color: black;
+}
+
+.bombs-left {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.bomb-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.game-over, .time-up {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: red;
+}
+
+.game-over button, .time-up button {
+  font-size: 24px;
+}

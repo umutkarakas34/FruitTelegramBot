@@ -2,23 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
-const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
+const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove }) => {
     const [img] = useImage(image);
     const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
     const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
     const [position, setPosition] = useState({ x, y });
+    const [rotation, setRotation] = useState(0);
     const [sliced, setSliced] = useState(false);
     const [exploded, setExploded] = useState(false);
     const [sliceEffect, setSliceEffect] = useState(false);
 
     useEffect(() => {
         if (gameOver) return;
+
         const interval = setInterval(() => {
-            setPosition((pos) => ({ ...pos, y: pos.y + speed }));
-        }, 16);
+            setPosition((pos) => {
+                const newY = pos.y + speed;
+                if (newY > containerHeight) {
+                    onRemove();
+                    return pos;
+                }
+                return { ...pos, y: newY };
+            });
+            setRotation((rot) => (rot + 0.15)); // Meyve döndürme
+        }, 12);
 
         return () => clearInterval(interval);
-    }, [gameOver, speed]);
+    }, [gameOver, speed, containerHeight, onRemove]);
 
     const handleMouseMove = (e) => {
         if (!sliced) {
@@ -47,6 +57,7 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
                     y={position.y}
                     width={180}
                     height={180}
+                    rotation={rotation}
                     onMouseMove={handleMouseMove}
                 />
             ) : exploded ? (
