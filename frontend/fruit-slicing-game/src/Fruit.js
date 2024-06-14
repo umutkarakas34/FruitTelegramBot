@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Image as KonvaImage, Group, Line } from 'react-konva';
+import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
 const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
