@@ -28,7 +28,7 @@ const Game = () => {
                 ...fruits,
                 { id: Date.now(), x: Math.random() * window.innerWidth, y: -50, image: randomImage, isBomb },
             ]);
-        }, 1000);
+        }, 600);
 
         return () => clearInterval(interval);
     }, [gameOver, fruitImages, bombImage]);
