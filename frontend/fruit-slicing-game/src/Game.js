@@ -12,6 +12,7 @@ const Game = () => {
     const fruitImages = [
         process.env.PUBLIC_URL + '/images/banana.png',
         process.env.PUBLIC_URL + '/images/apple.png',
+        process.env.PUBLIC_URL + '/images/carrot.png',
     ];
     const bombImage = process.env.PUBLIC_URL + '/images/bomb.png';
 
