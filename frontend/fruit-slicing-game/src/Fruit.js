@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
-const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove }) => {
+const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
     const [img] = useImage(image);
     const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
     const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
@@ -33,7 +33,7 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
     const handleMouseMove = (e) => {
         if (!sliced) {
             setSliced(true);
-            onSlice();
+            onSlice(isBomb, position.x, position.y);
             if (isBomb) {
                 setExploded(true);
                 setTimeout(() => {
@@ -55,8 +55,8 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                     image={img}
                     x={position.x}
                     y={position.y}
-                    width={180}
-                    height={180}
+                    width={size}
+                    height={size}
                     rotation={rotation}
                     onMouseMove={handleMouseMove}
                 />
@@ -65,34 +65,34 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                     image={explosion}
                     x={position.x}
                     y={position.y}
-                    width={180}
-                    height={180}
+                    width={size}
+                    height={size}
                 />
             ) : (
                 <>
                     <KonvaImage
                         image={img}
-                        x={position.x - 50}
-                        y={position.y}
-                        width={180}
-                        height={180}
-                        rotation={45}
+                        x={position.x - size / 4}
+                        y={position.y - size / 4}
+                        width={size}
+                        height={size / 2}
+                        rotation={-45}
                     />
                     <KonvaImage
                         image={img}
-                        x={position.x + 50}
-                        y={position.y}
-                        width={180}
-                        height={180}
-                        rotation={-45}
+                        x={position.x + size / 4}
+                        y={position.y + size / 4}
+                        width={size}
+                        height={size / 2}
+                        rotation={45}
                     />
                     {sliceEffect && (
                         <KonvaImage
                             image={slice}
-                            x={position.x - 25}
+                            x={position.x}
                             y={position.y}
-                            width={180}
-                            height={180}
+                            width={size}
+                            height={size}
                             rotation={45}
                         />
                     )}

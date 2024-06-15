@@ -102,3 +102,42 @@ body, html {
 .game-over button, .time-up button {
   font-size: 24px;
 }
+.game-container {
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+}
+
+.timer {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+}
+
+.game-over, .time-up {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.bombs-left {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.bomb-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+}
