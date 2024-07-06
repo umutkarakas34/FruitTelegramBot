@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
-<<<<<<< HEAD
 const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
-=======
-const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
->>>>>>> parent of e5d26b2 (game update)
     const [img] = useImage(image);
     const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
     const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
@@ -49,14 +45,9 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
                     image={img}
                     x={position.x}
                     y={position.y}
-<<<<<<< HEAD
                     width={size}
                     height={size}
-                    rotation={rotation}
-=======
-                    width={180}
-                    height={180}
->>>>>>> parent of e5d26b2 (game update)
+                    rotation={45}
                     onMouseMove={handleMouseMove}
                 />
             ) : exploded ? (

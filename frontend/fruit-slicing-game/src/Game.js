@@ -8,12 +8,9 @@ const Game = () => {
     const [bombsClicked, setBombsClicked] = useState(0);
     const [gameOver, setGameOver] = useState(false);
     const [speed, setSpeed] = useState(6); // Oyun hızı için başlangıç değeri
-<<<<<<< HEAD
     const [timeLeft, setTimeLeft] = useState(30); // Başlangıç süresi 30 saniye
     const [timeUp, setTimeUp] = useState(false); // Süre dolduğunda gösterilecek mesaj için durum değişkeni
     const [splashes, setSplashes] = useState([]); // Meyve lekeleri için state
-=======
->>>>>>> parent of e5d26b2 (game update)
 
     const fruitImages = useMemo(() => [
         process.env.PUBLIC_URL + '/images/banana.png',
@@ -32,11 +29,7 @@ const Game = () => {
                 : fruitImages[Math.floor(Math.random() * fruitImages.length)];
             setFruits((fruits) => [
                 ...fruits,
-<<<<<<< HEAD
                 { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, image: randomImage, isBomb },
-=======
-                { id: Date.now(), x: Math.random() * window.innerWidth, y: -50, image: randomImage, isBomb },
->>>>>>> parent of e5d26b2 (game update)
             ]);
         }, 400); // Meyve gelme sıklığını arttırdık (600ms'den 400ms'ye düşürdük)
 
@@ -57,7 +50,6 @@ const Game = () => {
         }
     }, [score]);
 
-<<<<<<< HEAD
     useEffect(() => {
         if (timeLeft > 0 && !gameOver) {
             const timer = setInterval(() => {
@@ -82,13 +74,6 @@ const Game = () => {
                 }
                 return newCount;
             });
-=======
-    const handleSlice = (id, isBomb) => {
-        setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
-        if (isBomb) {
-            setBombsClicked((count) => count + 1);
-            setScore((score) => Math.max(0, score - 10)); // Skoru 10 azalt, negatif olmasına izin verme
->>>>>>> parent of e5d26b2 (game update)
         } else {
             setScore((score) => score + 1);
             setSplashes((splashes) => [
@@ -165,18 +150,12 @@ const Game = () => {
                             y={fruit.y}
                             image={fruit.image}
                             isBomb={fruit.isBomb}
-<<<<<<< HEAD
                             onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
                             onRemove={() => handleRemove(fruit.id)}
                             gameOver={gameOver}
                             speed={speed} // Hızı buraya geçiriyoruz
                             containerHeight={stageHeight} // Container yüksekliğini buraya geçiriyoruz
                             size={50} // Meyvelerin boyutunu küçülttük
-=======
-                            onSlice={() => handleSlice(fruit.id, fruit.isBomb)}
-                            gameOver={gameOver}
-                            speed={speed} // Hızı buraya geçiriyoruz
->>>>>>> parent of e5d26b2 (game update)
                         />
                     ))}
                 </Layer>
