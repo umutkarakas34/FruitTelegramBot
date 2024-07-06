@@ -8,9 +8,12 @@ const Game = () => {
     const [bombsClicked, setBombsClicked] = useState(0);
     const [gameOver, setGameOver] = useState(false);
     const [speed, setSpeed] = useState(6); // Oyun hızı için başlangıç değeri
+<<<<<<< HEAD
     const [timeLeft, setTimeLeft] = useState(30); // Başlangıç süresi 30 saniye
     const [timeUp, setTimeUp] = useState(false); // Süre dolduğunda gösterilecek mesaj için durum değişkeni
     const [splashes, setSplashes] = useState([]); // Meyve lekeleri için state
+=======
+>>>>>>> parent of e5d26b2 (game update)
 
     const fruitImages = useMemo(() => [
         process.env.PUBLIC_URL + '/images/banana.png',
@@ -18,13 +21,9 @@ const Game = () => {
         process.env.PUBLIC_URL + '/images/carrot.png',
     ], []);
     const bombImage = process.env.PUBLIC_URL + '/images/bomb.png';
-    const bombFull = process.env.PUBLIC_URL + '/images/bomb_full.png';
-
-    const stageWidth = window.innerWidth < 600 ? window.innerWidth : 600; // Maksimum genişlik 600px
-    const stageHeight = window.innerHeight < 1000 ? window.innerHeight : 1000; // Maksimum yükseklik 1000px
 
     useEffect(() => {
-        if (gameOver || timeUp) return; // Oyun bittiğinde veya süre dolduğunda meyve üretimini durdur
+        if (gameOver) return;
 
         const interval = setInterval(() => {
             const isBomb = Math.random() < 0.2; // %20 olasılıkla bomba
@@ -33,16 +32,21 @@ const Game = () => {
                 : fruitImages[Math.floor(Math.random() * fruitImages.length)];
             setFruits((fruits) => [
                 ...fruits,
+<<<<<<< HEAD
                 { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, image: randomImage, isBomb },
+=======
+                { id: Date.now(), x: Math.random() * window.innerWidth, y: -50, image: randomImage, isBomb },
+>>>>>>> parent of e5d26b2 (game update)
             ]);
         }, 400); // Meyve gelme sıklığını arttırdık (600ms'den 400ms'ye düşürdük)
 
         return () => clearInterval(interval);
-    }, [gameOver, timeUp, fruitImages, bombImage, stageWidth]);
+    }, [gameOver, fruitImages, bombImage]);
 
     useEffect(() => {
         if (bombsClicked >= 3) {
             setGameOver(true);
+            setScore(0);
             setFruits([]); // Game Over durumunda meyveleri temizle
         }
     }, [bombsClicked]);
@@ -53,6 +57,7 @@ const Game = () => {
         }
     }, [score]);
 
+<<<<<<< HEAD
     useEffect(() => {
         if (timeLeft > 0 && !gameOver) {
             const timer = setInterval(() => {
@@ -77,6 +82,13 @@ const Game = () => {
                 }
                 return newCount;
             });
+=======
+    const handleSlice = (id, isBomb) => {
+        setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
+        if (isBomb) {
+            setBombsClicked((count) => count + 1);
+            setScore((score) => Math.max(0, score - 10)); // Skoru 10 azalt, negatif olmasına izin verme
+>>>>>>> parent of e5d26b2 (game update)
         } else {
             setScore((score) => score + 1);
             setSplashes((splashes) => [
@@ -86,40 +98,13 @@ const Game = () => {
         }
     };
 
-    const handleRemove = (id) => {
-        setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
-    };
-
     const handleRestart = () => {
         setFruits([]);
         setSplashes([]); // Lekeleri temizle
         setScore(0);
         setBombsClicked(0);
         setSpeed(6); // Oyunu yeniden başlatırken hızı başlangıç değerine sıfırla
-        setTimeLeft(30); // Süreyi yeniden başlat
         setGameOver(false);
-        setTimeUp(false); // timeUp durumunu false yap
-    };
-
-    const renderBombs = () => {
-        const bombs = [];
-        for (let i = 0; i < 3 - bombsClicked; i++) {
-            bombs.push(
-                <img
-                    key={i}
-                    src={bombFull}
-                    alt="bomb"
-                    className="bomb-icon"
-                />
-            );
-        }
-        return bombs;
-    };
-
-    const formatTime = (time) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
     // Kareli deseni oluşturma
@@ -149,23 +134,8 @@ const Game = () => {
     }
 
     return (
-        <div className="game-container">
-            {!gameOver && !timeUp && (
-                <>
-                    <div className="score">
-                        Score: {score}
-                    </div>
-                    <div className="timer">
-                        {formatTime(timeLeft)}
-                    </div>
-                </>
-            )}
-            {!timeUp && (
-                <div className="bombs-left">
-                    {renderBombs()}
-                </div>
-            )}
-            <Stage width={stageWidth} height={stageHeight}>
+        <div>
+            <Stage width={window.innerWidth} height={window.innerHeight}>
                 <Layer>
                     <Rect
                         x={0}
@@ -195,28 +165,38 @@ const Game = () => {
                             y={fruit.y}
                             image={fruit.image}
                             isBomb={fruit.isBomb}
+<<<<<<< HEAD
                             onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
                             onRemove={() => handleRemove(fruit.id)}
                             gameOver={gameOver}
                             speed={speed} // Hızı buraya geçiriyoruz
                             containerHeight={stageHeight} // Container yüksekliğini buraya geçiriyoruz
                             size={50} // Meyvelerin boyutunu küçülttük
+=======
+                            onSlice={() => handleSlice(fruit.id, fruit.isBomb)}
+                            gameOver={gameOver}
+                            speed={speed} // Hızı buraya geçiriyoruz
+>>>>>>> parent of e5d26b2 (game update)
                         />
                     ))}
                 </Layer>
             </Stage>
+            <div style={{ position: 'absolute', top: 10, left: 10, fontSize: 24, color: 'black' }}>
+                Score: {score}
+            </div>
             {gameOver && (
-                <div className="game-over">
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    color: 'red'
+                }}>
                     <h1>Game Over</h1>
-                    <h2>Score: {score}</h2>
-                    <button onClick={handleRestart}>Restart</button>
-                </div>
-            )}
-            {timeUp && (
-                <div className="time-up">
-                    <h1>Süre Doldu!</h1>
-                    <h2>Score: {score} puan kazandınız</h2>
-                    <button onClick={handleRestart}>Restart</button>
+                    <button onClick={handleRestart} style={{ fontSize: 24 }}>
+                        Restart
+                    </button>
                 </div>
             )}
         </div>

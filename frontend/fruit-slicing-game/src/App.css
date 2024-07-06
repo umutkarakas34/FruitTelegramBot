@@ -36,6 +36,7 @@
     transform: rotate(360deg);
   }
 }
+<<<<<<< HEAD
 body, html {
   margin: 0;
   padding: 0;
@@ -141,3 +142,5 @@ body, html {
     height: 30px;
     margin-right: 5px;
 }
+=======
+>>>>>>> parent of e5d26b2 (game update)

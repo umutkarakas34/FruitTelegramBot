@@ -2,33 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
+<<<<<<< HEAD
 const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
+=======
+const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed }) => {
+>>>>>>> parent of e5d26b2 (game update)
     const [img] = useImage(image);
     const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
     const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
     const [position, setPosition] = useState({ x, y });
-    const [rotation, setRotation] = useState(0);
     const [sliced, setSliced] = useState(false);
     const [exploded, setExploded] = useState(false);
     const [sliceEffect, setSliceEffect] = useState(false);
 
     useEffect(() => {
         if (gameOver) return;
-
         const interval = setInterval(() => {
-            setPosition((pos) => {
-                const newY = pos.y + speed;
-                if (newY > containerHeight) {
-                    onRemove();
-                    return pos;
-                }
-                return { ...pos, y: newY };
-            });
-            setRotation((rot) => (rot + 0.15)); // Meyve döndürme
-        }, 12);
+            setPosition((pos) => ({ ...pos, y: pos.y + speed }));
+        }, 16);
 
         return () => clearInterval(interval);
-    }, [gameOver, speed, containerHeight, onRemove]);
+    }, [gameOver, speed]);
 
     const handleMouseMove = (e) => {
         if (!sliced) {
@@ -55,9 +49,14 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                     image={img}
                     x={position.x}
                     y={position.y}
+<<<<<<< HEAD
                     width={size}
                     height={size}
                     rotation={rotation}
+=======
+                    width={180}
+                    height={180}
+>>>>>>> parent of e5d26b2 (game update)
                     onMouseMove={handleMouseMove}
                 />
             ) : exploded ? (
