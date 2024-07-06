@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Stage, Layer, Rect, Line, Text, Circle } from 'react-konva';
+import React, { useState, useEffect } from 'react';
+import { Stage, Layer } from 'react-konva';
 import Fruit from './Fruit';
 
 const Game = () => {
@@ -10,13 +10,12 @@ const Game = () => {
     const [speed, setSpeed] = useState(6); // Oyun hızı için başlangıç değeri
     const [timeLeft, setTimeLeft] = useState(30); // Başlangıç süresi 30 saniye
     const [timeUp, setTimeUp] = useState(false); // Süre dolduğunda gösterilecek mesaj için durum değişkeni
-    const [splashes, setSplashes] = useState([]); // Meyve lekeleri için state
 
-    const fruitImages = useMemo(() => [
+    const fruitImages = [
         process.env.PUBLIC_URL + '/images/banana.png',
         process.env.PUBLIC_URL + '/images/apple.png',
         process.env.PUBLIC_URL + '/images/carrot.png',
-    ], []);
+    ];
     const bombImage = process.env.PUBLIC_URL + '/images/bomb.png';
 
     useEffect(() => {
@@ -29,9 +28,9 @@ const Game = () => {
                 : fruitImages[Math.floor(Math.random() * fruitImages.length)];
             setFruits((fruits) => [
                 ...fruits,
-                { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, image: randomImage, isBomb },
+                { id: Date.now(), x: Math.random() * (stageWidth - 100) + 50, y: -50, image: randomImage, isBomb },
             ]);
-        }, 400); // Meyve gelme sıklığını arttırdık (600ms'den 400ms'ye düşürdük)
+        }, 600);
 
         return () => clearInterval(interval);
     }, [gameOver, fruitImages, bombImage]);
@@ -62,87 +61,35 @@ const Game = () => {
         }
     }, [timeLeft, gameOver]);
 
-    const handleSlice = (id, isBomb, x, y) => {
+    const handleSlice = (id, isBomb) => {
         setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
         if (isBomb) {
-            setScore(0); // Skoru sıfırla
             setBombsClicked((count) => {
                 const newCount = count + 1;
                 if (newCount >= 3) {
-                    setGameOver(true);
-                    setFruits([]); // Game Over durumunda meyveleri temizle
+                    setScore((score) => score < 50 ? 0 : score - 50); // Skoru 50 azalt, ancak negatif olmasına izin verme
+                } else {
+                    setScore((score) => score < 10 ? 0 : score - 10); // Skoru 10 azalt, ancak negatif olmasına izin verme
                 }
                 return newCount;
             });
         } else {
             setScore((score) => score + 1);
-            setSplashes((splashes) => [
-                ...splashes,
-                { id: Date.now(), x, y, color: 'red' } // Lekenin rengini ve pozisyonunu belirle
-            ]);
         }
     };
 
     const handleRestart = () => {
         setFruits([]);
-        setSplashes([]); // Lekeleri temizle
         setScore(0);
         setBombsClicked(0);
         setSpeed(6); // Oyunu yeniden başlatırken hızı başlangıç değerine sıfırla
         setGameOver(false);
     };
 
-    // Kareli deseni oluşturma
-    const gridSize = 50; // Karelerin boyutunu artırdık
-    const verticalLines = [];
-    for (let i = 0; i <= stageWidth / gridSize; i++) {
-        verticalLines.push(
-            <Line
-                key={`v${i}`}
-                points={[i * gridSize, 0, i * gridSize, stageHeight]}
-                stroke="#0f0"
-                strokeWidth={0.5} // Çizgileri incelttik
-            />
-        );
-    }
-
-    const horizontalLines = [];
-    for (let i = 0; i <= stageHeight / gridSize; i++) {
-        horizontalLines.push(
-            <Line
-                key={`h${i}`}
-                points={[0, i * gridSize, stageWidth, i * gridSize]}
-                stroke="#0f0"
-                strokeWidth={0.5} // Çizgileri incelttik
-            />
-        );
-    }
-
     return (
         <div>
             <Stage width={window.innerWidth} height={window.innerHeight}>
                 <Layer>
-                    <Rect
-                        x={0}
-                        y={0}
-                        width={stageWidth}
-                        height={stageHeight}
-                        fill="#000" // Tamamen siyah zemin
-                    />
-                    {verticalLines}
-                    {horizontalLines}
-                    {splashes.map((splash) => (
-                        <Circle
-                            key={splash.id}
-                            x={splash.x}
-                            y={splash.y}
-                            radius={20}
-                            fill={splash.color}
-                            opacity={0.6}
-                        />
-                    ))}
-                    <Text text={`Score: ${score}`} fontSize={24} fill="white" x={10} y={10} />
-                    <Text text={`Time Left: ${formatTime(timeLeft)}`} fontSize={24} fill="white" x={10} y={40} />
                     {fruits.map((fruit) => (
                         <Fruit
                             key={fruit.id}
@@ -150,12 +97,11 @@ const Game = () => {
                             y={fruit.y}
                             image={fruit.image}
                             isBomb={fruit.isBomb}
-                            onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
+                            onSlice={() => handleSlice(fruit.id, fruit.isBomb)}
                             onRemove={() => handleRemove(fruit.id)}
                             gameOver={gameOver}
                             speed={speed} // Hızı buraya geçiriyoruz
                             containerHeight={stageHeight} // Container yüksekliğini buraya geçiriyoruz
-                            size={50} // Meyvelerin boyutunu küçülttük
                         />
                     ))}
                 </Layer>
