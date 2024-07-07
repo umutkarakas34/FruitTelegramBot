@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Stage, Layer, Rect, Line, Text, Circle } from 'react-konva';
+import { Stage, Layer, Rect, Line, Circle } from 'react-konva';
 import Fruit from './Fruit';
-import { AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+import { Container, Button } from '@mui/material';
 import './Game.css';
 
 const Game = () => {
@@ -81,10 +81,6 @@ const Game = () => {
             });
         } else {
             setScore((score) => score + 1);
-            // setSplashes((splashes) => [
-            //     ...splashes,
-            //     { id: Date.now(), x, y, color: 'red' }
-            // ]);
         }
     };
 
@@ -188,8 +184,6 @@ const Game = () => {
                                 opacity={0.6}
                             />
                         ))}
-                        <Text text={`Score: ${score}`} fontSize={24} fill="white" x={10} y={10} />
-                        <Text text={`Time Left: ${formatTime(timeLeft)}`} fontSize={24} fill="white" x={10} y={40} />
                         {fruits.map((fruit) => (
                             <Fruit
                                 key={fruit.id}

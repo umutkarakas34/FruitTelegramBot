@@ -8,28 +8,39 @@ html, body {
 
 .game-container {
     position: relative;
-    text-align: center;
-    color: white;
-    width: 100vw;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .score {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 20px; /* Boşluk bırakmak için değiştirildi */
+    left: 20px; /* Boşluk bırakmak için değiştirildi */
     font-size: 24px;
+    color: white;
+    z-index: 10;
 }
 
 .timer {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px; /* Boşluk bırakmak için değiştirildi */
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 24px;
+    color: white;
+    z-index: 10;
+}
+
+.bombs-left {
+    position: absolute;
+    top: 20px; /* Boşluk bırakmak için değiştirildi */
+    right: 20px; /* Boşluk bırakmak için değiştirildi */
+    z-index: 10;
+}
+
+.bomb-icon {
+    width: 50px;
+    height: 50px;
+    margin-left: 5px;
 }
 
 .game-over, .time-up {
@@ -38,16 +49,4 @@ html, body {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-}
-
-.bombs-left {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-}
-
-.bomb-icon {
-    width: 30px;
-    height: 30px;
-    margin-right: 5px;
 }
