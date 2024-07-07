@@ -151,13 +151,6 @@ const Game = () => {
 
     return (
         <Container>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6">
-                        Fruit Slice Game
-                    </Typography>
-                </Toolbar>
-            </AppBar>
             <div className="game-container">
                 {!gameOver && !timeUp && (
                     <>
