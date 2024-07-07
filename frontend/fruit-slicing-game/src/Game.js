@@ -81,10 +81,10 @@ const Game = () => {
             });
         } else {
             setScore((score) => score + 1);
-            setSplashes((splashes) => [
-                ...splashes,
-                { id: Date.now(), x, y, color: 'red' }
-            ]);
+            // setSplashes((splashes) => [
+            //     ...splashes,
+            //     { id: Date.now(), x, y, color: 'red' }
+            // ]);
         }
     };
 
