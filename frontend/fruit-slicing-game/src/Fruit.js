@@ -2,28 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { Image as KonvaImage, Group } from 'react-konva';
 import useImage from 'use-image';
 
-const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove }) => {
+const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
     const [img] = useImage(image);
     const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
     const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
     const [position, setPosition] = useState({ x, y });
+    const [rotation, setRotation] = useState(0);
     const [sliced, setSliced] = useState(false);
     const [exploded, setExploded] = useState(false);
     const [sliceEffect, setSliceEffect] = useState(false);
 
     useEffect(() => {
         if (gameOver) return;
+
         const interval = setInterval(() => {
-            setPosition((pos) => ({ ...pos, y: pos.y + speed }));
-        }, 16);
+            setPosition((pos) => {
+                const newY = pos.y + speed;
+                if (newY > containerHeight) {
+                    onRemove();
+                    return pos;
+                }
+                return { ...pos, y: newY };
+            });
+            setRotation((rot) => (rot + 0.15)); // Meyve döndürme
+        }, 12);
 
         return () => clearInterval(interval);
-    }, [gameOver, speed]);
+    }, [gameOver, speed, containerHeight, onRemove]);
 
     const handleMouseMove = (e) => {
         if (!sliced) {
             setSliced(true);
-            onSlice();
+            onSlice(isBomb, position.x, position.y);
             if (isBomb) {
                 setExploded(true);
                 setTimeout(() => {
@@ -45,15 +55,9 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                     image={img}
                     x={position.x}
                     y={position.y}
-<<<<<<< HEAD
                     width={size}
                     height={size}
-                    rotation={45}
-=======
-                    width={180}
-                    height={180}
                     rotation={rotation}
->>>>>>> parent of fbf7919 (gf)
                     onMouseMove={handleMouseMove}
                 />
             ) : exploded ? (
@@ -61,34 +65,34 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                     image={explosion}
                     x={position.x}
                     y={position.y}
-                    width={180}
-                    height={180}
+                    width={size}
+                    height={size}
                 />
             ) : (
                 <>
                     <KonvaImage
                         image={img}
-                        x={position.x - 50}
-                        y={position.y}
-                        width={180}
-                        height={180}
-                        rotation={45}
+                        x={position.x - size / 4}
+                        y={position.y - size / 4}
+                        width={size}
+                        height={size / 2}
+                        rotation={-45}
                     />
                     <KonvaImage
                         image={img}
-                        x={position.x + 50}
-                        y={position.y}
-                        width={180}
-                        height={180}
-                        rotation={-45}
+                        x={position.x + size / 4}
+                        y={position.y + size / 4}
+                        width={size}
+                        height={size / 2}
+                        rotation={45}
                     />
                     {sliceEffect && (
                         <KonvaImage
                             image={slice}
-                            x={position.x - 25}
+                            x={position.x}
                             y={position.y}
-                            width={180}
-                            height={180}
+                            width={size}
+                            height={size}
                             rotation={45}
                         />
                     )}
