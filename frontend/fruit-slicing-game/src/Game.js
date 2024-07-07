@@ -2,16 +2,27 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Stage, Layer, Rect, Line, Text, Circle } from 'react-konva';
 import Fruit from './Fruit';
 import { AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+<<<<<<< HEAD
+=======
+import './Game.css';
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
 
 const Game = () => {
     const [fruits, setFruits] = useState([]);
     const [score, setScore] = useState(0);
     const [bombsClicked, setBombsClicked] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+<<<<<<< HEAD
     const [speed, setSpeed] = useState(6); 
     const [timeLeft, setTimeLeft] = useState(30); 
     const [timeUp, setTimeUp] = useState(false); 
     const [splashes, setSplashes] = useState([]); 
+=======
+    const [speed, setSpeed] = useState(6);
+    const [timeLeft, setTimeLeft] = useState(30);
+    const [timeUp, setTimeUp] = useState(false);
+    const [splashes, setSplashes] = useState([]);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
 
     const fruitImages = useMemo(() => [
         process.env.PUBLIC_URL + '/images/banana.png',
@@ -21,6 +32,7 @@ const Game = () => {
     const bombImage = process.env.PUBLIC_URL + '/images/bomb.png';
     const bombFull = process.env.PUBLIC_URL + '/images/bomb_full.png';
 
+<<<<<<< HEAD
     const stageWidth = window.innerWidth < 600 ? window.innerWidth : 600; 
     const stageHeight = window.innerHeight < 1000 ? window.innerHeight : 1000; 
 
@@ -29,6 +41,16 @@ const Game = () => {
 
         const interval = setInterval(() => {
             const isBomb = Math.random() < 0.2; 
+=======
+    const stageWidth = window.innerWidth < 600 ? window.innerWidth : 600;
+    const stageHeight = window.innerHeight < 1000 ? window.innerHeight : 1000;
+
+    useEffect(() => {
+        if (gameOver || timeUp) return;
+
+        const interval = setInterval(() => {
+            const isBomb = Math.random() < 0.2;
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             const randomImage = isBomb
                 ? bombImage
                 : fruitImages[Math.floor(Math.random() * fruitImages.length)];
@@ -36,7 +58,11 @@ const Game = () => {
                 ...fruits,
                 { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, image: randomImage, isBomb },
             ]);
+<<<<<<< HEAD
         }, 400); 
+=======
+        }, 400);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
 
         return () => clearInterval(interval);
     }, [gameOver, timeUp, fruitImages, bombImage, stageWidth]);
@@ -44,7 +70,11 @@ const Game = () => {
     useEffect(() => {
         if (bombsClicked >= 3) {
             setGameOver(true);
+<<<<<<< HEAD
             setFruits([]); 
+=======
+            setFruits([]);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
         }
     }, [bombsClicked]);
 
@@ -61,7 +91,11 @@ const Game = () => {
             }, 1000);
             return () => clearInterval(timer);
         } else if (timeLeft === 0 && !gameOver) {
+<<<<<<< HEAD
             setTimeUp(true); 
+=======
+            setTimeUp(true);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             setFruits([]);
         }
     }, [timeLeft, gameOver]);
@@ -69,21 +103,36 @@ const Game = () => {
     const handleSlice = (id, isBomb, x, y) => {
         setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
         if (isBomb) {
+<<<<<<< HEAD
             setScore(0); 
+=======
+            setScore(0);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             setBombsClicked((count) => {
                 const newCount = count + 1;
                 if (newCount >= 3) {
                     setGameOver(true);
+<<<<<<< HEAD
                     setFruits([]); 
+=======
+                    setFruits([]);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
                 }
                 return newCount;
             });
         } else {
             setScore((score) => score + 1);
+<<<<<<< HEAD
             setSplashes((splashes) => [
                 ...splashes,
                 { id: Date.now(), x, y, color: 'red' } 
             ]);
+=======
+            // setSplashes((splashes) => [
+            //     ...splashes,
+            //     { id: Date.now(), x, y, color: 'red' }
+            // ]);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
         }
     };
 
@@ -93,6 +142,7 @@ const Game = () => {
 
     const handleRestart = () => {
         setFruits([]);
+<<<<<<< HEAD
         setSplashes([]); 
         setScore(0);
         setBombsClicked(0);
@@ -100,6 +150,15 @@ const Game = () => {
         setTimeLeft(30); 
         setGameOver(false);
         setTimeUp(false); 
+=======
+        setSplashes([]);
+        setScore(0);
+        setBombsClicked(0);
+        setSpeed(6);
+        setTimeLeft(30);
+        setGameOver(false);
+        setTimeUp(false);
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
     };
 
     const renderBombs = () => {
@@ -123,7 +182,11 @@ const Game = () => {
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
+<<<<<<< HEAD
     const gridSize = 50; 
+=======
+    const gridSize = 50;
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
     const verticalLines = [];
     for (let i = 0; i <= stageWidth / gridSize; i++) {
         verticalLines.push(
@@ -131,7 +194,11 @@ const Game = () => {
                 key={`v${i}`}
                 points={[i * gridSize, 0, i * gridSize, stageHeight]}
                 stroke="#0f0"
+<<<<<<< HEAD
                 strokeWidth={0.5} 
+=======
+                strokeWidth={0.5}
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             />
         );
     }
@@ -143,13 +210,18 @@ const Game = () => {
                 key={`h${i}`}
                 points={[0, i * gridSize, stageWidth, i * gridSize]}
                 stroke="#0f0"
+<<<<<<< HEAD
                 strokeWidth={0.5} 
+=======
+                strokeWidth={0.5}
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             />
         );
     }
 
     return (
         <Container>
+<<<<<<< HEAD
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6">
@@ -157,6 +229,8 @@ const Game = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
+=======
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
             <div className="game-container">
                 {!gameOver && !timeUp && (
                     <>
@@ -180,7 +254,11 @@ const Game = () => {
                             y={0}
                             width={stageWidth}
                             height={stageHeight}
+<<<<<<< HEAD
                             fill="#000" 
+=======
+                            fill="#000"
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
                         />
                         {verticalLines}
                         {horizontalLines}
@@ -206,9 +284,15 @@ const Game = () => {
                                 onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
                                 onRemove={() => handleRemove(fruit.id)}
                                 gameOver={gameOver}
+<<<<<<< HEAD
                                 speed={speed} 
                                 containerHeight={stageHeight} 
                                 size={50} 
+=======
+                                speed={speed}
+                                containerHeight={stageHeight}
+                                size={50}
+>>>>>>> 4db233e1be6293f31ee671442502833ba444f609
                             />
                         ))}
                     </Layer>
