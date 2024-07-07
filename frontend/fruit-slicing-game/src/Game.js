@@ -23,7 +23,7 @@ const Game = () => {
     const bombFull = process.env.PUBLIC_URL + '/images/bomb_full.png';
 
     const stageWidth = window.innerWidth < 600 ? window.innerWidth : 600;
-    const stageHeight = window.innerHeight < 1000 ? window.innerHeight : 1000;
+    const stageHeight = window.innerHeight;
 
     useEffect(() => {
         if (gameOver || timeUp) return;
@@ -67,6 +67,12 @@ const Game = () => {
         }
     }, [timeLeft, gameOver]);
 
+    useEffect(() => {
+        if (window.innerWidth < 600) {
+            setSpeed((prevSpeed) => prevSpeed * 1.5);
+        }
+    }, []);
+
     const handleSlice = (id, isBomb, x, y) => {
         setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
         if (isBomb) {
@@ -93,7 +99,7 @@ const Game = () => {
         setSplashes([]);
         setScore(0);
         setBombsClicked(0);
-        setSpeed(6);
+        setSpeed(window.innerWidth < 600 ? 9 : 6);
         setTimeLeft(30);
         setGameOver(false);
         setTimeUp(false);
@@ -146,61 +152,59 @@ const Game = () => {
     }
 
     return (
-        <Container>
+        <Container style={{ padding: 0, margin: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
             <div className="game-container">
-                {!gameOver && !timeUp && (
-                    <>
-                        <div className="score">
-                            Score: {score}
-                        </div>
-                        <div className="timer">
-                            {formatTime(timeLeft)}
-                        </div>
-                    </>
-                )}
+                <div className="score">
+                    Score: {score}
+                </div>
+                <div className="timer">
+                    {formatTime(timeLeft)}
+                </div>
                 {!timeUp && (
                     <div className="bombs-left">
                         {renderBombs()}
                     </div>
                 )}
-                <Stage width={stageWidth} height={stageHeight}>
-                    <Layer>
-                        <Rect
-                            x={0}
-                            y={0}
-                            width={stageWidth}
-                            height={stageHeight}
-                            fill="#000"
-                        />
-                        {verticalLines}
-                        {horizontalLines}
-                        {splashes.map((splash) => (
-                            <Circle
-                                key={splash.id}
-                                x={splash.x}
-                                y={splash.y}
-                                radius={20}
-                                fill={splash.color}
-                                opacity={0.6}
+                <div className="stage-wrapper">
+                    <Stage width={stageWidth} height={stageHeight}>
+                        <Layer>
+                            <Rect
+                                x={0}
+                                y={0}
+                                width={stageWidth}
+                                height={stageHeight}
+                                fill="#000"
                             />
-                        ))}
-                        {fruits.map((fruit) => (
-                            <Fruit
-                                key={fruit.id}
-                                x={fruit.x}
-                                y={fruit.y}
-                                image={fruit.image}
-                                isBomb={fruit.isBomb}
-                                onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
-                                onRemove={() => handleRemove(fruit.id)}
-                                gameOver={gameOver}
-                                speed={speed}
-                                containerHeight={stageHeight}
-                                size={50}
-                            />
-                        ))}
-                    </Layer>
-                </Stage>
+                            {verticalLines}
+                            {horizontalLines}
+                            {splashes.map((splash) => (
+                                <Circle
+                                    key={splash.id}
+                                    x={splash.x}
+                                    y={splash.y}
+                                    radius={20}
+                                    fill={splash.color}
+                                    opacity={0.6}
+                                />
+                            ))}
+                            {fruits.map((fruit) => (
+                                <Fruit
+                                    key={fruit.id}
+                                    x={fruit.x}
+                                    y={fruit.y}
+                                    image={fruit.image}
+                                    isBomb={fruit.isBomb}
+                                    onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
+                                    onRemove={() => handleRemove(fruit.id)}
+                                    gameOver={gameOver}
+                                    speed={speed}
+                                    containerHeight={stageHeight}
+                                    size={50}
+                                />
+                            ))}
+                        </Layer>
+                    </Stage>
+                </div>
                 {gameOver && (
                     <div className="game-over">
                         <h1>Game Over</h1>
