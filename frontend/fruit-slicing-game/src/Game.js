@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Stage, Layer, Rect, Line, Text, Circle } from 'react-konva';
 import Fruit from './Fruit';
 import { AppBar, Toolbar, Typography, Container, Button } from '@mui/material';
+import './Game.css';
 
 const Game = () => {
     const [fruits, setFruits] = useState([]);
