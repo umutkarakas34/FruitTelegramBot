@@ -1,33 +1,128 @@
 require('dotenv').config();
 const { Telegraf } = require('telegraf');
 const express = require('express');
-const User = require('./models/user');
+const { User, Referral } = require('./models/relationships');
 const sequelize = require('./utility/db');
+const crypto = require('crypto');
 
-// sequelize.sync({ force: true });
+sequelize.sync();
+
+function generateReferralCode() {
+    return crypto.randomBytes(4).toString('hex'); // 8 karakterlik bir referans kodu oluşturur
+}
+const generateReferralLink = (username, referralCode) => {
+    return `https://t.me/testbot_gamegamebot?start=${referralCode}`;
+};
+
+const generateUniqueReferralCode = async () => {
+    let referralCode;
+    let isUnique = false;
+
+    while (!isUnique) {
+        referralCode = generateReferralCode();
+        const existingUser = await User.findOne({ where: { referral_code: referralCode } });
+        if (!existingUser) {
+            isUnique = true;
+        }
+    }
+
+    return referralCode;
+};
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
 
-bot.start((ctx) => ctx.reply('Merhaba! Hoş geldiniz ' + ctx.from.id + ' ' + ctx.from.username));
+bot.start(async (ctx) => {
+    try {
+        const referralCode = ctx.startPayload; // Referans kodunu linkten alıyoruz
+        const referringUser = await User.findOne({ where: { referral_code: referralCode } });
+
+        const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
+        if (user) {
+            ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz.`);
+        } else {
+            const newReferralCode = await generateUniqueReferralCode();
+
+            const newUser = await User.create({
+                telegram_id: ctx.from.id,
+                username: ctx.from.username,
+                first_name: ctx.from.first_name,
+                last_name: ctx.from.last_name,
+                referral_code: newReferralCode,
+                referred_by: referringUser ? referringUser.id : null
+            });
+
+            // Referans ilişkilerini ekleme
+            if (referringUser) {
+                await Referral.create({
+                    user_id: newUser.id,
+                    referred_user_id: referringUser.id,
+                    referral_level: 1
+                });
+
+                // İkinci seviye referansları ekle
+                if (referringUser.referred_by) {
+                    await Referral.create({
+                        user_id: newUser.id,
+                        referred_user_id: referringUser.referred_by,
+                        referral_level: 2
+                    });
+                }
+            }
+
+            ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${newReferralCode}`);
+        }
+    } catch (error) {
+        console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
+        ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
+    }
+});
+
+
+bot.on('text', async (ctx) => {
+    try {
+        const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
+        if (user) {
+            const referralLink = generateReferralLink(ctx.from.username, user.referral_code);
+            ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz. İşte referans linkiniz: ${referralLink}`);
+        } else {
+            const newReferralCode = await generateUniqueReferralCode();
+
+            const newUser = await User.create({
+                telegram_id: ctx.from.id,
+                username: ctx.from.username,
+                first_name: ctx.from.first_name,
+                last_name: ctx.from.last_name,
+                referral_code: newReferralCode
+            });
+
+            ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${newReferralCode}`);
+        }
+    } catch (error) {
+        console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
+        ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
+    }
+});
+
 
 // bot.on('text', async (ctx) => {
 //     try {
-//         const user = await User.findOne({ where: { telegramId: ctx.from.id } });
+//         const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
 //         if (user) {
 //             ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz.`);
-//         }
-//         else {
+//         } else {
+//             const referralCode = generateReferralCode();
+
 //             await User.create({
-//                 telegramId: ctx.from.id,
+//                 telegram_id: ctx.from.id,
 //                 username: ctx.from.username,
 //                 first_name: ctx.from.first_name,
-//                 last_name: ctx.from.last_name
+//                 last_name: ctx.from.last_name,
+//                 referral_code: referralCode
 //             });
 
-//             ctx.reply(`Merhaba @${ctx.from.username} kaydınız oluşturulmuştur.`)
+//             ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${referralCode}`);
 //         }
-
 //     } catch (error) {
 //         console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
 //         ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
