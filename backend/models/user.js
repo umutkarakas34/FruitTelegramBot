@@ -32,6 +32,7 @@ const User = sequelize.define('User', {
         type: Sequelize.STRING,
         allowNull: true
     },
+    token: Sequelize.FLOAT,
     created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW

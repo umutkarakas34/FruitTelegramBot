@@ -5,7 +5,7 @@ const { User, Referral } = require('./models/relationships');
 const sequelize = require('./utility/db');
 const crypto = require('crypto');
 
-sequelize.sync();
+// sequelize.sync();
 
 function generateReferralCode() {
     return crypto.randomBytes(4).toString('hex'); // 8 karakterlik bir referans kodu oluşturur
@@ -28,6 +28,45 @@ const generateUniqueReferralCode = async () => {
 
     return referralCode;
 };
+
+const calculateReferralEarnings = async (userId) => {
+    const level1Earnings = await Referral.findAll({
+        where: {
+            referred_user_id: userId,
+            referral_level: 1
+        },
+        include: [{
+            model: User,
+            as: 'referrer',
+            attributes: ['id', 'username', 'token'] // Kazancın kullanıcıya bağlı olması için gerekli ilişkiler
+        }]
+    });
+
+    const level2Earnings = await Referral.findAll({
+        where: {
+            referred_user_id: userId,
+            referral_level: 2
+        },
+        include: [{
+            model: User,
+            as: 'referrer',
+            attributes: ['id', 'username', 'token']
+        }]
+    });
+
+    let totalEarnings = 0;
+
+    level1Earnings.forEach(referral => {
+        totalEarnings += referral.referrer.token * 0.10; // %10 kazanç
+    });
+
+    level2Earnings.forEach(referral => {
+        totalEarnings += referral.referrer.token * 0.025; // %2.5 kazanç
+    });
+
+    return totalEarnings;
+};
+
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
@@ -77,7 +116,72 @@ bot.start(async (ctx) => {
         ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
     }
 });
+bot.command('earnings', async (ctx) => {
+    try {
+        const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
 
+        if (!user) {
+            ctx.reply('Kullanıcı bulunamadı.');
+            return;
+        }
+
+        const totalEarnings = await calculateReferralEarnings(user.id);
+
+        ctx.reply(`Toplam referans kazancınız: ${totalEarnings.toFixed(2)} TL`);
+    } catch (error) {
+        console.error('Kazanç hesaplanırken hata:', error);
+        ctx.reply('Kazanç hesaplanırken bir hata oluştu.');
+    }
+});
+
+bot.command('kazan', async (ctx) => {
+    try {
+        const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
+        const min = 1;
+        const max = 10;
+        const randomAmount = (Math.random() * (max - min)) + min;
+
+        if (user) {
+            user.token += randomAmount;
+            await user.save();
+
+            // Üst referans kazanç güncelleme
+            if (user.referred_by) {
+                const referringUser = await User.findByPk(user.referred_by);
+                if (referringUser) {
+                    const bonus = randomAmount * 0.10; // %10 bonus
+                    referringUser.token += bonus;
+                    await referringUser.save();
+
+                    // Üst referansın üst referansını kontrol et ve kazancını güncelle
+                    if (referringUser.referred_by) {
+                        const superReferringUser = await User.findByPk(referringUser.referred_by);
+                        if (superReferringUser) {
+                            const superBonus = randomAmount * 0.025; // %2.5 bonus
+                            superReferringUser.token += superBonus;
+                            await superReferringUser.save();
+                        }
+                    }
+                }
+            }
+
+            ctx.reply(`Tebrikler @${ctx.from.username}, ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(user.token.toFixed(2))}`);
+        } else {
+            const newUser = await User.create({
+                telegram_id: ctx.from.id,
+                username: ctx.from.username,
+                first_name: ctx.from.first_name,
+                last_name: ctx.from.last_name,
+                token: randomAmount
+            });
+            ctx.reply(`Hoş geldiniz @${ctx.from.username}, kaydınız oluşturuldu ve ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(newUser.token.toFixed(2))}`);
+            console.log(`Yeni kullanıcı ${ctx.from.username} ${parseFloat(randomAmount.toFixed(2))} token kazandı. Başlangıç token: ${parseFloat(newUser.token.toFixed(2))}`);
+        }
+    } catch (error) {
+        console.error('Token güncellenirken hata:', error);
+        ctx.reply('Token güncellenirken bir hata oluştu.');
+    }
+});
 
 bot.on('text', async (ctx) => {
     try {
@@ -101,59 +205,6 @@ bot.on('text', async (ctx) => {
     } catch (error) {
         console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
         ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
-    }
-});
-
-
-// bot.on('text', async (ctx) => {
-//     try {
-//         const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
-//         if (user) {
-//             ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz.`);
-//         } else {
-//             const referralCode = generateReferralCode();
-
-//             await User.create({
-//                 telegram_id: ctx.from.id,
-//                 username: ctx.from.username,
-//                 first_name: ctx.from.first_name,
-//                 last_name: ctx.from.last_name,
-//                 referral_code: referralCode
-//             });
-
-//             ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${referralCode}`);
-//         }
-//     } catch (error) {
-//         console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
-//         ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
-//     }
-// });
-
-bot.command('kazan', async (ctx) => {
-    try {
-        const user = await User.findOne({ where: { telegramId: ctx.from.id } });
-        const min = 1;
-        const max = 10;
-        const randomAmount = (Math.random() * (max - min)) + min;
-
-        if (user) {
-            user.token += randomAmount;
-            await user.save();
-            ctx.reply(`Tebrikler @${ctx.from.username}, ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(user.token.toFixed(2))}`);
-        } else {
-            const newUser = await User.create({
-                telegramId: ctx.from.id,
-                username: ctx.from.username,
-                first_name: ctx.from.first_name,
-                last_name: ctx.from.last_name,
-                token: randomAmount
-            });
-            ctx.reply(`Hoş geldiniz @${ctx.from.username}, kaydınız oluşturuldu ve ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(newUser.token.toFixed(2))}`);
-            console.log(`Yeni kullanıcı ${ctx.from.username} ${parseFloat(randomAmount.toFixed(2))} token kazandı. Başlangıç token: ${parseFloat(newUser.token.toFixed(2))}`);
-        }
-    } catch (error) {
-        console.error('Token güncellenirken hata:', error);
-        ctx.reply('Token güncellenirken bir hata oluştu.');
     }
 });
 
