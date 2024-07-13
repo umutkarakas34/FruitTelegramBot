@@ -2,15 +2,47 @@ const Sequelize = require('sequelize');
 const sequelize = require('../utility/db');
 
 const User = sequelize.define('User', {
-    telegramId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    username: Sequelize.STRING,
-    first_name: Sequelize.STRING,
-    last_name: Sequelize.STRING,
-    token: Sequelize.DOUBLE,
-})
+    telegram_id: {
+        type: Sequelize.BIGINT,
+        allowNull: false
+    },
+    username: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    first_name: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    last_name: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    referral_code: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+    },
+    referred_by: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    token: Sequelize.FLOAT,
+    ref_earning: {
+        type: Sequelize.FLOAT
+    },
+    created_at: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
+    }
+}, {
+    tableName: 'users',
+    timestamps: false
+});
 
 module.exports = User;
