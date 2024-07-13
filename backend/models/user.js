@@ -33,6 +33,9 @@ const User = sequelize.define('User', {
         allowNull: true
     },
     token: Sequelize.FLOAT,
+    ref_earning: {
+        type: Sequelize.FLOAT
+    },
     created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
