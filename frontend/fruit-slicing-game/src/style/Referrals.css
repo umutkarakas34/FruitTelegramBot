@@ -4,13 +4,19 @@ body {
     font-family: Arial, sans-serif;
     background-color: #121212;
     color: #fff;
+    overflow-x: hidden; /* Yatay kaydırma çubuğunu gizler */
+  }
+  
+  .container {
+    width: 90%; /* Sayfanın genişliğini %90 yapar */
+    max-width: 1200px; /* Maksimum genişlik sınırı koyar */
+    margin: 0 auto; /* Ortalar */
+    padding: 0 20px; /* İç kenar boşlukları ekler */
   }
   
   .referrals-container {
     padding-top: 60px; /* Navbar için yer ayırma */
     padding-bottom: 60px; /* Footer için yer ayırma */
-   width: 60%; /* Genişliği artırıyoruz */
-    margin: 0 auto; /* Ortalamak için otomatik marjin */
   }
   
   .header-title {
@@ -58,7 +64,7 @@ body {
     background-color: #d3d3d3 !important; /* Açık gri renkte buton */
     color: #fff !important; /* Beyaz yazı */
     font-size: 1rem !important;
-    padding: px 20px !important; /* Daha fazla padding */
+    padding: 10px 20px !important; /* Daha fazla padding */
   }
   
   @media (max-width: 600px) {
