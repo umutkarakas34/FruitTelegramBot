@@ -1,0 +1,36 @@
+/* style/Footer.css */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #121212;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .MuiIconButton-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .MuiIconButton-root svg {
+    font-size: 24px;
+  }
+  
+  .MuiIconButton-root .MuiTypography-caption {
+    margin-top: 5px;
+  }
+  
+  @media (max-width: 600px) {
+    .MuiIconButton-root svg {
+      font-size: 20px;
+    }
+  
+    .MuiIconButton-root .MuiTypography-caption {
+      font-size: 0.75rem;
+    }
+  }
+  

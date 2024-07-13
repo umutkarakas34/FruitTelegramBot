@@ -1,6 +1,8 @@
 import './App.css';
 import Game from './Game';
 import Home from './pages/Home';
+import Task from './pages/Task';
+import Referrals from './pages/Referrals';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { CSSTransition } from 'react-transition-group';
@@ -28,6 +30,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/task" element={<Task />} />
+            <Route path="/referrals" element={<Referrals />} />
           </Routes>
         </CSSTransition>
         {!showHome && (

@@ -1,0 +1,45 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-color: #121212;
+    padding: 10px 0;
+    width: 100%;
+    max-width: 400px; /* Maksimum genişlik belirliyoruz */
+    display: flex;
+    justify-content: center; /* Navbarı ortala */
+  }
+  
+  .nav-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-title {
+    background: linear-gradient(90deg, #ff5722, #ff9800, #ffeb3b, #8bc34a, #00bcd4, #3f51b5, #9c27b0);
+    background-clip: text;
+    color: transparent;
+    animation: gradient-animation 5s ease infinite;
+    background-size: 200% 200%;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+  }
+  
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  

@@ -1,91 +1,129 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Box, Typography, Button, IconButton, Grid, Paper } from '@mui/material';
-import { Home as HomeIcon, Assignment as TasksIcon, People as FriendsIcon, Settings as SettingsIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import { FaAppleAlt, FaLemon } from 'react-icons/fa';
-import { useSpring, animated } from 'react-spring';
+import { Container, Box, Typography, Button, Grid, Paper } from '@mui/material';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import '../style/Home.css';
 
 const Home = () => {
-  const fruitAnimation = useSpring({
-    loop: true,
-    to: [
-      { transform: 'translateY(0px)' },
-      { transform: 'translateY(-10px)' },
-      { transform: 'translateY(0px)' }
-    ],
-    from: { transform: 'translateY(0px)' },
-    config: { duration: 1000 }
-  });
+  const [timeRemaining, setTimeRemaining] = useState(4320); // 12 hours in seconds
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        const newTimeRemaining = prev - 1;
+        setProgress((newTimeRemaining / 43200) * 100);
+        return newTimeRemaining;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+  };
 
   return (
-    <Container maxWidth="sm" className="home-container">
-      <Box className="header" display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <IconButton color="inherit">
-          <CancelIcon />
-        </IconButton>
-        <Typography variant="h6" component="div" className="header-title">
-          Crypto Game
-        </Typography>
-        <IconButton color="inherit">
-          <SettingsIcon />
-        </IconButton>
-      </Box>
-
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mb={3}>
+    <Container maxWidth="xs" className="home-container">
+      <Navbar />
+      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>
           <Typography variant="h4">฿ 117,721</Typography>
         </Box>
 
-        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3 }}>
-          <Grid container alignItems="center">
-            <Grid item xs>
-              <Typography variant="h6" className="game-title">Drop Game</Typography>
-              <Typography variant="body1" className="game-tickets">Tickets: 7</Typography>
+        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px' }}>
+          <Grid container direction="row" alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Drop Game</Typography>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" component={Link} to="/game">
-                Play Now
+              <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>Tickets: 7</Typography>
+            </Grid>
+          </Grid>
+          <Grid container direction="column" alignItems="center">
+            <Grid item sx={{ width: '100%' }}>
+              <Button
+                variant="contained"
+                component={Link}
+                to="/game"
+                sx={{
+                  borderRadius: '10px',
+                  padding: '10px 0',
+                  marginTop: '20px',
+                  width: '100%',
+                  background: 'linear-gradient(90deg, #ff5722, #ff9800, #ffeb3b, #8bc34a, #00bcd4, #3f51b5, #9c27b0)',
+                  color: '#fff',
+                  backgroundSize: '200% 200%',
+                  animation: 'gradient-animation 5s ease infinite',
+                }}
+              >
+                Play
               </Button>
             </Grid>
-          </Grid>
-          <Grid container justifyContent="center" spacing={2} mt={2}>
-            <Grid item>
-              <animated.div style={fruitAnimation}>
-                <FaAppleAlt className="fruit-icon" />
-              </animated.div>
+            <Grid item sx={{ marginTop: '15px', width: '100%' }}>
+              <Typography variant="body1" className="game-description" sx={{ fontSize: '0.9rem', color: '#ccc', textAlign: 'center' }}>
+                Join the Drop Game and earn rewards! The more you play, the more tickets you earn. Click 'Play' to start your adventure.
+              </Typography>
             </Grid>
-            <Grid item>
-              <animated.div style={fruitAnimation}>
-                <FaLemon className="fruit-icon" />
-              </animated.div>
+            <Grid item sx={{ marginTop: '15px', width: '100%' }}>
+              <Typography
+                variant="body2"
+                component={Link}
+                to="/learn-more"
+                sx={{
+                  color: '#fff',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'none',
+                  }
+                }}
+              >
+                Learn More
+              </Typography>
             </Grid>
-          
           </Grid>
         </Paper>
 
-        <Paper elevation={3} className="farming-info" sx={{ p: 2 }}>
-          <Typography variant="h6">Farming ฿ 5.747</Typography>
-          <Typography variant="body2">Remaining: 07h 12m</Typography>
-        </Paper>
+        <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb: 3 }}>
+          <Box sx={{ position: 'relative', width: '100%', height: '50px', backgroundColor: '#3a3a3a', borderRadius: '10px', overflow: 'hidden' }}>
+            <Box sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              height: '100%',
+              width: `${progress}%`,
+              backgroundColor: '#808080', // Kalan süre gri renkte
+              borderRadius: '10px',
+              transition: 'width 1s linear'
+            }}></Box>
+            <Typography className="farming-text" sx={{
+              position: 'absolute',
+              width: '100%',
+              textAlign: 'center',
+              lineHeight: '50px',
+              color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+              fontWeight: 'bold',
+              fontSize: '0.875rem' // Daha küçük font
+            }}>Farming</Typography>
+            <Typography className="timer" sx={{
+              position: 'absolute',
+              right: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+              fontSize: '0.75rem',
+              fontWeight: 'bold'
+            }}>{formatTime(timeRemaining)}</Typography>
+          </Box>
+        </Box>
       </Box>
-
-      <Box className="bottom-nav" display="flex" justifyContent="space-around" alignItems="center" mt={3}>
-        <IconButton color="inherit" component={Link} to="/home">
-          <HomeIcon />
-          <Typography variant="caption">Home</Typography>
-        </IconButton>
-        <IconButton color="inherit">
-          <TasksIcon />
-          <Typography variant="caption">Tasks</Typography>
-        </IconButton>
-        <IconButton color="inherit">
-          <FriendsIcon />
-          <Typography variant="caption">Friends</Typography>
-        </IconButton>
-      </Box>
+      <Footer />
     </Container>
   );
 };
