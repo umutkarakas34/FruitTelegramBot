@@ -11,12 +11,12 @@ body {
     width: 90%; /* Sayfanın genişliğini %90 yapar */
     max-width: 1200px; /* Maksimum genişlik sınırı koyar */
     margin: 0 auto; /* Ortalar */
-    padding: 0 20px; /* İç kenar boşlukları ekler */
+    padding: 0 30px; /* İç kenar boşlukları ekler */
   }
   
   .referrals-container {
     padding-top: 60px; /* Navbar için yer ayırma */
-    padding-bottom: 60px; /* Footer için yer ayırma */
+    padding-bottom: 25px; /* Footer için yer ayırma */
   }
   
   .header-title {
@@ -34,7 +34,7 @@ body {
     animation: gradient-animation 5s ease infinite; /* Animasyon ekleniyor */
     color: #fff;
     width: 100%; /* Kartların genişliğini %100 yapıyoruz */
-    padding: 20px; /* Daha fazla padding */
+    padding: 30px; /* Daha fazla padding */
   }
   
   .referral-avatar {
@@ -64,7 +64,7 @@ body {
     background-color: #d3d3d3 !important; /* Açık gri renkte buton */
     color: #fff !important; /* Beyaz yazı */
     font-size: 1rem !important;
-    padding: 10px 20px !important; /* Daha fazla padding */
+    padding: 30px 30px !important; /* Daha fazla padding */
   }
   
   @media (max-width: 600px) {
