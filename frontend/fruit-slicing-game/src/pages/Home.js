@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import '../style/Home.css';
 
 const Home = () => {
-  const [timeRemaining, setTimeRemaining] = useState(4320); // 12 hours in seconds
+  const [timeRemaining, setTimeRemaining] = useState(4); // 12 hours in seconds
   const [progress, setProgress] = useState(100);
 
   useEffect(() => {

@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Image as KonvaImage, Group } from 'react-konva';
-import useImage from 'use-image';
+import { Text as KonvaText, Group } from 'react-konva';
 
-const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
-    const [img] = useImage(image);
-    const [explosion] = useImage(process.env.PUBLIC_URL + '/images/explosion.png');
-    const [slice] = useImage(process.env.PUBLIC_URL + '/images/slice.png');
+const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
     const [position, setPosition] = useState({ x, y });
     const [rotation, setRotation] = useState(0);
     const [sliced, setSliced] = useState(false);
     const [exploded, setExploded] = useState(false);
     const [sliceEffect, setSliceEffect] = useState(false);
+    const [sliceParts, setSliceParts] = useState([]);
 
     useEffect(() => {
         if (gameOver) return;
@@ -41,6 +38,10 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
                 }, 500);
             } else {
                 setSliceEffect(true);
+                setSliceParts([
+                    { ...position, rotation: -45, xMove: -size / 2, yMove: -size / 2 },
+                    { ...position, rotation: 45, xMove: size / 2, yMove: size / 2 }
+                ]);
                 setTimeout(() => {
                     setSliceEffect(false);
                 }, 300);
@@ -51,52 +52,32 @@ const Fruit = ({ x, y, image, onSlice, isBomb, gameOver, speed, containerHeight,
     return (
         <Group>
             {!sliced ? (
-                <KonvaImage
-                    image={img}
+                <KonvaText
+                    text={icon}
                     x={position.x}
                     y={position.y}
-                    width={size}
-                    height={size}
+                    fontSize={size}
                     rotation={rotation}
                     onMouseMove={handleMouseMove}
                 />
             ) : exploded ? (
-                <KonvaImage
-                    image={explosion}
+                <KonvaText
+                    text="💥"
                     x={position.x}
                     y={position.y}
-                    width={size}
-                    height={size}
+                    fontSize={size}
                 />
             ) : (
-                <>
-                    <KonvaImage
-                        image={img}
-                        x={position.x - size / 4}
-                        y={position.y - size / 4}
-                        width={size}
-                        height={size / 2}
-                        rotation={-45}
+                sliceParts.map((part, index) => (
+                    <KonvaText
+                        key={index}
+                        text={icon}
+                        x={part.x + part.xMove}
+                        y={part.y + part.yMove}
+                        fontSize={size / 2}
+                        rotation={part.rotation}
                     />
-                    <KonvaImage
-                        image={img}
-                        x={position.x + size / 4}
-                        y={position.y + size / 4}
-                        width={size}
-                        height={size / 2}
-                        rotation={45}
-                    />
-                    {sliceEffect && (
-                        <KonvaImage
-                            image={slice}
-                            x={position.x}
-                            y={position.y}
-                            width={size}
-                            height={size}
-                            rotation={45}
-                        />
-                    )}
-                </>
+                ))
             )}
         </Group>
     );
