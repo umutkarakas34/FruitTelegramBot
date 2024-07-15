@@ -8,7 +8,7 @@ const Referrals = () => {
   return (
     <Container className="referrals-container container" sx={{ width: 444 }}>
       <Box sx={{ mt: 5 }}> {/* Navbar'ı aşağı almak için margin-top ekledik */}
-        <Navbar />
+        {/* <Navbar /> */}
       </Box>
       <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} mb={3}>
         <Avatar sx={{ mb: 2, width: 56, height: 56 }} className="referral-avatar">👨‍👩‍👧‍👦</Avatar>
