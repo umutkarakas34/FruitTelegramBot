@@ -17,7 +17,7 @@ const Tasks = () => {
 
   return (
     <Container maxWidth="xs" className="tasks-container">
-      <Navbar />
+      {/* <Navbar /> */}
       <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
         <Typography variant="h5" mb={1}>Tasks</Typography>
         <Typography variant="body2" mb={2}>

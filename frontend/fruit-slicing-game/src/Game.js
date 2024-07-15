@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Stage, Layer, Line, Circle,Rect, Text as KonvaText } from 'react-konva';
+import { Stage, Layer, Circle, Image as KonvaImage, Text as KonvaText } from 'react-konva';
+import useImage from 'use-image';
 import Fruit from './Fruit';
 import { Container, Button } from '@mui/material';
-import Navbar from './components/Navbar';
 
 const Game = () => {
     const [fruits, setFruits] = useState([]);
@@ -13,13 +13,16 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = useState(30);
     const [timeUp, setTimeUp] = useState(false);
     const [splashes, setSplashes] = useState([]);
+    const [backgroundImage] = useImage('/images/background.jpg'); // Resim dosyasını yükleyin
 
     const fruitIcons = useMemo(() => [
-        '🍌', // Banana
-        '🍎', // Apple
-        '🥕', // Carrot
+        'apple', // Apple
+        'banana', // Banana
+        'peach', // Peach
+        'sandia', // Watermelon
+        'basaha' // Strawberry
     ], []);
-    const bombIcon = '💣';
+    const bombIcon = 'boom';
     const bombFull = '💣';
 
     const stageWidth = Math.min(window.innerWidth, 433); // Adjusted to a wider width
@@ -123,52 +126,25 @@ const Game = () => {
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    const gridSize = 50;
-    const verticalLines = [];
-    for (let i = 0; i <= stageWidth / gridSize; i++) {
-        verticalLines.push(
-            <Line
-                key={`v${i}`}
-                points={[i * gridSize, 0, i * gridSize, stageHeight]}
-                stroke="#0f0"
-                strokeWidth={0.5}
-            />
-        );
-    }
-
-    const horizontalLines = [];
-    for (let i = 0; i <= stageHeight / gridSize; i++) {
-        horizontalLines.push(
-            <Line
-                key={`h${i}`}
-                points={[0, i * gridSize, stageWidth, i * gridSize]}
-                stroke="#0f0"
-                strokeWidth={0.5}
-            />
-        );
-    }
-
     return (
         <Container style={{ padding: 0, margin: 0, width: stageWidth, overflow: 'hidden', position: 'relative' }}>
-            <Navbar />
+            {/* <Navbar /> */}
             <div className="game-container" style={{ position: 'relative' }}>
                 <Stage width={stageWidth} height={stageHeight}>
                     <Layer>
-                        <Rect
+                        <KonvaImage
+                            image={backgroundImage}
                             x={0}
                             y={0}
                             width={stageWidth}
                             height={stageHeight}
-                            fill="#000"
                         />
-                        {verticalLines}
-                        {horizontalLines}
                         {splashes.map((splash) => (
                             <Circle
                                 key={splash.id}
                                 x={splash.x}
                                 y={splash.y}
-                                radius={20}
+                                radius={200}
                                 fill={splash.color}
                                 opacity={0.6}
                             />
@@ -185,7 +161,7 @@ const Game = () => {
                                 gameOver={gameOver}
                                 speed={speed}
                                 containerHeight={stageHeight}
-                                size={50}
+                                size={70} // Meyve boyutunu biraz daha büyüttük
                             />
                         ))}
                         <KonvaText
