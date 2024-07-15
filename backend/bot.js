@@ -29,49 +29,21 @@ const generateUniqueReferralCode = async () => {
 };
 
 bot.start(async (ctx) => {
-    try {
-        const referralCode = ctx.startPayload; // Referans kodunu linkten alıyoruz
-        const referringUser = await User.findOne({ where: { referral_code: referralCode } });
+    const telegramId = ctx.from.id;
+    const username = ctx.from.username;
+    const firstname = ctx.from.first_name;
+    const lastname = ctx.from.last_name;
+    const referralCode = ctx.startPayload;
 
-        const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
-        if (user) {
-            ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz.`);
-        } else {
-            const newReferralCode = await generateUniqueReferralCode();
+    const url = `https://2246-188-132-191-150.ngrok-free.app/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
 
-            const newUser = await User.create({
-                telegram_id: ctx.from.id,
-                username: ctx.from.username,
-                first_name: ctx.from.first_name,
-                last_name: ctx.from.last_name,
-                referral_code: newReferralCode,
-                referred_by: referringUser ? referringUser.id : null
-            });
-
-            // Referans ilişkilerini ekleme
-            if (referringUser) {
-                await Referral.create({
-                    user_id: newUser.id,
-                    referred_user_id: referringUser.id,
-                    referral_level: 1
-                });
-
-                // İkinci seviye referansları ekle
-                if (referringUser.referred_by) {
-                    await Referral.create({
-                        user_id: newUser.id,
-                        referred_user_id: referringUser.referred_by,
-                        referral_level: 2
-                    });
-                }
-            }
-
-            ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${newReferralCode}`);
+    ctx.reply('Play butonuna tıklayın:', {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'PLAY', web_app: { url: url } }]
+            ]
         }
-    } catch (error) {
-        console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
-        ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
-    }
+    });
 });
 
 bot.command('earnings', async (ctx) => {
@@ -173,7 +145,15 @@ bot.command('claim', async (ctx) => {
 });
 
 bot.command('play', (ctx) => {
-    const url = 'https://google.com/userId=' + ctx.from.id;
+    const telegramId = ctx.from.id;
+    const username = ctx.from.username;
+    const firstname = ctx.from.first_name;
+    const lastname = ctx.from.last_name;
+    const referralCode = ctx.payload;
+
+    const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
+    &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+
     ctx.reply('Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [

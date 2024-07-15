@@ -29,12 +29,20 @@ const User = sequelize.define('User', {
         allowNull: false
     },
     referred_by: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: true
     },
-    token: Sequelize.FLOAT,
+    token: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0
+    },
     ref_earning: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
+        defaultValue: 0
+    },
+    ticket: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
     },
     created_at: {
         type: Sequelize.DATE,
