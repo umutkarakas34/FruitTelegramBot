@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Stage, Layer, Rect, Line, Circle } from 'react-konva';
+import { Stage, Layer, Line, Circle,Rect, Text as KonvaText } from 'react-konva';
 import Fruit from './Fruit';
 import { Container, Button } from '@mui/material';
-import './Game.css';
+import Navbar from './components/Navbar';
 
 const Game = () => {
     const [fruits, setFruits] = useState([]);
@@ -14,33 +14,33 @@ const Game = () => {
     const [timeUp, setTimeUp] = useState(false);
     const [splashes, setSplashes] = useState([]);
 
-    const fruitImages = useMemo(() => [
-        process.env.PUBLIC_URL + '/images/banana.png',
-        process.env.PUBLIC_URL + '/images/apple.png',
-        process.env.PUBLIC_URL + '/images/carrot.png',
+    const fruitIcons = useMemo(() => [
+        '🍌', // Banana
+        '🍎', // Apple
+        '🥕', // Carrot
     ], []);
-    const bombImage = process.env.PUBLIC_URL + '/images/bomb.png';
-    const bombFull = process.env.PUBLIC_URL + '/images/bomb_full.png';
+    const bombIcon = '💣';
+    const bombFull = '💣';
 
-    const stageWidth = window.innerWidth < 600 ? window.innerWidth : 600;
-    const stageHeight = window.innerHeight;
+    const stageWidth = Math.min(window.innerWidth, 433); // Adjusted to a wider width
+    const stageHeight = window.innerHeight; // Adjusted height to fill the screen
 
     useEffect(() => {
         if (gameOver || timeUp) return;
 
         const interval = setInterval(() => {
             const isBomb = Math.random() < 0.2;
-            const randomImage = isBomb
-                ? bombImage
-                : fruitImages[Math.floor(Math.random() * fruitImages.length)];
+            const randomIcon = isBomb
+                ? bombIcon
+                : fruitIcons[Math.floor(Math.random() * fruitIcons.length)];
             setFruits((fruits) => [
                 ...fruits,
-                { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, image: randomImage, isBomb },
+                { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, icon: randomIcon, isBomb },
             ]);
         }, 400);
 
         return () => clearInterval(interval);
-    }, [gameOver, timeUp, fruitImages, bombImage, stageWidth]);
+    }, [gameOver, timeUp, fruitIcons, bombIcon, stageWidth]);
 
     useEffect(() => {
         if (bombsClicked >= 3) {
@@ -109,12 +109,9 @@ const Game = () => {
         const bombs = [];
         for (let i = 0; i < 3 - bombsClicked; i++) {
             bombs.push(
-                <img
-                    key={i}
-                    src={bombFull}
-                    alt="bomb"
-                    className="bomb-icon"
-                />
+                <span key={i} className="bomb-icon">
+                    {bombFull}
+                </span>
             );
         }
         return bombs;
@@ -152,61 +149,72 @@ const Game = () => {
     }
 
     return (
-        <Container style={{ padding: 0, margin: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
-            <div className="game-container">
-                <div className="score">
-                    Score: {score}
-                </div>
-                <div className="timer">
-                    {formatTime(timeLeft)}
-                </div>
-                {!timeUp && (
-                    <div className="bombs-left">
-                        {renderBombs()}
-                    </div>
-                )}
-                <div className="stage-wrapper">
-                    <Stage width={stageWidth} height={stageHeight}>
-                        <Layer>
-                            <Rect
-                                x={0}
-                                y={0}
-                                width={stageWidth}
-                                height={stageHeight}
-                                fill="#000"
+        <Container style={{ padding: 0, margin: 0, width: stageWidth, overflow: 'hidden', position: 'relative' }}>
+            <Navbar />
+            <div className="game-container" style={{ position: 'relative' }}>
+                <Stage width={stageWidth} height={stageHeight}>
+                    <Layer>
+                        <Rect
+                            x={0}
+                            y={0}
+                            width={stageWidth}
+                            height={stageHeight}
+                            fill="#000"
+                        />
+                        {verticalLines}
+                        {horizontalLines}
+                        {splashes.map((splash) => (
+                            <Circle
+                                key={splash.id}
+                                x={splash.x}
+                                y={splash.y}
+                                radius={20}
+                                fill={splash.color}
+                                opacity={0.6}
                             />
-                            {verticalLines}
-                            {horizontalLines}
-                            {splashes.map((splash) => (
-                                <Circle
-                                    key={splash.id}
-                                    x={splash.x}
-                                    y={splash.y}
-                                    radius={20}
-                                    fill={splash.color}
-                                    opacity={0.6}
-                                />
-                            ))}
-                            {fruits.map((fruit) => (
-                                <Fruit
-                                    key={fruit.id}
-                                    x={fruit.x}
-                                    y={fruit.y}
-                                    image={fruit.image}
-                                    isBomb={fruit.isBomb}
-                                    onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
-                                    onRemove={() => handleRemove(fruit.id)}
-                                    gameOver={gameOver}
-                                    speed={speed}
-                                    containerHeight={stageHeight}
-                                    size={50}
-                                />
-                            ))}
-                        </Layer>
-                    </Stage>
-                </div>
+                        ))}
+                        {fruits.map((fruit) => (
+                            <Fruit
+                                key={fruit.id}
+                                x={fruit.x}
+                                y={fruit.y}
+                                icon={fruit.icon}
+                                isBomb={fruit.isBomb}
+                                onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
+                                onRemove={() => handleRemove(fruit.id)}
+                                gameOver={gameOver}
+                                speed={speed}
+                                containerHeight={stageHeight}
+                                size={50}
+                            />
+                        ))}
+                        <KonvaText
+                            text={`Score: ${score}`}
+                            x={10}
+                            y={10}
+                            fontSize={18}
+                            fill="white"
+                        />
+                        <KonvaText
+                            text={formatTime(timeLeft)}
+                            x={stageWidth - 100}
+                            y={10}
+                            fontSize={18}
+                            fill="white"
+                        />
+                        {!timeUp && (
+                            <KonvaText
+                                text={`Bombs: ${3 - bombsClicked}`}
+                                x={stageWidth - 100}
+                                y={stageHeight - 30}
+                                fontSize={18}
+                                fill="white"
+                            />
+                        )}
+                    </Layer>
+                </Stage>
                 {gameOver && (
-                    <div className="game-over">
+                    <div className="game-over" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white', textAlign: 'center' }}>
                         <h1>Game Over</h1>
                         <h2>Score: {score}</h2>
                         <Button variant="contained" color="primary" onClick={handleRestart}>
@@ -215,7 +223,7 @@ const Game = () => {
                     </div>
                 )}
                 {timeUp && (
-                    <div className="time-up">
+                    <div className="time-up" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white', textAlign: 'center' }}>
                         <h1>Time's Up!</h1>
                         <h2>Score: {score}</h2>
                         <Button variant="contained" color="primary" onClick={handleRestart}>
