@@ -13,11 +13,9 @@ const Farming = require('../models/farming');
 function generateReferralCode() {
     return crypto.randomBytes(4).toString('hex'); // 8 karakterlik bir referans kodu oluşturur
 }
-
 const generateReferralLink = (username, referralCode) => {
     return `https://t.me/testbot_gamegamebot?start=${referralCode}`;
 };
-
 const generateUniqueReferralCode = async () => {
     let referralCode;
     let isUnique = false;
