@@ -35,8 +35,8 @@ bot.start(async (ctx) => {
     const lastname = ctx.from.last_name;
     const referralCode = ctx.startPayload;
 
-    const url = `https://2246-188-132-191-150.ngrok-free.app/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-
+    const url = `https://4313-188-132-191-150.ngrok-free.app/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    const url1 = 'https://4313-188-132-191-150.ngrok-free.app/user/tasks';
     ctx.reply('Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [
@@ -151,13 +151,14 @@ bot.command('play', (ctx) => {
     const lastname = ctx.from.last_name;
     const referralCode = ctx.payload;
 
-    const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
-    &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    // const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
+    // &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    const url1 = ' https://4313-188-132-191-150.ngrok-free.app/user/profile';
 
     ctx.reply('Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'PLAY', web_app: { url: url } }]
+                [{ text: 'PLAY', web_app: { url: url1 } }]
             ]
         }
     });

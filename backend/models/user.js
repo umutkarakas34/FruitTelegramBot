@@ -44,6 +44,9 @@ const User = sequelize.define('User', {
         type: Sequelize.INTEGER,
         defaultValue: 0
     },
+    ref_earning_claim_date: {
+        type: Sequelize.DATE
+    },
     created_at: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW

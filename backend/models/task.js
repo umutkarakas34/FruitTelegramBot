@@ -20,6 +20,7 @@ const Task = sequelize.define('Task', {
         type: Sequelize.TEXT,
         allowNull: false
     },
+    task_link: Sequelize.STRING,
     admin_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

@@ -6,6 +6,8 @@ const Referral = require('../models/referral');
 const crypto = require('crypto');
 const Task = require('../models/task');
 const DailyCheckin = require('../models/dailyCheckin');
+const Game = require('../models/game');
+const Farming = require('../models/farming');
 
 
 function generateReferralCode() {
@@ -177,5 +179,155 @@ const getTasks = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
-module.exports = { login, getTasks };
+};
+const createGameLog = async (req, res) => {
+    try {
+        const { game_time, game_score, game_bomb_clicked, game_slice_numbers, hourglass_clicks, user_id } = req.body;
+
+        // Verilen bilgileri kullanarak yeni bir oyun kaydı oluştur
+        const newGame = await Game.create({
+            game_time,
+            game_score,
+            game_bomb_clicked,
+            game_slice_numbers,
+            hourglass_clicks,
+            user_id
+        });
+
+        // Başarılı olursa, oluşturulan oyun kaydını geri döndür
+        res.status(201).json(newGame);
+    } catch (error) {
+        // Konsol hatası için error'u log'la
+        console.error(error);
+
+        // Hata durumunda, hata mesajını geri döndür
+        res.status(500).json({ error: 'An error occurred while creating the game log.' });
+    }
+};
+const increaseTicket = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Kullanıcıyı bul ve ticket sayısını bir azalt
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (user.ticket <= 0) {
+            return res.status(400).json({ error: 'No tickets left to decrease' });
+        }
+
+        user.ticket -= 1;
+        await user.save();
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while updating the ticket count' });
+    }
+};
+const claim = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Kullanıcıyı bul
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const now = new Date();
+        const lastClaimDate = user.ref_earning_claim_date;
+
+        if (lastClaimDate && (now - lastClaimDate) < 12 * 60 * 60 * 1000) {
+            return res.status(400).json({ error: 'You can only claim every 12 hours' });
+        }
+
+        // ref_earning miktarını token alanına ekle ve ref_earning'i sıfırla
+        user.token += user.ref_earning;
+        user.ref_earning = 0;
+        user.ref_earning_claim_date = now;
+
+        await user.save();
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while claiming the referral earnings' });
+    }
+};
+const startFarming = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        // Kullanıcıyı bul
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Yeni bir farming kaydı oluştur
+        const newFarming = await Farming.create({
+            user_id: userId,
+            start_time: new Date(),
+            end_time: null,
+            is_active: true
+        });
+
+        res.status(201).json(newFarming);
+    } catch (error) {
+        // Konsol hatası için error'u log'la
+        console.error(error);
+
+        // Hata durumunda, hata mesajını geri döndür
+        res.status(500).json({ error: 'An error occurred while starting the farming process' });
+    }
+};
+const claimFarming = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const farmingTokens = 72;
+
+        // Kullanıcıyı bul
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Aktif farming kaydını bul
+        const farming = await Farming.findOne({
+            where: {
+                user_id: userId,
+                is_active: true
+            }
+        });
+
+        if (!farming) {
+            return res.status(400).json({ error: 'No active farming process found' });
+        }
+
+        const now = new Date();
+        const startTime = farming.start_time;
+
+        if ((now - startTime) < 12 * 60 * 60 * 1000) {
+            return res.status(400).json({ error: 'You can only claim after 12 hours of farming' });
+        }
+
+        // Farming işlemini tamamla ve kullanıcıya token ekle
+        user.token += farmingTokens; // farmingTokens değişkeni ile kazanılacak token miktarını belirleyin
+        await user.save();
+
+        farming.end_time = now;
+        farming.is_active = false;
+        await farming.save();
+
+        res.status(200).json({ message: 'Farming claimed successfully', user });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while claiming the farming process' });
+    }
+};
+
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming };
