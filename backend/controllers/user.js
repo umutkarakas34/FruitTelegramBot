@@ -30,7 +30,6 @@ const generateUniqueReferralCode = async () => {
 
     return referralCode;
 };
-
 const handleDailyCheckin = async (userId) => {
     try {
         const today = new Date().toISOString().split('T')[0];
@@ -83,7 +82,6 @@ const handleDailyCheckin = async (userId) => {
         console.error("Check-in işlemi sırasında hata oluştu:", error);
     }
 };
-
 const login = async (req, res) => {
     try {
         const telegramId = req.query.telegram_id;
