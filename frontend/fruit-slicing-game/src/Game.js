@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Stage, Layer, Circle, Image as KonvaImage, Text as KonvaText } from 'react-konva';
 import useImage from 'use-image';
 import Fruit from './Fruit';
 import { Container, Button } from '@mui/material';
 
 const Game = () => {
+    const navigate = useNavigate();
     const [fruits, setFruits] = useState([]);
     const [score, setScore] = useState(0);
     const [bombsClicked, setBombsClicked] = useState(0);
@@ -76,6 +78,12 @@ const Game = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (gameOver || timeUp) {
+            navigate('/reward', { state: { score } });
+        }
+    }, [gameOver, timeUp, score, navigate]);
+
     const handleSlice = (id, isBomb, x, y) => {
         setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
         if (isBomb) {
@@ -128,7 +136,6 @@ const Game = () => {
 
     return (
         <Container style={{ padding: 0, margin: 0, width: stageWidth, overflow: 'hidden', position: 'relative' }}>
-            {/* <Navbar /> */}
             <div className="game-container" style={{ position: 'relative' }}>
                 <Stage width={stageWidth} height={stageHeight}>
                     <Layer>
