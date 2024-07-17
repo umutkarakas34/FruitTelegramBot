@@ -4,6 +4,7 @@ import { Stage, Layer, Circle, Image as KonvaImage, Text as KonvaText } from 're
 import useImage from 'use-image';
 import Fruit from './Fruit';
 import { Container, Button } from '@mui/material';
+import './Game.css';
 
 const Game = () => {
     const navigate = useNavigate();
@@ -152,8 +153,8 @@ const Game = () => {
     };
 
     return (
-        <Container style={{ padding: 0, margin: 0, width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
-            <div className="game-container">
+        <Container className="game-container">
+            <div className="stage-wrapper">
                 <Stage width={stageSize.width} height={stageSize.height}>
                     <Layer>
                         <KonvaImage

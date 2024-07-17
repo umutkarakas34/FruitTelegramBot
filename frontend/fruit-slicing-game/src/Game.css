@@ -2,12 +2,13 @@ body, html, #root {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
+    height: 90%;
     overflow: hidden; /* Scroll ve kayma işlemlerini tamamen engeller */
     background-color: black;
-    display: flex; /* Flexbox kullanarak içeriği ortalayalım */
-    align-items: center; /* İçeriği dikeyde ortalar */
-    justify-content: center; /* İçeriği yatayda ortalar */
+    display: flex; 
+    overflow: hidden;
+    /* align-items: center;  */
+    justify-content: center; 
 }
 
 .game-container {
@@ -15,8 +16,8 @@ body, html, #root {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%; /* Telegram viewport yüksekliğini ayarlar */
+    width: 100vw;
+    height: 100vh; /* Telegram viewport yüksekliğini ayarlar */
     overflow: hidden; /* Scroll ve kayma işlemlerini engeller */
     position: relative; /* İçeriklerin konumlandırılması için */
 }
@@ -24,6 +25,7 @@ body, html, #root {
 .stage-wrapper {
     width: 100%;
     height: 100%;
+    position: relative; /* İçeriklerin konumlandırılması için */
 }
 
 .game-over, .time-up {
@@ -49,4 +51,12 @@ body, html, #root {
 
 .game-over Button, .time-up Button {
     margin-top: 10px;
+}
+
+.konvajs-content canvas {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    height: 100vh; /* Canvas yüksekliğini tam ekran yapalım */
+    width: 100%; /* Canvas genişliğini tam ekran yapalım */
 }
