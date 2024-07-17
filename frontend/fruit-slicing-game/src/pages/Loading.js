@@ -8,7 +8,7 @@ const Loading = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate('/home'); // 3 saniye sonra ana sayfaya yönlendirme
-    }, 10000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, [navigate]);
 

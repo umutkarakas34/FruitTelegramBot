@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography, IconButton, Paper, Grid, Button, Avatar } from '@mui/material';
+import { Container, Box, Typography, Paper, Grid, Button, Avatar } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../style/Task.css';
@@ -16,15 +16,15 @@ const Tasks = () => {
   ];
 
   return (
-    <Container maxWidth="xs" className="tasks-container">
-      {/* <Navbar /> */}
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
+    <Container className="tasks-container" sx={{ width: '55vw', }}>
+
+      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" justifyContent="center" mt={10}>
         <Typography variant="h5" mb={1}>Tasks</Typography>
         <Typography variant="body2" mb={2}>
           We’ll reward you immediately with points after each task completion.
         </Typography>
         {tasks.map((task) => (
-          <Paper key={task.id} elevation={3} className="task-card" sx={{ p: 1, mb: 1, backgroundColor: '#1c1c1c' }}>
+          <Paper key={task.id} elevation={3} className="task-card" sx={{ p: 1, mb: 1, width: '80vw', maxWidth: 600, backgroundColor: '#1c1c1c' }}>
             <Grid container alignItems="center" spacing={1}>
               <Grid item>
                 <Avatar className="task-avatar">{task.avatar}</Avatar>
