@@ -1,9 +1,36 @@
 /* RewardPage.css */
 
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.rs {
+  background-color: #ffffff;
+  color: #673ab7;
+  padding: 15px 30px; /* Daha büyük boyut için padding artırıldı */
+  text-transform: none;
+  font-size: 20px; /* Daha büyük font boyutu */
+  border: 2px solid #673ab7; /* Daha belirgin kenarlık */
+  border-radius: 5px; /* Hafif yuvarlak köşeler */
+}
+
+.res:hover {
+  background-color: #f2f2f2;
+}
+
 .r-container {
   position: relative;
-  text-align: center;
-  margin-top: 50px;
+  height: 100vh; /* Tam ekran yüksekliği */
+  width: 100vw;  /* Tam ekran genişliği */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 0;  /* Container padding sıfırlanıyor */
 }
 
 .confetti-canvas {
@@ -18,16 +45,7 @@
 .reward-content {
   position: relative;
   z-index: 1;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 10px;
-  display: inline-block;
-}
-
-.reward-gif {
-  width: 150px;
-  height: auto;
-  margin-bottom: 20px;
+  text-align: center;
 }
 
 .reward-message {
@@ -46,17 +64,6 @@
   margin-bottom: 20px;
 }
 
-.res {
-  background-color: #673ab7;
-  color: white;
-  padding: 10px 20px;
-  text-transform: none;
-  font-size: 16px;
-}
-
-.res:hover {
-  background-color: #5e35b1;
-}
 
 .background-animation {
   position: absolute;
