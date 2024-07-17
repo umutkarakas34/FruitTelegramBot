@@ -39,9 +39,9 @@ const RewardPage = () => {
   };
 
   return (
-    <Container className="reward-container">
+    <Container className="r-container">
       <canvas ref={canvasRef} className="confetti-canvas" />
-      <Box className="reward-content" display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start" sx={{ width: 1000 }}>
+      <Box className="reward-content">
         <img src="/confetti.gif" alt="Confetti" className="reward-gif" />
         <Typography variant="h4" className="reward-message">Insane skills! You're a master!</Typography>
         <Typography variant="h3" className="reward-score">฿ {score}</Typography>
