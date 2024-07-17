@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
@@ -204,7 +204,7 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
-      <Footer />
+      <Footer  />
       <Snackbar
         open={alertOpen}
         onClose={() => setAlertOpen(false)}

@@ -4,11 +4,17 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212;
   color: #fff;
+  overflow-x: hidden; /* Yatay kaydırma çubuğunu gizler */
+  height: 100vh;
+  width: 100vw;
 }
 
 .tasks-container {
-  padding-top: 60px; /* Navbar için yer ayırma */
-  padding-bottom: 60px; /* Footer için yer ayırma */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-title {

@@ -1,4 +1,3 @@
-// components/Footer.js
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { Home as HomeIcon, Assignment as TasksIcon, People as FriendsIcon } from '@mui/icons-material';
@@ -7,7 +6,7 @@ import '../style/Footer.css';
 
 const Footer = () => {
   return (
-    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center">
+    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center" style={{ marginTop: '70px' }}>
       <IconButton color="inherit" component={Link} to="/">
         <HomeIcon />
         <Typography variant="caption">Home</Typography>
