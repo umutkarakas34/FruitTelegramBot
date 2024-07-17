@@ -9,7 +9,7 @@ const Game = () => {
     const [score, setScore] = useState(0);
     const [bombsClicked, setBombsClicked] = useState(0);
     const [gameOver, setGameOver] = useState(false);
-    const [speed, setSpeed] = useState(6);
+    const [speed, setSpeed] = useState(2);
     const [timeLeft, setTimeLeft] = useState(30);
     const [timeUp, setTimeUp] = useState(false);
     const [splashes, setSplashes] = useState([]);

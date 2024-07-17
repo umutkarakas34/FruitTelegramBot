@@ -43,7 +43,7 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e0e0e0; /* Arka plan rengini biraz farklı yaptık */
+  background-color: #e0e0e0; 
 }
 
 .game-container {

@@ -31,7 +31,7 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
         return () => clearInterval(interval);
     }, [gameOver, speed, containerHeight, onRemove]);
 
-    const handleMouseMove = (e) => {
+    const handleSlice = (e) => {
         if (!sliced) {
             setSliced(true);
             onSlice(isBomb, position.x, position.y);
@@ -63,7 +63,10 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
                     width={size}
                     height={size}
                     rotation={rotation}
-                    onMouseMove={handleMouseMove}
+                    onMouseDown={handleSlice}
+                    onMouseUp={handleSlice}
+                    onMouseMove={handleSlice}
+                    onTouchMove={handleSlice} // Mobil cihazlar için
                 />
             ) : exploded ? (
                 <KonvaImage
@@ -80,8 +83,8 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
                         image={part.image}
                         x={position.x + part.xMove}
                         y={position.y + part.yMove}
-                        width={size / 1.5} // Kesilmiş hali biraz daha büyük
-                        height={size / 1.5}
+                        width={size / 0.85} // Kesilmiş hali biraz daha büyük
+                        height={size / 0.85}
                         rotation={part.rotation}
                     />
                 ))
