@@ -27,8 +27,25 @@ const Game = () => {
     const bombIcon = 'boom';
     const bombFull = '💣';
 
-    const stageWidth = Math.min(window.innerWidth, 433); // Adjusted to a wider width
-    const stageHeight = window.innerHeight; // Adjusted height to fill the screen
+    const [stageSize, setStageSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setStageSize({
+                width: window.innerWidth,
+                height: window.innerHeight
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         if (gameOver || timeUp) return;
@@ -40,12 +57,12 @@ const Game = () => {
                 : fruitIcons[Math.floor(Math.random() * fruitIcons.length)];
             setFruits((fruits) => [
                 ...fruits,
-                { id: Date.now(), x: Math.random() * (stageWidth - 50) + 25, y: -25, icon: randomIcon, isBomb },
+                { id: Date.now(), x: Math.random() * (stageSize.width - 50) + 25, y: -25, icon: randomIcon, isBomb },
             ]);
         }, 400);
 
         return () => clearInterval(interval);
-    }, [gameOver, timeUp, fruitIcons, bombIcon, stageWidth]);
+    }, [gameOver, timeUp, fruitIcons, bombIcon, stageSize]);
 
     useEffect(() => {
         if (bombsClicked >= 3) {
@@ -135,16 +152,16 @@ const Game = () => {
     };
 
     return (
-        <Container style={{ padding: 0, margin: 0, width: stageWidth, overflow: 'hidden', position: 'relative' }}>
-            <div className="game-container" style={{ position: 'relative' }}>
-                <Stage width={stageWidth} height={stageHeight}>
+        <Container style={{ padding: 0, margin: 0, width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+            <div className="game-container">
+                <Stage width={stageSize.width} height={stageSize.height}>
                     <Layer>
                         <KonvaImage
                             image={backgroundImage}
                             x={0}
                             y={0}
-                            width={stageWidth}
-                            height={stageHeight}
+                            width={stageSize.width}
+                            height={stageSize.height}
                         />
                         {splashes.map((splash) => (
                             <Circle
@@ -167,7 +184,7 @@ const Game = () => {
                                 onRemove={() => handleRemove(fruit.id)}
                                 gameOver={gameOver}
                                 speed={speed}
-                                containerHeight={stageHeight}
+                                containerHeight={stageSize.height}
                                 size={70} // Meyve boyutunu biraz daha büyüttük
                             />
                         ))}
@@ -180,7 +197,7 @@ const Game = () => {
                         />
                         <KonvaText
                             text={formatTime(timeLeft)}
-                            x={stageWidth - 100}
+                            x={stageSize.width - 100}
                             y={10}
                             fontSize={18}
                             fill="white"
@@ -188,8 +205,8 @@ const Game = () => {
                         {!timeUp && (
                             <KonvaText
                                 text={`Bombs: ${3 - bombsClicked}`}
-                                x={stageWidth - 100}
-                                y={stageHeight - 30}
+                                x={stageSize.width - 100}
+                                y={stageSize.height - 30}
                                 fontSize={18}
                                 fill="white"
                             />
@@ -197,7 +214,7 @@ const Game = () => {
                     </Layer>
                 </Stage>
                 {gameOver && (
-                    <div className="game-over" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white', textAlign: 'center' }}>
+                    <div className="game-over">
                         <h1>Game Over</h1>
                         <h2>Score: {score}</h2>
                         <Button variant="contained" color="primary" onClick={handleRestart}>
@@ -206,7 +223,7 @@ const Game = () => {
                     </div>
                 )}
                 {timeUp && (
-                    <div className="time-up" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white', textAlign: 'center' }}>
+                    <div className="time-up">
                         <h1>Time's Up!</h1>
                         <h2>Score: {score}</h2>
                         <Button variant="contained" color="primary" onClick={handleRestart}>
