@@ -1,27 +1,9 @@
-.res {
-  background-color: #ffffff; /* Beyaz renkte */
-  color: #000; /* Siyah yazı rengi */
-  margin-top: 20px;
-  padding: 15px 30px; /* Butonu büyütmek için padding ekleyin */
-  font-size: 18px; /* Font boyutunu artırarak butonu büyütün */
-  z-index: 3; /* Butonun üstte olması için */
-  position: relative; /* z-index'in çalışması için */
-}
+/* RewardPage.css */
 
-.res:hover {
-  background-color: #e0e0e0; /* Daha açık gri renkte hover */
-}
-
-.reward-container {
-  height: 100vh;
-  width: 100vw; /* Ekranın tamamını kaplayacak şekilde ayarlandı */
-  background-color: #44ff00;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+.r-container {
   position: relative;
+  text-align: center;
+  margin-top: 50px;
 }
 
 .confetti-canvas {
@@ -29,78 +11,69 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%; /* Tüm yüksekliği kaplar */
+  height: 100%;
   pointer-events: none;
-  z-index: 1;
 }
 
 .reward-content {
-  text-align: center;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Dikey ve yatayda ortalama */
-  width: 100%;
-  height: 100%; /* İçeriği tam ekran kaplamak için */
-  position: relative; /* z-index'in çalışması için */
+  position: relative;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  display: inline-block;
 }
 
 .reward-gif {
-  width: 100px; /* GIF boyutu */
-  height: 100px;
-  margin-bottom: 20px; /* Aşağıda boşluk bırakır */
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .reward-message {
-  font-size: 24px;
-  margin-top: 10px; /* Yukarıda biraz boşluk bırakır */
-  background: linear-gradient(90deg, #ffffff, #000000);
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: gradient-animation 5s ease infinite;
-  background-size: 200% 200%;
+  color: #4caf50;
+  margin-bottom: 20px;
 }
 
 .reward-score {
-  font-size: 48px;
-  margin: 10px 0; /* Yukarı ve aşağıda biraz boşluk bırakır */
+  color: #ff9800;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .reward-label {
-  font-size: 18px;
+  color: #3f51b5;
   margin-bottom: 20px;
+}
+
+.res {
+  background-color: #673ab7;
+  color: white;
+  padding: 10px 20px;
+  text-transform: none;
+  font-size: 16px;
+}
+
+.res:hover {
+  background-color: #5e35b1;
 }
 
 .background-animation {
   position: absolute;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
   z-index: 0;
-  background: radial-gradient(circle, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));
-  overflow: hidden;
-  animation: moveBackground 5s linear infinite;
+  animation: fadeInBackground 2s ease-in-out;
 }
 
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
   }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes moveBackground {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 100% 100%;
+  to {
+    opacity: 1;
   }
 }
