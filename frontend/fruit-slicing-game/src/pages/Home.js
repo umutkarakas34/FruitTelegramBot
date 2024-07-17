@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { GiKatana } from 'react-icons/gi'; // Katana ikonu import edin
+import { GiKatana } from 'react-icons/gi';
 import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -54,19 +54,16 @@ const Home = () => {
       }
     });
 
-    // Puanı güncelle
     setPoints((prevPoints) => prevPoints + pointsEarned);
-    setPointsEarned(0); // Kazancı sıfırla
+    setPointsEarned(0);
 
-    // Uyarı mesajını göster
     setAlertOpen(true);
-    setTimeout(() => setAlertOpen(false), 3000); // Uyarı mesajını 3 saniye sonra gizle
+    setTimeout(() => setAlertOpen(false), 3000);
 
-    // Süreyi tekrar başlat
     clearInterval(timerRef.current);
     setTimeRemaining(initialTime);
     setProgress(100);
-    startTimer(); // Zamanlayıcıyı yeniden başlat
+    startTimer();
   };
 
   const formatTime = (seconds) => {
@@ -77,8 +74,7 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth="xs" className="home-container">
-      {/* <Navbar /> */}
+    <Container maxWidth={false} className="home-container">
       <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
@@ -149,7 +145,7 @@ const Home = () => {
               left: 0,
               height: '100%',
               width: `${progress}%`,
-              backgroundColor: timeRemaining === 0 ? '#fff' : '#808080', // Tamamen beyaz olduğunda
+              backgroundColor: timeRemaining === 0 ? '#fff' : '#808080',
               borderRadius: '10px',
               transition: 'width 1s linear'
             }}></Box>
@@ -158,9 +154,9 @@ const Home = () => {
               width: '100%',
               textAlign: 'center',
               lineHeight: '50px',
-              color: timeRemaining === 0 ? '#000' : 'rgba(255, 255, 255, 0.5)', // Tamamen beyaz olduğunda siyah renk
+              color: timeRemaining === 0 ? '#000' : 'rgba(255, 255, 255, 0.5)',
               fontWeight: 'bold',
-              fontSize: '0.875rem' // Daha küçük font
+              fontSize: '0.875rem'
             }}>{timeRemaining === 0 ? '' : 'Farming'}</Typography>
             {timeRemaining !== 0 && (
               <Typography className="timer" sx={{
@@ -168,7 +164,7 @@ const Home = () => {
                 right: '10px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+                color: 'rgba(255, 255, 255, 0.5)',
                 fontSize: '0.75rem',
                 fontWeight: 'bold'
               }}>{formatTime(timeRemaining)}</Typography>
@@ -201,7 +197,7 @@ const Home = () => {
               top: '50%',
               left: '10px',
               transform: 'translateY(-50%)',
-              color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+              color: 'rgba(255, 255, 255, 0.5)',
               fontSize: '0.75rem',
               fontWeight: 'bold'
             }}>+{pointsEarned.toFixed(3)} ฿</Typography>
