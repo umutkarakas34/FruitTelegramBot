@@ -6,8 +6,8 @@ import '../style/Footer.css';
 
 const Footer = () => {
   return (
-    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center" >
-      <IconButton color="inherit" component={Link} to="/">
+    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center">
+      <IconButton color="inherit" component={Link} to="/home">
         <HomeIcon />
         <Typography variant="caption">Home</Typography>
       </IconButton>

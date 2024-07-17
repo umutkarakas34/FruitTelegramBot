@@ -36,7 +36,7 @@ bot.start(async (ctx) => {
     const referralCode = ctx.startPayload;
 
     const url = `https://99ab-188-132-191-150.ngrok-free.app/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-    const url1 = `https://99ab-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    const url1 = `https://1580-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
     ctx.reply('Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [
@@ -144,25 +144,25 @@ bot.command('claim', async (ctx) => {
     }
 });
 
-bot.command('play', (ctx) => {
-    const telegramId = ctx.from.id;
-    const username = ctx.from.username;
-    const firstname = ctx.from.first_name;
-    const lastname = ctx.from.last_name;
-    const referralCode = ctx.payload;
+// bot.command('play', (ctx) => {
+//     const telegramId = ctx.from.id;
+//     const username = ctx.from.username;
+//     const firstname = ctx.from.first_name;
+//     const lastname = ctx.from.last_name;
+//     const referralCode = ctx.payload;
 
-    // const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
-    // &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-    const url1 = ' https://4313-188-132-191-150.ngrok-free.app/user/profile';
+//     // const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
+//     // &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+//     const url1 = ' https://4313-188-132-191-150.ngrok-free.app/user/profile';
 
-    ctx.reply('Play butonuna tıklayın:', {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'PLAY', web_app: { url: url1 } }]
-            ]
-        }
-    });
-});
+//     ctx.reply('Play butonuna tıklayın:', {
+//         reply_markup: {
+//             inline_keyboard: [
+//                 [{ text: 'PLAY', web_app: { url: url1 } }]
+//             ]
+//         }
+//     });
+// });
 
 bot.on('text', async (ctx) => {
     try {

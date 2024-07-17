@@ -8,10 +8,13 @@ import Loading from './pages/Loading';
 import ErrorScreen from './components/Error';
 import ErrorBoundary from './components/ErrorBoundary';
 import RewardPage from './pages/RewardPage';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Footer from './components/Footer'; // Footer bileşeni eklendi
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
 function App() {
+  const location = useLocation();
+
   useEffect(() => {
     // Telegram SDK yüklendiğinde çalışacak kod
     const script = document.createElement('script');
@@ -28,10 +31,13 @@ function App() {
     };
   }, []);
 
+  // Footer'ın görüneceği sayfaları belirtiyoruz
+  const showFooter = ['/home', '/task', '/referrals'].includes(location.pathname);
+
   return (
-    <Router>
-      <div className="App">
-        <ErrorBoundary>
+    <div className="App">
+      <ErrorBoundary>
+        <div className="content">
           <Routes>
             <Route path="/" element={<Loading />} />
             <Route path="/home" element={<Home />} />
@@ -42,10 +48,17 @@ function App() {
             <Route path="/reward" element={<RewardPage />} />
             <Route path="*" element={<ErrorScreen />} />
           </Routes>
-        </ErrorBoundary>
-      </div>
-    </Router>
+        </div>
+        {showFooter && <Footer />}
+      </ErrorBoundary>
+    </div>
   );
 }
 
-export default App;
+export default function AppWithRouter() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
