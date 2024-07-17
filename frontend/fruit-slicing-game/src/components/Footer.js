@@ -6,7 +6,7 @@ import '../style/Footer.css';
 
 const Footer = () => {
   return (
-    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center" style={{ marginTop: '70px' }}>
+    <Box className="footer" display="flex" justifyContent="space-around" alignItems="center" >
       <IconButton color="inherit" component={Link} to="/">
         <HomeIcon />
         <Typography variant="caption">Home</Typography>
