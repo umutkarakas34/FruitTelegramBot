@@ -20,30 +20,28 @@ const Tasks = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#121212',
         color: '#fff',
-        overflowX: 'hidden',
+        overflow: 'hidden',
         paddingBottom: '80px',
       }}
     >
       <Box
         sx={{
-          mt: 2, // Move elements slightly down
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'auto',
-          flex: '1 1 auto',
-          paddingBottom: '80px',
+          position: 'sticky',
+          top: 0,
+          backgroundColor: '#121212',
+          width: '100%',
+          zIndex: 1,
+          textAlign: 'center',
+          padding: '10px 0',
         }}
       >
         <Typography
           variant="h5"
           mb={1}
           sx={{
-            color: '#fff', // Task title color set to white
+            color: '#fff', // Task başlık rengi beyaz
             fontSize: '1.2rem',
           }}
         >
@@ -52,6 +50,20 @@ const Tasks = () => {
         <Typography variant="body2" mb={2}>
           We’ll reward you immediately with points after each task completion.
         </Typography>
+      </Box>
+      <Box
+        sx={{
+          mt: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          overflowY: 'auto',
+          flex: '1 1 auto',
+          width: '100%', // Tam genişlikte olması için
+          paddingBottom: '80px',
+        }}
+      >
         {tasks.map((task) => (
           <Paper
             key={task.id}
@@ -66,7 +78,6 @@ const Tasks = () => {
               backgroundSize: '200% 200%',
               animation: 'gradient-animation 5s ease infinite',
               color: '#fff',
-              width: '100%',
               padding: '10px',
             }}
           >
