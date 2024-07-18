@@ -86,7 +86,7 @@ const Referrals = () => {
             Get a 🎟️ play pass for each fren
           </Typography>
           <Typography variant="body1" mb={2}>
-            <strong>Your friends join Blum</strong><br />
+            <strong>Your friends join Fruit Cyrpto</strong><br />
             And start farming points
           </Typography>
           <Typography variant="body1">
