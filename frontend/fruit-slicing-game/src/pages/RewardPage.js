@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button } from '@mui/material';
 import confetti from 'canvas-confetti';
+import { ReactComponent as Logo } from '../logo1.svg';
 
 const RewardPage = () => {
   const location = useLocation();
@@ -56,7 +57,7 @@ const RewardPage = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden',
+        overflow: 'auto',
         padding: 0,
       }}
     >
@@ -74,9 +75,21 @@ const RewardPage = () => {
         <Typography variant="h4" sx={{ color: '#4caf50', marginBottom: '20px' }}>
           Insane skills! You're a master!
         </Typography>
-        <Typography variant="h3" sx={{ color: '#ff9800', fontWeight: 'bold', marginBottom: '10px' }}>
-          ฿ {score}
-        </Typography>
+        <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
+          <Typography variant="h3" sx={{ color: '#ff9800', fontWeight: 'bold', marginBottom: '10px' }}>
+            {score}
+          </Typography>
+          <Box
+            component={Logo}
+            sx={{
+              width: '60px', // İkonun boyutu büyütüldü
+              height: '70px', // İkonun boyutu büyütüldü
+              marginLeft: '8px',
+              position: 'relative',
+              top: '-12px', // İkonu yukarı kaydırmak için
+            }}
+          />
+        </Box>
         <Typography variant="body1" sx={{ color: '#3f51b5', marginBottom: '20px' }}>
           Rewards
         </Typography>

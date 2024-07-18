@@ -6,6 +6,7 @@ import { GiKatana } from 'react-icons/gi';
 import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { ReactComponent as Logo } from '../logo1.svg';
 import '../style/Home.css';
 
 const Home = () => {
@@ -79,7 +80,19 @@ const Home = () => {
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>
-          <Typography variant="h4">฿ {points.toFixed(3)}</Typography>
+          <Box display="flex" alignItems="center">
+            <Box
+              component={Logo}
+              sx={{
+                width: '50px', // İkonun boyutu büyütüldü
+                height: '60px', // İkonun boyutu büyütüldü
+                marginRight: '8px',
+                position: 'relative',
+                top: '-8px', // İkonu yukarı kaydırmak için
+              }}
+            />
+            <Typography variant="h4">{points.toFixed(3)}</Typography>
+          </Box>
         </Box>
 
         <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
@@ -200,7 +213,7 @@ const Home = () => {
               color: 'rgba(255, 255, 255, 0.5)',
               fontSize: '0.75rem',
               fontWeight: 'bold'
-            }}>+{pointsEarned.toFixed(3)} ฿</Typography>
+            }}>+{pointsEarned.toFixed(3)}</Typography>
           </Box>
         </Box>
       </Box>

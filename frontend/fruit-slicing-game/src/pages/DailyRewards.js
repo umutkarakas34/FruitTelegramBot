@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
-import LocalActivityIcon from '@mui/icons-material/LocalActivity'; // Ticket ikonu
-import { ReactComponent as Logo } from '../logo.svg'; // SVG dosyasını import et
+import { GiKatana } from 'react-icons/gi'; // Katana ikonu
+import { ReactComponent as Logo } from '../logo1.svg'; // SVG dosyasını import et
 
 const DailyRewards = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const DailyRewards = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden',
+        overflow: 'auto', // Kaydırma eklendi
         padding: 0,
         backgroundColor: '#000',
         color: '#fff',
@@ -71,17 +71,22 @@ const DailyRewards = () => {
           }}
         >
           <Box
-            component={Logo}
             sx={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px', // Sağ üst köşeye alındı
-              width: '24px',
-              height: '24px',
-              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px', // İkon ve sayı arasında boşluk
             }}
-          />
-          <Typography variant="h6">20</Typography>
+          >
+            <Box
+              component={Logo}
+              sx={{
+                width: '30px', // İkonun boyutu küçültüldü
+                height: '30px', // İkonun boyutu küçültüldü
+                color: '#fff',
+              }}
+            />
+            <Typography variant="h6">20</Typography>
+          </Box>
           <Typography variant="body2">Fruit Points</Typography>
         </Box>
         <Box
@@ -96,16 +101,21 @@ const DailyRewards = () => {
             width: '150px',
           }}
         >
-          <LocalActivityIcon
+          <Box
             sx={{
-              position: 'absolute',
-              top: '10px',
-              right: '10px', // Sağ üst köşeye alındı
-              fontSize: '24px',
-              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px', // İkon ve sayı arasında boşluk
             }}
-          />
-          <Typography variant="h6">2</Typography>
+          >
+            <GiKatana
+              style={{
+                fontSize: '30px', // Katana ikonunun boyutu
+                color: '#fff', // İkonun rengi kaldırıldı
+              }}
+            />
+            <Typography variant="h6">2</Typography>
+          </Box>
           <Typography variant="body2">Play Passes</Typography>
         </Box>
       </Box>
