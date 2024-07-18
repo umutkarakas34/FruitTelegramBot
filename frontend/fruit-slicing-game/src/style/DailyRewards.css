@@ -10,8 +10,24 @@
     text-align: center;
   }
   
-  .rewards-header {
+  .lightning-icon {
+    font-size: 80px; /* İkon boyutu artırıldı */
+    color: #ff0;
+    animation: flash 1.5s infinite;
     margin-bottom: 20px;
+  }
+  
+  @keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+    25%, 75% {
+      opacity: 0.5;
+    }
+  }
+  
+  .rewards-header {
+    margin-bottom: 40px; /* Rewards title ve icon arasına mesafe eklendi */
   }
   
   .rewards-title {
@@ -38,7 +54,7 @@
   }
   
   .rewards-note {
-    margin-bottom: 20px;
+    margin-bottom: 60px; /* Buton ile aradaki mesafe artırıldı */
     font-size: 14px;
   }
   
@@ -50,6 +66,8 @@
     font-size: 16px;
     border: none;
     border-radius: 5px;
+    margin-bottom: 10px;
+    width: 30%; /* Buton genişletildi */
   }
   
   .continue-button:hover {

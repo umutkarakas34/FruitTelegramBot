@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container, Box, Typography, Paper, Grid, Button, Avatar } from '@mui/material';
 import Footer from '../components/Footer';
-import '../style/Task.css';
 
 const Tasks = () => {
   const tasks = [
@@ -12,36 +11,83 @@ const Tasks = () => {
     { id: 5, title: 'Invite 10 frens', progress: '0/10 frens', reward: '+200 BP', avatar: '👨‍👩‍👧‍👦' },
     { id: 6, title: 'Pokras Lampas Quest', progress: '3/3 tasks', reward: '+300 BP', avatar: '🖌️' },
     { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
   ];
 
   return (
-    <Container className="tasks-container" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" justifyContent="center" mt={10} sx={{ overflow: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
-        <Typography variant="h5" mb={1}>Tasks</Typography>
+    <Container
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#121212',
+        color: '#fff',
+        overflowX: 'hidden',
+        paddingBottom: '80px',
+      }}
+    >
+      <Box
+        sx={{
+          mt: 2, // Move elements slightly down
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'auto',
+          flex: '1 1 auto',
+          paddingBottom: '80px',
+        }}
+      >
+        <Typography
+          variant="h5"
+          mb={1}
+          sx={{
+            color: '#fff', // Task title color set to white
+            fontSize: '1.2rem',
+          }}
+        >
+          Tasks
+        </Typography>
         <Typography variant="body2" mb={2}>
           We’ll reward you immediately with points after each task completion.
         </Typography>
         {tasks.map((task) => (
-          <Paper key={task.id} elevation={3} className="task-card" sx={{ p: 1, mb: 1, width: '80vw', maxWidth: 600, backgroundColor: '#1c1c1c' }}>
+          <Paper
+            key={task.id}
+            elevation={3}
+            sx={{
+              p: 1,
+              mb: 1,
+              width: '80vw',
+              maxWidth: 600,
+              backgroundColor: '#1c1c1c',
+              background: 'linear-gradient(145deg, #4a4a4a, #2a2a2a)',
+              backgroundSize: '200% 200%',
+              animation: 'gradient-animation 5s ease infinite',
+              color: '#fff',
+              width: '100%',
+              padding: '10px',
+            }}
+          >
             <Grid container alignItems="center" spacing={1}>
               <Grid item>
-                <Avatar className="task-avatar">{task.avatar}</Avatar>
+                <Avatar sx={{ backgroundColor: '#808080', color: 'white', width: 40, height: 40, fontSize: '1.2rem' }}>
+                  {task.avatar}
+                </Avatar>
               </Grid>
               <Grid item xs>
                 <Box display="flex" flexDirection="column">
-                  <Typography variant="h6" style={{ color: '#fff', fontSize: '0.8rem' }}>{task.title}</Typography>
-                  <Typography variant="body2" style={{ color: '#fff', fontSize: '0.7rem' }}>{task.progress}, {task.reward}</Typography>
+                  <Typography variant="h6" sx={{ color: '#fff', fontSize: '0.8rem' }}>
+                    {task.title}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.7rem' }}>
+                    {task.progress}, {task.reward}
+                  </Typography>
                 </Box>
               </Grid>
               <Grid item>
-                <Button className="claim-button" disabled>
+                <Button sx={{ backgroundColor: '#d3d3d3', color: '#fff', fontSize: '0.7rem', padding: '5px 10px' }} disabled>
                   Claim
                 </Button>
               </Grid>
