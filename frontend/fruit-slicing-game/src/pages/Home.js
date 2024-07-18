@@ -74,8 +74,9 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth={false} className="home-container" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflow: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
+    <Container maxWidth="xs" className="home-container">
+      <Navbar />
+      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>
@@ -85,7 +86,7 @@ const Home = () => {
         <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
           <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Drop Game</Typography>
+              <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Slice Game</Typography>
             </Grid>
             <Grid item>
               <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>
@@ -115,24 +116,11 @@ const Home = () => {
             </Grid>
             <Grid item sx={{ marginTop: '15px', width: '100%' }}>
               <Typography variant="body1" className="game-description" sx={{ fontSize: '0.9rem', color: '#ccc', textAlign: 'center' }}>
-                Join the Drop Game and earn rewards! The more you play, the more tickets you earn. Click 'Play' to start your adventure.
+                Join the Slice Game and earn rewards!
               </Typography>
             </Grid>
             <Grid item sx={{ marginTop: '15px', width: '100%' }}>
-              <Typography
-                variant="body2"
-                component={Link}
-                to="/learn-more"
-                sx={{
-                  color: '#fff',
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'none',
-                  }
-                }}
-              >
-                Learn More
-              </Typography>
+        
             </Grid>
           </Grid>
         </Paper>
