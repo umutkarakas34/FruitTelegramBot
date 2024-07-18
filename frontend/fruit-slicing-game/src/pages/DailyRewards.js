@@ -3,7 +3,7 @@ import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity'; // Ticket ikonu
-import FastfoodIcon from '@mui/icons-material/Fastfood'; // F ikonu
+import { ReactComponent as Logo } from '../logo.svg'; // SVG dosyasını import et
 
 const DailyRewards = () => {
   const navigate = useNavigate();
@@ -70,12 +70,14 @@ const DailyRewards = () => {
             width: '150px',
           }}
         >
-          <FastfoodIcon
+          <Box
+            component={Logo}
             sx={{
               position: 'absolute',
               top: '10px',
               right: '10px', // Sağ üst köşeye alındı
-              fontSize: '24px',
+              width: '24px',
+              height: '24px',
               color: '#fff',
             }}
           />
