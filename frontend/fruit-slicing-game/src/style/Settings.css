@@ -1,0 +1,47 @@
+.settings-container {
+    width: 449px;
+    margin-left: -5px;
+    margin-top: 40px;
+    /* Tüm içeriği sola 5px kaydır */
+}
+
+.settings-content {
+    padding: 20px;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.settings-title {
+    margin-top: 40px;
+}
+/* Light mode styles */
+.light-mode {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --border-color: #dee2e6;
+}
+
+.settings-container.light-mode {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Other components */
+body.light-mode {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.navbar.light-mode {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.footer.light-mode {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Add more components as needed */

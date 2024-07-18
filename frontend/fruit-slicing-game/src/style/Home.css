@@ -4,11 +4,20 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212;
   color: #fff;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .home-container {
-  padding-top: 60px; /* Navbar için yer ayırma */
-  padding-bottom: 60px; /* Footer için yer ayırma */
+  padding: 0;
+  margin: 0;
+  height: 100vh; /* Tam ekran yüksekliği */
+  width: 100vw; /* Tam ekran genişliği */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-icon {
@@ -71,4 +80,8 @@ body {
   .game-tickets {
     font-size: 0.75rem;
   }
+}
+
+footer {
+  margin-top: 500px;
 }

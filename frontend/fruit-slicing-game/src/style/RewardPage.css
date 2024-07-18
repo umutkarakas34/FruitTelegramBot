@@ -1,0 +1,86 @@
+/* RewardPage.css */
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.rs {
+  background-color: #ffffff;
+  color: #673ab7;
+  padding: 15px 30px; /* Daha büyük boyut için padding artırıldı */
+  text-transform: none;
+  font-size: 20px; /* Daha büyük font boyutu */
+  border: 2px solid #673ab7; /* Daha belirgin kenarlık */
+  border-radius: 5px; /* Hafif yuvarlak köşeler */
+}
+
+.res:hover {
+  background-color: #f2f2f2;
+}
+
+.r-container {
+  position: relative;
+  height: 100vh; /* Tam ekran yüksekliği */
+  width: 100vw;  /* Tam ekran genişliği */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 0;  /* Container padding sıfırlanıyor */
+}
+
+.confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.reward-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.reward-message {
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+.reward-score {
+  color: #ff9800;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.reward-label {
+  color: #3f51b5;
+  margin-bottom: 20px;
+}
+
+
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+  z-index: 0;
+  animation: fadeInBackground 2s ease-in-out;
+}
+
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

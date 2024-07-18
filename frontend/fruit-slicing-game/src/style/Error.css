@@ -1,0 +1,49 @@
+.error-screen {
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .error-message {
+    font-size: 24px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #ffffff, #000000);
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: gradient-animation 5s ease infinite;
+    background-size: 200% 200%;
+  }
+  
+  .error-submessage {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .refresh-button {
+    background-color: transparent;
+    color: #fff;
+    margin-top: 20px;
+  }
+  
+  .refresh-button:hover {
+    color: #bbb;
+  }
+  
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  

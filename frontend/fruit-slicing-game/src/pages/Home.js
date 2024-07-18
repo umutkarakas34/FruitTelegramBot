@@ -1,24 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Box, Typography, Button, Grid, Paper } from '@mui/material';
+import { Container, Box, Typography, Button, Grid, Paper, Snackbar } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
+import { GiKatana } from 'react-icons/gi';
+import confetti from 'canvas-confetti';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../style/Home.css';
 
 const Home = () => {
-  const [timeRemaining, setTimeRemaining] = useState(4); // 12 hours in seconds
+  const initialTime = 43200; // 12 hours in seconds
+  const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [progress, setProgress] = useState(100);
+  const [points, setPoints] = useState(117721);
+  const [pointsEarned, setPointsEarned] = useState(0);
+  const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    startTimer();
+
+    return () => clearInterval(timerRef.current);
+  }, []);
+
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setProgress(0);
+          return 0;
+        }
         const newTimeRemaining = prev - 1;
-        setProgress((newTimeRemaining / 43200) * 100);
+        setPointsEarned((prevPointsEarned) => prevPointsEarned + pointsPerSecond);
+        setProgress((newTimeRemaining / initialTime) * 100);
         return newTimeRemaining;
       });
     }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  };
+
+  const handleStartClick = (event) => {
+    const buttonRect = event.target.getBoundingClientRect();
+
+    confetti({
+      particleCount: 100,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: (buttonRect.left + buttonRect.width / 2) / window.innerWidth,
+        y: (buttonRect.top + buttonRect.height / 2) / window.innerHeight,
+      }
+    });
+
+    setPoints((prevPoints) => prevPoints + pointsEarned);
+    setPointsEarned(0);
+
+    setAlertOpen(true);
+    setTimeout(() => setAlertOpen(false), 3000);
+
+    clearInterval(timerRef.current);
+    setTimeRemaining(initialTime);
+    setProgress(100);
+    startTimer();
+  };
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
@@ -29,20 +75,23 @@ const Home = () => {
 
   return (
     <Container maxWidth="xs" className="home-container">
+      <Navbar />
       <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>
-          <Typography variant="h4">฿ 117,721</Typography>
+          <Typography variant="h4">฿ {points.toFixed(3)}</Typography>
         </Box>
 
-        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px' }}>
+        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
           <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item>
               <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Slice Game</Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>Tickets: 7</Typography>
+              <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>
+                <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> 7
+              </Typography>
             </Grid>
           </Grid>
           <Grid container direction="column" alignItems="center">
@@ -76,7 +125,7 @@ const Home = () => {
           </Grid>
         </Paper>
 
-        <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb: 3 }}>
+        <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb: 3, maxWidth: '600px' }}>
           <Box sx={{ position: 'relative', width: '100%', height: '50px', backgroundColor: '#3a3a3a', borderRadius: '10px', overflow: 'hidden' }}>
             <Box sx={{
               position: 'absolute',
@@ -84,7 +133,7 @@ const Home = () => {
               left: 0,
               height: '100%',
               width: `${progress}%`,
-              backgroundColor: '#808080', // Kalan süre gri renkte
+              backgroundColor: timeRemaining === 0 ? '#fff' : '#808080',
               borderRadius: '10px',
               transition: 'width 1s linear'
             }}></Box>
@@ -93,23 +142,66 @@ const Home = () => {
               width: '100%',
               textAlign: 'center',
               lineHeight: '50px',
-              color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+              color: timeRemaining === 0 ? '#000' : 'rgba(255, 255, 255, 0.5)',
               fontWeight: 'bold',
-              fontSize: '0.875rem' // Daha küçük font
-            }}>Farming</Typography>
-            <Typography className="timer" sx={{
+              fontSize: '0.875rem'
+            }}>{timeRemaining === 0 ? '' : 'Farming'}</Typography>
+            {timeRemaining !== 0 && (
+              <Typography className="timer" sx={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: 'rgba(255, 255, 255, 0.5)',
+                fontSize: '0.75rem',
+                fontWeight: 'bold'
+              }}>{formatTime(timeRemaining)}</Typography>
+            )}
+            {timeRemaining === 0 && (
+              <Button
+                variant="contained"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem',
+                  '&:hover': {
+                    backgroundColor: '#fff',
+                  }
+                }}
+                onClick={handleStartClick}
+              >
+                Start
+              </Button>
+            )}
+            <Typography className="points-per-second" sx={{
               position: 'absolute',
-              right: '10px',
               top: '50%',
+              left: '10px',
               transform: 'translateY(-50%)',
-              color: 'rgba(255, 255, 255, 0.5)', // Daha silik renkte
+              color: 'rgba(255, 255, 255, 0.5)',
               fontSize: '0.75rem',
               fontWeight: 'bold'
-            }}>{formatTime(timeRemaining)}</Typography>
+            }}>+{pointsEarned.toFixed(3)} ฿</Typography>
           </Box>
         </Box>
       </Box>
-      <Footer />
+      <Footer sx={{ flexShrink: 0 }} />
+      <Snackbar
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MuiAlert onClose={() => setAlertOpen(false)} severity="info" sx={{ backgroundColor: '#000', color: '#fff', fontSize: '0.875rem' }}>
+          Meyvelere karşı dikkatli olun!
+        </MuiAlert>
+      </Snackbar>
     </Container>
   );
 };

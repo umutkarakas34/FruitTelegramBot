@@ -1,26 +1,25 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../utility/db');
-const Admin = require('./admin'); // Admin modelini içe aktarma
+const Admin = require('../models/admin'); // User modelini içe aktarma
 
-const Task = sequelize.define('Task', {
+const Blog = sequelize.define('Blog', {
     id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
+        allowNull: false,
         primaryKey: true
     },
-    task_title: {
+    title: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    task_image: {
+    image: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true // Resim opsiyonel olabilir, true yerine false yapabilirsiniz zorunlu kılmak isterseniz
     },
-    task_description: {
+    content: {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    task_link: Sequelize.STRING,
     admin_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -28,15 +27,9 @@ const Task = sequelize.define('Task', {
             model: Admin,
             key: 'id'
         }
-    },
-    created_at: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
     }
 }, {
-    tableName: 'tasks',
-    timestamps: false
+    timestamps: true
 });
 
-
-module.exports = Task;
+module.exports = Blog;

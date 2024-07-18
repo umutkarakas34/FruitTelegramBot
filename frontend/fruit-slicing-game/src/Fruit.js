@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Text as KonvaText, Group } from 'react-konva';
+import { Image as KonvaImage, Group } from 'react-konva';
+import useImage from 'use-image';
 
-const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, onRemove, size }) => {
+const Fruit = ({ x, y, icon, onSlice, isBomb, isHour, gameOver, speed, containerHeight, onRemove, size }) => {
     const [position, setPosition] = useState({ x, y });
     const [rotation, setRotation] = useState(0);
     const [sliced, setSliced] = useState(false);
     const [exploded, setExploded] = useState(false);
     const [sliceEffect, setSliceEffect] = useState(false);
     const [sliceParts, setSliceParts] = useState([]);
+    const [sliceOpacity, setSliceOpacity] = useState(1);
+    const [fullImage] = useImage(`/images/${icon}.png`);
+    const [sliceImage1] = useImage(`/images/${icon}-1.png`);
+    const [sliceImage2] = useImage(`/images/${icon}-2.png`);
+    const [explosionImage] = useImage('/images/explosion.png'); // Patlama resmi
+    const [addedTimeImage] = useImage('/images/added_time.png'); // Added time image
 
     useEffect(() => {
         if (gameOver) return;
@@ -27,10 +34,26 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
         return () => clearInterval(interval);
     }, [gameOver, speed, containerHeight, onRemove]);
 
-    const handleMouseMove = (e) => {
+    useEffect(() => {
+        if (sliced && sliceOpacity > 0) {
+            const fadeOutInterval = setInterval(() => {
+                setSliceOpacity((prevOpacity) => {
+                    if (prevOpacity === 0.05) {
+                        clearInterval(fadeOutInterval);
+                        setSliced(false); // Efekt tamamen kaybolacak
+                        return 0;
+                    }
+                    return prevOpacity - 0.1;
+                });
+            }, 75);
+            return () => clearInterval(fadeOutInterval);
+        }
+    }, [sliced, sliceOpacity]);
+
+    const handleSlice = (e) => {
         if (!sliced) {
             setSliced(true);
-            onSlice(isBomb, position.x, position.y);
+            onSlice(isBomb, isHour, position.x, position.y);
             if (isBomb) {
                 setExploded(true);
                 setTimeout(() => {
@@ -39,8 +62,8 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
             } else {
                 setSliceEffect(true);
                 setSliceParts([
-                    { ...position, rotation: -45, xMove: -size / 2, yMove: -size / 2 },
-                    { ...position, rotation: 45, xMove: size / 2, yMove: size / 2 }
+                    { image: sliceImage1, rotation: -20, xMove: -size / 4, yMove: -size / 4 },
+                    { image: sliceImage2, rotation: 20, xMove: size / 4, yMove: size / 4 }
                 ]);
                 setTimeout(() => {
                     setSliceEffect(false);
@@ -52,33 +75,50 @@ const Fruit = ({ x, y, icon, onSlice, isBomb, gameOver, speed, containerHeight, 
     return (
         <Group>
             {!sliced ? (
-                <KonvaText
-                    text={icon}
+                <KonvaImage
+                    image={fullImage}
                     x={position.x}
                     y={position.y}
-                    fontSize={size}
+                    width={size}
+                    height={size}
                     rotation={rotation}
-                    onMouseMove={handleMouseMove}
+                    onMouseDown={handleSlice}
+                    onMouseUp={handleSlice}
+                    onMouseMove={handleSlice}
+                    onTouchMove={handleSlice} // Mobil cihazlar için
                 />
-            ) : exploded ? (
-                <KonvaText
-                    text="💥"
+            ) : exploded && sliceOpacity > 0 ? (
+                <KonvaImage
+                    image={explosionImage}
                     x={position.x}
                     y={position.y}
-                    fontSize={size}
+                    width={size + 50}
+                    height={size + 50}
+                    opacity={sliceOpacity}
                 />
-            ) : (
+            ) : isHour && sliceOpacity > 0 ? (
+                <KonvaImage
+                    image={addedTimeImage}
+                    x={position.x}
+                    y={position.y}
+                    width={size - 20}
+                    height={size - 20}
+                    opacity={sliceOpacity}
+                />
+            ) : sliced && sliceOpacity > 0 ? (
                 sliceParts.map((part, index) => (
-                    <KonvaText
+                    <KonvaImage
                         key={index}
-                        text={icon}
-                        x={part.x + part.xMove}
-                        y={part.y + part.yMove}
-                        fontSize={size / 2}
+                        image={part.image}
+                        x={position.x + part.xMove}
+                        y={position.y + part.yMove}
+                        width={size / 0.85} // Kesilmiş hali biraz daha büyük
+                        height={size / 0.85}
                         rotation={part.rotation}
+                        opacity={sliceOpacity}
                     />
                 ))
-            )}
+            ) : null}
         </Group>
     );
 };

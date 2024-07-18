@@ -4,47 +4,64 @@ import Home from './pages/Home';
 import Task from './pages/Task';
 import Referrals from './pages/Referrals';
 import Settings from './pages/Settings';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { CSSTransition } from 'react-transition-group';
-import './style/Transition.css';
+import Loading from './pages/Loading';
+import ErrorScreen from './components/Error';
+import ErrorBoundary from './components/ErrorBoundary';
+import DailyRewards from './pages/DailyRewards';
+import RewardPage from './pages/RewardPage';
+import Footer from './components/Footer'; // Footer bileşeni eklendi
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function App() {
-  const [showHome, setShowHome] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowHome(true);
-    }, 3000); // 3 saniye sonra ana sayfayı göster
-    return () => clearTimeout(timer);
+    // Telegram SDK yüklendiğinde çalışacak kod
+    const script = document.createElement('script');
+    script.src = "https://telegram.org/js/telegram-web-app.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      } else {
+        console.error('Telegram Web App is not available');
+      }
+    };
   }, []);
 
+  // Footer'ın görüneceği sayfaları belirtiyoruz
+  const showFooter = ['/home', '/task', '/referrals'].includes(location.pathname);
+
   return (
-    <Router>
-      <div className="App">
-        <CSSTransition
-          in={showHome}
-          timeout={500}
-          classNames="fade"
-          unmountOnExit
-        >
+    <div className="App">
+      <ErrorBoundary>
+        <div className="content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Loading />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/game" element={<Game />} />
             <Route path="/task" element={<Task />} />
             <Route path="/referrals" element={<Referrals />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/reward" element={<RewardPage />} />
+            <Route path="/daily-rewards" element={<DailyRewards />} />
+            <Route path="*" element={<ErrorScreen />} />
           </Routes>
-        </CSSTransition>
-        {!showHome && (
-          <div className="loading-screen">
-            <h1>Crypto Game</h1>
-            <p>Loading...</p>
-          </div>
-        )}
-      </div>
-    </Router>
+        </div>
+        {showFooter && <Footer />}
+      </ErrorBoundary>
+    </div>
   );
 }
 
-export default App;
+export default function AppWithRouter() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
