@@ -21,15 +21,28 @@ function App() {
     const script = document.createElement('script');
     script.src = "https://telegram.org/js/telegram-web-app.js";
     script.async = true;
+
+    // iOS'ta onload yerine onreadystatechange kullanarak yüklemeyi kontrol et
+    script.onload = script.onreadystatechange = () => {
+      if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+        if (window.Telegram.WebApp) {
+          // Web App hazır
+          window.Telegram.WebApp.ready();
+
+          // Web App tam ekran yap
+          window.Telegram.WebApp.expand();
+
+        } else {
+          console.error('Telegram Web App is not available');
+        }
+      }
+    };
+
     document.body.appendChild(script);
 
-    script.onload = () => {
-      if (window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-      } else {
-        console.error('Telegram Web App is not available');
-      }
+    // Temizleme işlemi (cleanup)
+    return () => {
+      document.body.removeChild(script);
     };
   }, []);
 

@@ -4,7 +4,9 @@
   min-height: 100vh;
   text-align: center;
 }
-
+body, html {
+  overflow: hidden;
+}
 .content {
   flex: 1;
   overflow-y: auto;
