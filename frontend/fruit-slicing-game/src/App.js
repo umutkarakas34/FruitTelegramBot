@@ -7,6 +7,7 @@ import Settings from './pages/Settings';
 import Loading from './pages/Loading';
 import ErrorScreen from './components/Error';
 import ErrorBoundary from './components/ErrorBoundary';
+import DailyRewards from './pages/DailyRewards';
 import RewardPage from './pages/RewardPage';
 import Footer from './components/Footer'; // Footer bileşeni eklendi
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
@@ -46,6 +47,7 @@ function App() {
             <Route path="/referrals" element={<Referrals />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/reward" element={<RewardPage />} />
+            <Route path="/daily-rewards" element={<DailyRewards />} />
             <Route path="*" element={<ErrorScreen />} />
           </Routes>
         </div>
