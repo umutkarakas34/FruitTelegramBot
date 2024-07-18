@@ -1,13 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Box, Typography, Paper, Button, Avatar } from '@mui/material';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../style/Referrals.css';
 
 const Referrals = () => {
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
+  const handleScroll = () => {
+    if (window.pageYOffset > 300) {
+      setShowScrollButton(true);
+    } else {
+      setShowScrollButton(false);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <Container className="referrals-container" sx={{ width: '100vw', height: '100vh' }}>
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" justifyContent="center" mt={10}>
+    <Container className="referrals-container" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
+      <Box
+        className="main-content"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        mt={10}
+        sx={{
+          overflow: 'auto',
+          flex: '1 1 auto',
+          height: 'calc(100vh - 80px)', // Adjusting height to ensure footer is always visible
+          paddingBottom: '80px' // Adjusting padding to ensure space for the footer
+        }}
+      >
         <Avatar sx={{ mb: 2, width: 80, height: 80 }} className="referral-avatar">👨‍👩‍👧‍👦</Avatar>
         <Typography variant="h5" mb={2}>Invite frens. Earn points</Typography>
         <Typography variant="body1" mb={3}>How it works</Typography>
@@ -29,7 +62,24 @@ const Referrals = () => {
           Invite a fren (10 left)
         </Button>
       </Box>
-      <Footer />
+      {showScrollButton && (
+        <Button
+          onClick={scrollToTop}
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+            backgroundColor: 'primary.main',
+            color: '#fff',
+            '&:hover': {
+              backgroundColor: 'primary.dark',
+            },
+          }}
+        >
+          Scroll to Top
+        </Button>
+      )}
+      <Footer sx={{ flexShrink: 0 }} />
     </Container>
   );
 };

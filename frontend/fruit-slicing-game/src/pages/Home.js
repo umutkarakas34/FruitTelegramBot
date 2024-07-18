@@ -74,15 +74,15 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth={false} className="home-container">
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10}>
+    <Container maxWidth={false} className="home-container" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
+      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflow: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>
           <Typography variant="h4">฿ {points.toFixed(3)}</Typography>
         </Box>
 
-        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px' }}>
+        <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
           <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item>
               <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Drop Game</Typography>
@@ -137,7 +137,7 @@ const Home = () => {
           </Grid>
         </Paper>
 
-        <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb:3}}>
+        <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb: 3, maxWidth: '600px' }}>
           <Box sx={{ position: 'relative', width: '100%', height: '50px', backgroundColor: '#3a3a3a', borderRadius: '10px', overflow: 'hidden' }}>
             <Box sx={{
               position: 'absolute',
@@ -204,7 +204,7 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
-      <Footer  />
+      <Footer sx={{ flexShrink: 0 }} />
       <Snackbar
         open={alertOpen}
         onClose={() => setAlertOpen(false)}

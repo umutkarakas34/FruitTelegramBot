@@ -43,7 +43,7 @@ const RewardPage = () => {
   }, []);
 
   const handlePlayAgain = () => {
-    navigate('/game');
+    navigate('/home');
   };
 
   return (
@@ -97,7 +97,7 @@ const RewardPage = () => {
             },
           }}
         >
-          Play Again
+          Home
         </Button>
       </Box>
       <Box

@@ -1,17 +1,14 @@
-body, html, #root {
+* {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 90%;
-    overflow: hidden; /* Scroll ve kayma işlemlerini tamamen engeller */
-    background-color: black;
-    display: flex; 
-    overflow: hidden;
-    /* align-items: center;  */
-    justify-content: center; 
+    box-sizing: border-box; /* Box-sizing: border-box tüm elementler için uygulanır */
 }
 
-.game-container {
+body {
+    overflow: hidden; /* Tüm sayfa için taşmayı gizler */
+}
+
+.game-page {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,6 +16,13 @@ body, html, #root {
     width: 100vw;
     height: 100vh; /* Telegram viewport yüksekliğini ayarlar */
     overflow: hidden; /* Scroll ve kayma işlemlerini engeller */
+    position: relative; /* İçeriklerin konumlandırılması için */
+    padding: 0; /* Padding sıfırlama */
+}
+
+.game-container {
+    width: 100%;
+    height: 100%;
     position: relative; /* İçeriklerin konumlandırılması için */
 }
 

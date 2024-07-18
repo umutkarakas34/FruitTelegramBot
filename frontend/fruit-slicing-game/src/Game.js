@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Stage, Layer, Circle, Image as KonvaImage, Text as KonvaText } from 'react-konva';
+import { Stage, Layer, Text as KonvaText, Image as KonvaImage } from 'react-konva';
 import useImage from 'use-image';
 import Fruit from './Fruit';
-import { Container, Button } from '@mui/material';
+import { Container } from '@mui/material';
 import './Game.css';
 
 const Game = () => {
@@ -15,17 +15,23 @@ const Game = () => {
     const [speed, setSpeed] = useState(2);
     const [timeLeft, setTimeLeft] = useState(30);
     const [timeUp, setTimeUp] = useState(false);
-    const [splashes, setSplashes] = useState([]);
-    const [backgroundImage] = useImage('/images/background.jpg'); // Resim dosyasını yükleyin
+    const [sliceNumbers, setSliceNumbers] = useState(0);
+    const [hourglassClicks, setHourglassClicks] = useState(0);
+    const [backgroundImage] = useImage('/images/background.jpg');
+    const [addedTimeImage] = useImage('/images/added_time.png');
+    const [addedTimeEffect, setAddedTimeEffect] = useState({ visible: false, x: 0, y: 0, opacity: 1 });
+    const startTime = useMemo(() => Date.now(), []);
 
     const fruitIcons = useMemo(() => [
-        'apple', // Apple
-        'banana', // Banana
-        'peach', // Peach
-        'sandia', // Watermelon
-        'basaha' // Strawberry
+        'apple',
+        'banana',
+        'peach',
+        'sandia',
+        'basaha'
     ], []);
+
     const bombIcon = 'boom';
+    const hourIcon = 'hour';
     const bombFull = '💣';
 
     const [stageSize, setStageSize] = useState({
@@ -53,28 +59,33 @@ const Game = () => {
 
         const interval = setInterval(() => {
             const isBomb = Math.random() < 0.2;
+            const isHour = !isBomb && Math.random() < 0.1;
             const randomIcon = isBomb
                 ? bombIcon
-                : fruitIcons[Math.floor(Math.random() * fruitIcons.length)];
+                : isHour
+                    ? hourIcon
+                    : fruitIcons[Math.floor(Math.random() * fruitIcons.length)];
+
             setFruits((fruits) => [
                 ...fruits,
-                { id: Date.now(), x: Math.random() * (stageSize.width - 50) + 25, y: -25, icon: randomIcon, isBomb },
+                { id: Date.now(), x: Math.random() * (stageSize.width - 50) + 25, y: -25, icon: randomIcon, isBomb, isHour },
             ]);
         }, 400);
 
         return () => clearInterval(interval);
-    }, [gameOver, timeUp, fruitIcons, bombIcon, stageSize]);
+    }, [gameOver, timeUp, fruitIcons, bombIcon, hourIcon, stageSize]);
 
     useEffect(() => {
         if (bombsClicked >= 3) {
             setGameOver(true);
             setFruits([]);
+            setSpeed(2);
         }
     }, [bombsClicked]);
 
     useEffect(() => {
         if (score > 0 && score % 10 === 0) {
-            setSpeed((prevSpeed) => prevSpeed + 1);
+            setSpeed((prevSpeed) => prevSpeed + 0.2);
         }
     }, [score]);
 
@@ -87,35 +98,61 @@ const Game = () => {
         } else if (timeLeft === 0 && !gameOver) {
             setTimeUp(true);
             setFruits([]);
+            setSpeed(2);
         }
     }, [timeLeft, gameOver]);
 
     useEffect(() => {
         if (window.innerWidth < 600) {
-            setSpeed((prevSpeed) => prevSpeed * 1.5);
+            setSpeed((prevSpeed) => prevSpeed + 0.2);
         }
     }, []);
 
     useEffect(() => {
         if (gameOver || timeUp) {
+            const gameTime = Math.floor((Date.now() - startTime) / 1000);
+            console.log({
+                game_time: gameTime,
+                game_score: score,
+                game_bomb_clicked: bombsClicked,
+                game_slice_numbers: sliceNumbers,
+                hourglass_clicks: hourglassClicks
+            });
             navigate('/reward', { state: { score } });
         }
-    }, [gameOver, timeUp, score, navigate]);
+    }, [gameOver, timeUp, score, navigate, bombsClicked, sliceNumbers, hourglassClicks, startTime]);
 
-    const handleSlice = (id, isBomb, x, y) => {
-        setFruits((fruits) => fruits.filter((fruit) => fruit.id !== id));
+    const handleSlice = (isBomb, isHour, x, y) => {
+        setSliceNumbers((count) => count + 1);
         if (isBomb) {
-            setScore(0);
             setBombsClicked((count) => {
-                const newCount = count + 1;
-                if (newCount >= 3) {
+                let newScore = score;
+                if (count === 0) {
+                    newScore -= 10;
+                } else if (count === 1) {
+                    newScore -= 10;
+                } else if (count >= 2) {
+                    newScore -= 50;
                     setGameOver(true);
                     setFruits([]);
+                    setSpeed(2);
                 }
-                return newCount;
+                setScore(newScore < 0 ? 0 : newScore);
+                return count + 1;
             });
+        } else if (isHour) {
+            setHourglassClicks((count) => count + 1);
+            setTimeLeft((prevTime) => prevTime + 2);
+            // Show and animate the added time effect
+            setAddedTimeEffect({ visible: true, x, y, opacity: 1 });
+            setTimeout(() => {
+                setAddedTimeEffect((effect) => ({ ...effect, opacity: 0 }));
+            }, 100);
+            setTimeout(() => {
+                setAddedTimeEffect({ visible: false, x: 0, y: 0, opacity: 1 });
+            }, 150);
         } else {
-            setScore((score) => score + 1);
+            // setScore((score) => score + 100);
         }
     };
 
@@ -124,10 +161,12 @@ const Game = () => {
     };
 
     const handleRestart = () => {
+        setSpeed(2);
         setFruits([]);
-        setSplashes([]);
         setScore(0);
         setBombsClicked(0);
+        setSliceNumbers(0);
+        setHourglassClicks(0);
         setSpeed(window.innerWidth < 600 ? 9 : 6);
         setTimeLeft(30);
         setGameOver(false);
@@ -153,8 +192,8 @@ const Game = () => {
     };
 
     return (
-        <Container className="game-container">
-            <div className="stage-wrapper">
+        <Container className="game-page">
+            <div className="game-container">
                 <Stage width={stageSize.width} height={stageSize.height}>
                     <Layer>
                         <KonvaImage
@@ -164,16 +203,6 @@ const Game = () => {
                             width={stageSize.width}
                             height={stageSize.height}
                         />
-                        {splashes.map((splash) => (
-                            <Circle
-                                key={splash.id}
-                                x={splash.x}
-                                y={splash.y}
-                                radius={200}
-                                fill={splash.color}
-                                opacity={0.6}
-                            />
-                        ))}
                         {fruits.map((fruit) => (
                             <Fruit
                                 key={fruit.id}
@@ -181,12 +210,13 @@ const Game = () => {
                                 y={fruit.y}
                                 icon={fruit.icon}
                                 isBomb={fruit.isBomb}
-                                onSlice={(isBomb, id, x, y) => handleSlice(id, isBomb, x, y)}
+                                isHour={fruit.isHour}
+                                onSlice={() => handleSlice(fruit.isBomb, fruit.isHour, fruit.x, fruit.y)}
                                 onRemove={() => handleRemove(fruit.id)}
                                 gameOver={gameOver}
                                 speed={speed}
                                 containerHeight={stageSize.height}
-                                size={70} // Meyve boyutunu biraz daha büyüttük
+                                size={70}
                             />
                         ))}
                         <KonvaText
@@ -198,7 +228,7 @@ const Game = () => {
                         />
                         <KonvaText
                             text={formatTime(timeLeft)}
-                            x={stageSize.width - 100}
+                            x={stageSize.width - 50}
                             y={10}
                             fontSize={18}
                             fill="white"
@@ -212,26 +242,9 @@ const Game = () => {
                                 fill="white"
                             />
                         )}
+
                     </Layer>
                 </Stage>
-                {gameOver && (
-                    <div className="game-over">
-                        <h1>Game Over</h1>
-                        <h2>Score: {score}</h2>
-                        <Button variant="contained" color="primary" onClick={handleRestart}>
-                            Restart
-                        </Button>
-                    </div>
-                )}
-                {timeUp && (
-                    <div className="time-up">
-                        <h1>Time's Up!</h1>
-                        <h2>Score: {score}</h2>
-                        <Button variant="contained" color="primary" onClick={handleRestart}>
-                            Restart
-                        </Button>
-                    </div>
-                )}
             </div>
         </Container>
     );

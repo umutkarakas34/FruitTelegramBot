@@ -23,10 +23,11 @@ function App() {
     document.body.appendChild(script);
 
     script.onload = () => {
-      if (window.TelegramGameProxy) {
-        // window.TelegramGameProxy.ready();
+      if (window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
       } else {
-        console.error('Telegram Game Proxy is not available');
+        console.error('Telegram Web App is not available');
       }
     };
   }, []);
