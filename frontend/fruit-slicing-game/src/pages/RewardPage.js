@@ -86,7 +86,8 @@ const RewardPage = () => {
               height: '70px', // İkonun boyutu büyütüldü
               marginLeft: '8px',
               position: 'relative',
-              top: '-12px', // İkonu yukarı kaydırmak için
+             
+              top: '-13px', // İkonu yukarı kaydırmak için
             }}
           />
         </Box>

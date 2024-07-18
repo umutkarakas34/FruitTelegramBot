@@ -74,7 +74,8 @@ const DailyRewards = () => {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px', // İkon ve sayı arasında boşluk
+              gap: '8px'
+              , // İkon ve sayı arasında boşluk
             }}
           >
             <Box
@@ -83,6 +84,9 @@ const DailyRewards = () => {
                 width: '30px', // İkonun boyutu küçültüldü
                 height: '30px', // İkonun boyutu küçültüldü
                 color: '#fff',
+                
+                position: 'relative',
+                top: '-5px',
               }}
             />
             <Typography variant="h6">20</Typography>
