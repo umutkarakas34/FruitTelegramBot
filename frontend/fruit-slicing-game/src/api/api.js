@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API
-const BASE_URL = 'https://nasty-symbols-unite.loca.lt/'; // Buraya kendi API URL'nizi ekleyin
+const BASE_URL = 'https://4f5f028eb1a83d40d64e5bcda7bd2939.serveo.net/'; // Buraya kendi API URL'nizi ekleyin
 
 // Create an instance of axios
 const api = axios.create({
