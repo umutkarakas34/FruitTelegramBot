@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { GiKatana } from 'react-icons/gi';
@@ -8,21 +8,26 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ReactComponent as Logo } from '../logo1.svg';
 import '../style/Home.css';
+import api from '../api/api';
 
 const Home = () => {
   const initialTime = 43200; // 12 hours in seconds
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [progress, setProgress] = useState(100);
-  const [points, setPoints] = useState(117721);
+  const [points, setPoints] = useState(0);
+  const [tickets, setTicket] = useState(0);
+  const [username, setUsername] = useState(0);
   const [pointsEarned, setPointsEarned] = useState(0);
-  const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
-  const [showConfetti, setShowConfetti] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
   const timerRef = useRef(null);
+
+  const location = useLocation(); // useLocation hook'unu kullanarak query parametrelerini alıyoruz
 
   useEffect(() => {
     startTimer();
-
+    fetchUserData(); // Kullanıcı verilerini çek
     return () => clearInterval(timerRef.current);
   }, []);
 
@@ -42,6 +47,27 @@ const Home = () => {
     }, 1000);
   };
 
+  const fetchUserData = async () => {
+    const params = new URLSearchParams(location.search); // URL'den query parametrelerini alıyoruz
+    const telegramId = params.get('telegram_id');
+    const username = params.get('username');
+    const firstname = params.get('firstname');
+    const lastname = params.get('lastname');
+    const referralCode = params.get('referralCode');
+
+    try {
+      // profile route'una istek at
+      const response = await api.get(`/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`);
+      console.log(response);
+      setPoints(response.token);
+      setUserData(response);
+      setUsername(response.username);
+      setTicket(response.ticket);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
   const handleStartClick = (event) => {
     const buttonRect = event.target.getBoundingClientRect();
 
@@ -55,7 +81,6 @@ const Home = () => {
       }
     });
 
-    setPoints((prevPoints) => prevPoints + pointsEarned);
     setPointsEarned(0);
 
     setAlertOpen(true);
@@ -89,7 +114,7 @@ const Home = () => {
       <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflowY: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
-          <Typography variant="h6">nftbholder</Typography>
+          <Typography variant="h6">@{username}</Typography>
           <Box display="flex" alignItems="center">
             <Box
               component={Logo}
@@ -104,7 +129,6 @@ const Home = () => {
             <Typography variant="h4">{points.toFixed(3)}</Typography>
           </Box>
         </Box>
-
         <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
           <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item>
@@ -112,7 +136,7 @@ const Home = () => {
             </Grid>
             <Grid item>
               <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>
-                <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> 7
+                <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> {tickets}
               </Typography>
             </Grid>
           </Grid>
