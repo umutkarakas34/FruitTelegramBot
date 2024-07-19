@@ -75,8 +75,18 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth={false} className="home-container" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '80px' }}>
-      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflow: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
+    <Container maxWidth={false} className="home-container"
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        backgroundColor: '#121212',
+        color: '#fff',
+        overflowY: 'auto',
+        paddingY: '0px',
+      }}>
+      <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflowY: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
         <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
           <Box className="profile-icon" mb={2}>X</Box>
           <Typography variant="h6">nftbholder</Typography>

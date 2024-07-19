@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, Typography, Paper, Button, Avatar } from '@mui/material';
 import Footer from '../components/Footer';
+import { GiKatana } from 'react-icons/gi';
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -34,7 +35,7 @@ const Referrals = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingBottom: '80px',
+        paddingY: '30px',
       }}
     >
       <Box
@@ -51,21 +52,21 @@ const Referrals = () => {
         }}
       >
         <Box sx={{ width: '80vw', maxWidth: 600, textAlign: 'center', mb: 2 }}>
-          <Avatar 
-            sx={{ 
-              mb: 2, 
-              width: 80, 
-              height: 80, 
-              backgroundColor: '#808080', 
-              color: 'white', 
-              fontSize: '2rem', 
+          <Avatar
+            sx={{
+              mb: 2,
+              width: 80,
+              height: 80,
+              // backgroundColor: 'white',
+              color: 'white',
+              fontSize: '2rem',
               margin: '0 auto' // Avatarı ortalamak için
             }}
+            src="/images/referrals.png"
           >
-            👨‍👩‍👧‍👦
           </Avatar>
           <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem' }}>Invite frens. Earn points</Typography>
-          <Typography variant="body1" mb={3}>How it works</Typography>
+          {/* <Typography variant="body1" mb={3}>How it works</Typography> */}
         </Box>
         <Paper
           elevation={3}
@@ -82,23 +83,23 @@ const Referrals = () => {
           }}
         >
           <Typography variant="body1" mb={2}>
-            <strong>Share your invitation link</strong><br />
-            Get a 🎟️ play pass for each fren
+            <strong>Share Your Magic Link</strong><br />
+            Unlock a <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> Play Pass for Each Fren!
           </Typography>
           <Typography variant="body1" mb={2}>
-            <strong>Your friends join Fruit Cyrpto</strong><br />
-            And start farming points
+            <strong>Your Friends Join the Fruit Crypto Adventure</strong><br />
+            Let them start farming points and reaping rewards!
           </Typography>
           <Typography variant="body1">
-            <strong>Score 10% from buddies</strong><br />
-            Plus an extra 2.5% from their referrals
+            <strong>Boost Your Earnings</strong><br />
+            Earn 10% from your buddies' points, plus an extra 2.5% from their referrals!
           </Typography>
         </Paper>
         <Button
           variant="contained"
           color="primary"
           sx={{
-            mt: 3,
+            mt: 1,
             width: '80vw',
             maxWidth: 600,
             backgroundColor: '#d3d3d3',

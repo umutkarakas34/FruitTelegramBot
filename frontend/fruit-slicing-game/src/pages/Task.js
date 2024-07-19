@@ -11,6 +11,13 @@ const Tasks = () => {
     { id: 5, title: 'Invite 10 frens', progress: '0/10 frens', reward: '+200 BP', avatar: '👨‍👩‍👧‍👦' },
     { id: 6, title: 'Pokras Lampas Quest', progress: '3/3 tasks', reward: '+300 BP', avatar: '🖌️' },
     { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
   ];
 
   return (
@@ -23,7 +30,7 @@ const Tasks = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingBottom: '80px',
+        paddingY: '30px',
       }}
     >
       <Box
@@ -106,6 +113,7 @@ const Tasks = () => {
           </Paper>
         ))}
       </Box>
+
       <Footer sx={{ flexShrink: 0 }} />
     </Container>
   );
