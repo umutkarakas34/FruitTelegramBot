@@ -30,7 +30,7 @@ function App() {
           window.Telegram.WebApp.ready();
 
           // Web App tam ekran yap
-          window.Telegram.WebApp.expand();
+          // window.Telegram.WebApp.expand();
 
         } else {
           console.error('Telegram Web App is not available');

@@ -227,13 +227,27 @@ const increaseTicket = async (req, res) => {
 const getReferrals = async (req, res) => {
     const { userId } = req.query;
     try {
-        const ref = await User.findAll({ where: { referred_by: userId } });
+        const level1Refs = await User.findAll({ where: { referred_by: userId } });
+        const user = await User.findByPk(userId);
+        // Alt referansların sayısını almak için kullanıcıların bir listesini oluşturalım
+        const referralsWithCount = await Promise.all(level1Refs.map(async (ref) => {
+            const subRefCount = await User.count({ where: { referred_by: ref.id } });
+            return {
+                ...ref.toJSON(),
+                subRefCount
+            };
+        }));
 
-        return res.status(200).json(ref);
+        return res.status(200).json({
+            level1Referrals: referralsWithCount,
+            refCount: level1Refs.length,
+            myReferralCode: user.referral_code
+        });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 }
+
 const claim = async (req, res) => {
     try {
         const { userId } = req.body;
