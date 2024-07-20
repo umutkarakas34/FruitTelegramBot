@@ -7,6 +7,7 @@ router.get('/profile', userController.login);
 router.get('/tasks', userController.getTasks);
 router.post('/create-gamelog', userController.createGameLog);
 router.post('/increase-ticket', userController.increaseTicket);
+router.get('/referrals', userController.getReferrals)
 router.post('/claim-ref', userController.claim);
 
 router.post('/start-farming', userController.startFarming);

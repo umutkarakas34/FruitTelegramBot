@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Container, Box, Typography, Paper, Button, Avatar } from '@mui/material';
 import Footer from '../components/Footer';
 import { GiKatana } from 'react-icons/gi';
+import api from '../api/api';
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [referrals, setReferrals] = useState([]);
 
   const handleScroll = () => {
     if (window.pageYOffset > 300) {
@@ -18,8 +20,20 @@ const Referrals = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const fetchReferrals = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      console.log(userData);
+      const response = await api.get('/user/referrals', { userId: userData.id });
+      setReferrals(response);
+    } catch (error) {
+      console.error('Error fetching referrals:', error);
+    }
+  };
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
+    fetchReferrals();
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -66,7 +80,6 @@ const Referrals = () => {
           >
           </Avatar>
           <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem' }}>Invite frens. Earn points</Typography>
-          {/* <Typography variant="body1" mb={3}>How it works</Typography> */}
         </Box>
         <Paper
           elevation={3}
@@ -95,6 +108,33 @@ const Referrals = () => {
             Earn 10% from your buddies' points, plus an extra 2.5% from their referrals!
           </Typography>
         </Paper>
+        {referrals.length > 0 ? (
+          referrals.map((referral) => (
+            <Paper
+              key={referral.id}
+              elevation={3}
+              sx={{
+                p: 2,
+                width: '80vw',
+                maxWidth: 600,
+                backgroundColor: '#1c1c1c',
+                color: '#fff',
+                mb: 2,
+              }}
+            >
+              <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                Referral ID: {referral.id}
+              </Typography>
+              <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                User ID: {referral.user_id}
+              </Typography>
+            </Paper>
+          ))
+        ) : (
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            No referrals found.
+          </Typography>
+        )}
         <Button
           variant="contained"
           color="primary"

@@ -5,6 +5,8 @@ const crypto = require('crypto');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+const blockedUsers = new Set();
+
 function generateReferralCode() {
     return crypto.randomBytes(4).toString('hex'); // 8 karakterlik bir referans kodu oluşturur
 }
@@ -28,6 +30,34 @@ const generateUniqueReferralCode = async () => {
     return referralCode;
 };
 
+bot.catch((err, ctx) => {
+    if (err.response && err.response.error_code === 403 && err.response.description === 'Forbidden: bot was blocked by the user') {
+        const chatId = ctx.update.message.chat.id;
+        blockedUsers.add(chatId);
+        console.log(`User ${chatId} has blocked the bot.`);
+    } else {
+        console.error('Error:', err);
+    }
+});
+
+const sendMessageToUser = async (chatId, text, options = {}) => {
+    if (blockedUsers.has(chatId)) {
+        console.log(`Cannot send message to user ${chatId}, as they have blocked the bot.`);
+        return;
+    }
+
+    try {
+        await bot.telegram.sendMessage(chatId, text, options);
+    } catch (error) {
+        if (error.response && error.response.error_code === 403) {
+            console.log(`User ${chatId} has blocked the bot.`);
+            blockedUsers.add(chatId);
+        } else {
+            console.error('Error sending message:', error);
+        }
+    }
+};
+
 bot.start(async (ctx) => {
     const telegramId = ctx.from.id;
     const username = ctx.from.username;
@@ -36,8 +66,8 @@ bot.start(async (ctx) => {
     const referralCode = ctx.startPayload;
 
     const url = `https://99ab-188-132-191-150.ngrok-free.app/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-    const url1 = `https://acc0-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-    ctx.reply('Play butonuna tıklayın:', {
+    const url1 = `https://ef17-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    await sendMessageToUser(ctx.from.id, 'Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [
                 [{ text: 'PLAY', web_app: { url: url1 } }]
@@ -51,20 +81,18 @@ bot.command('earnings', async (ctx) => {
         const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
 
         if (!user) {
-            ctx.reply('Kullanıcı bulunamadı.');
+            await sendMessageToUser(ctx.from.id, 'Kullanıcı bulunamadı.');
             return;
         }
 
         if (user.ref_earning) {
-            ctx.reply(`Toplam referans kazancınız: ${user.ref_earning}`);
+            await sendMessageToUser(ctx.from.id, `Toplam referans kazancınız: ${user.ref_earning}`);
+        } else {
+            await sendMessageToUser(ctx.from.id, `Henüz referans kazancınız yok.`);
         }
-        else {
-            ctx.reply(`Henüz referans kazancınız yok.`);
-        }
-
     } catch (error) {
         console.error('Kazanç hesaplanırken hata:', error);
-        ctx.reply('Kazanç hesaplanırken bir hata oluştu.');
+        await sendMessageToUser(ctx.from.id, 'Kazanç hesaplanırken bir hata oluştu.');
     }
 });
 
@@ -99,7 +127,7 @@ bot.command('kazan', async (ctx) => {
                 }
             }
 
-            ctx.reply(`Tebrikler @${ctx.from.username}, ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(user.token.toFixed(2))}`);
+            await sendMessageToUser(ctx.from.id, `Tebrikler @${ctx.from.username}, ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(user.token.toFixed(2))}`);
         } else {
             const newUser = await User.create({
                 telegram_id: ctx.from.id,
@@ -108,12 +136,11 @@ bot.command('kazan', async (ctx) => {
                 last_name: ctx.from.last_name,
                 token: randomAmount
             });
-            ctx.reply(`Hoş geldiniz @${ctx.from.username}, kaydınız oluşturuldu ve ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(newUser.token.toFixed(2))}`);
-            // console.log(`Yeni kullanıcı ${ctx.from.username} ${parseFloat(randomAmount.toFixed(2))} token kazandı. Başlangıç token: ${parseFloat(newUser.token.toFixed(2))}`);
+            await sendMessageToUser(ctx.from.id, `Hoş geldiniz @${ctx.from.username}, kaydınız oluşturuldu ve ${parseFloat(randomAmount.toFixed(2))} token kazandınız! Şu anki token miktarınız: ${parseFloat(newUser.token.toFixed(2))}`);
         }
     } catch (error) {
         console.error('Token güncellenirken hata:', error);
-        ctx.reply('Token güncellenirken bir hata oluştu.');
+        await sendMessageToUser(ctx.from.id, 'Token güncellenirken bir hata oluştu.');
     }
 });
 
@@ -122,7 +149,7 @@ bot.command('claim', async (ctx) => {
         const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
 
         if (!user) {
-            ctx.reply('Kullanıcı bulunamadı.');
+            await sendMessageToUser(ctx.from.id, 'Kullanıcı bulunamadı.');
             return;
         }
         if (user.ref_earning && user.ref_earning != 0) {
@@ -130,46 +157,25 @@ bot.command('claim', async (ctx) => {
             await user.update({
                 token: user.token + refEarning,
                 ref_earning: 0
-            })
+            });
 
-            ctx.reply(`Toplam talep edilen kazanç: ${refEarning.toFixed(2)}. Şu anki token miktarınız: ${user.token.toFixed(2)}`);
-        }
-        else {
-            ctx.reply(`Toplanacak referans kazancı bulunamadı.`);
+            await sendMessageToUser(ctx.from.id, `Toplam talep edilen kazanç: ${refEarning.toFixed(2)}. Şu anki token miktarınız: ${user.token.toFixed(2)}`);
+        } else {
+            await sendMessageToUser(ctx.from.id, `Toplanacak referans kazancı bulunamadı.`);
         }
 
     } catch (error) {
         console.error('Kazanç talep edilirken hata:', error);
-        ctx.reply('Kazanç talep edilirken bir hata oluştu.');
+        await sendMessageToUser(ctx.from.id, 'Kazanç talep edilirken bir hata oluştu.');
     }
 });
-
-// bot.command('play', (ctx) => {
-//     const telegramId = ctx.from.id;
-//     const username = ctx.from.username;
-//     const firstname = ctx.from.first_name;
-//     const lastname = ctx.from.last_name;
-//     const referralCode = ctx.payload;
-
-//     // const url = `https://2246-188-132-191-150.ngrok-free.app/user/login?telegram_id=${telegramId}
-//     // &username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-//     const url1 = ' https://4313-188-132-191-150.ngrok-free.app/user/profile';
-
-//     ctx.reply('Play butonuna tıklayın:', {
-//         reply_markup: {
-//             inline_keyboard: [
-//                 [{ text: 'PLAY', web_app: { url: url1 } }]
-//             ]
-//         }
-//     });
-// });
 
 bot.on('text', async (ctx) => {
     try {
         const user = await User.findOne({ where: { telegram_id: ctx.from.id } });
         if (user) {
             const referralLink = generateReferralLink(ctx.from.username, user.referral_code);
-            ctx.reply(`Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz. İşte referans linkiniz: ${referralLink}`);
+            await sendMessageToUser(ctx.from.id, `Merhaba @${ctx.from.username}! Tekrardan hoş geldiniz. İşte referans linkiniz: ${referralLink}`);
         } else {
             const newReferralCode = await generateUniqueReferralCode();
 
@@ -181,11 +187,11 @@ bot.on('text', async (ctx) => {
                 referral_code: newReferralCode
             });
 
-            ctx.reply(`Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${newReferralCode}`);
+            await sendMessageToUser(ctx.from.id, `Merhaba @${ctx.from.username}, kaydınız oluşturulmuştur. Referans kodunuz: ${newReferralCode}`);
         }
     } catch (error) {
         console.error('Kullanıcı bilgileri kaydedilirken hata:', error);
-        ctx.reply('Bilgileriniz kaydedilirken bir hata oluştu.');
+        await sendMessageToUser(ctx.from.id, 'Bilgileriniz kaydedilirken bir hata oluştu.');
     }
 });
 

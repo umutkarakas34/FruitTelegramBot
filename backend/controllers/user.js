@@ -8,6 +8,7 @@ const Task = require('../models/task');
 const DailyCheckin = require('../models/dailyCheckin');
 const Game = require('../models/game');
 const Farming = require('../models/farming');
+const { message } = require('telegraf/filters');
 
 
 function generateReferralCode() {
@@ -102,7 +103,7 @@ const login = async (req, res) => {
 
             const refCount = await User.count({ where: { referred_by: user.id } });
             const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: user.id } });
-            return res.status(200).json({ username: user.username, token: user.token, ticket: user.ticket, ref_earning: user.ref_earning, refCount: refCount, DailyCheckinCount: dailyCheckinCount.checkin_series });
+            return res.status(200).json({ id: user.id, username: user.username, token: user.token, ticket: user.ticket, ref_earning: user.ref_earning, refCount: refCount, DailyCheckinCount: dailyCheckinCount.checkin_series });
         } else {
             let referringUser = null;
             let refCount = 0;
@@ -145,7 +146,7 @@ const login = async (req, res) => {
                 await handleDailyCheckin(newUser.id);
                 const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: newUser.id } });
 
-                return res.status(200).json({ username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
+                return res.status(200).json({ id: newUser.id, username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
             } else {
                 const newUser = await User.create({
                     telegram_id: telegramId,
@@ -160,7 +161,7 @@ const login = async (req, res) => {
                 await handleDailyCheckin(newUser.id);
                 const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: newUser.id } });
 
-                return res.status(200).json({ username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
+                return res.status(200).json({ id: newUser.id, username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
             }
         }
     } catch (err) {
@@ -171,9 +172,9 @@ const getTasks = async (req, res) => {
     try {
         const tasks = await Task.findAll();
 
-        res.status(200).json(tasks);
+        return res.status(200).json(tasks);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: err.message });
     }
 };
 const createGameLog = async (req, res) => {
@@ -223,6 +224,16 @@ const increaseTicket = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while updating the ticket count' });
     }
 };
+const getReferrals = async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const ref = await User.findAll({ where: { referred_by: userId } });
+
+        return res.status(200).json(ref);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
 const claim = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -326,4 +337,4 @@ const claimFarming = async (req, res) => {
     }
 };
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming };
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals };

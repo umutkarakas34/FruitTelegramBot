@@ -16,7 +16,7 @@ const Home = () => {
   const [progress, setProgress] = useState(100);
   const [points, setPoints] = useState(0);
   const [tickets, setTicket] = useState(0);
-  const [username, setUsername] = useState(0);
+  const [username, setUsername] = useState('');
   const [pointsEarned, setPointsEarned] = useState(0);
   const [alertOpen, setAlertOpen] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -27,7 +27,15 @@ const Home = () => {
 
   useEffect(() => {
     startTimer();
-    fetchUserData(); // Kullanıcı verilerini çek
+    const cachedUserData = getUserDataFromCache();
+    if (cachedUserData) {
+      setUserData(cachedUserData);
+      setPoints(cachedUserData.token);
+      setUsername(cachedUserData.username);
+      setTicket(cachedUserData.ticket);
+    } else {
+      fetchUserData(); // Kullanıcı verilerini çek
+    }
     return () => clearInterval(timerRef.current);
   }, []);
 
@@ -59,6 +67,7 @@ const Home = () => {
       // profile route'una istek at
       const response = await api.get(`/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`);
       console.log(response);
+      localStorage.setItem('userData', JSON.stringify(response)); // Verileri localStorage'a kaydet
       setPoints(response.token);
       setUserData(response);
       setUsername(response.username);
@@ -68,7 +77,21 @@ const Home = () => {
     }
   };
 
-  const handleStartClick = (event) => {
+  const getUserDataFromCache = () => {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData) : null;
+  };
+
+  const handlePlayClick = async (event) => {
+    try {
+      const response = await api.post('/user/increase-ticket', { userId: userData.id });
+      console.log(response);
+    } catch (error) {
+      console.error('Error increasing ticket:', error);
+    }
+  };
+
+  const handleStartClick = async (event) => {
     const buttonRect = event.target.getBoundingClientRect();
 
     confetti({
@@ -141,25 +164,26 @@ const Home = () => {
             </Grid>
           </Grid>
           <Grid container direction="column" alignItems="center">
-            <Grid item sx={{ width: '100%' }}>
-              <Button
-                variant="contained"
-                component={Link}
-                to="/game"
-                sx={{
-                  borderRadius: '10px',
-                  padding: '10px 0',
-                  marginTop: '20px',
-                  width: '100%',
-                  background: 'linear-gradient(90deg, #ff5722, #ff9800, #ffeb3b, #8bc34a, #00bcd4, #3f51b5, #9c27b0)',
-                  color: '#fff',
-                  backgroundSize: '200% 200%',
-                  animation: 'gradient-animation 5s ease infinite',
-                }}
-              >
-                Play
-              </Button>
-            </Grid>
+            {tickets > 0 && (
+              <Grid item sx={{ width: '100%' }}>
+                <Button
+                  variant="contained"
+                  onClick={handlePlayClick}
+                  sx={{
+                    borderRadius: '10px',
+                    padding: '10px 0',
+                    marginTop: '20px',
+                    width: '100%',
+                    background: 'linear-gradient(90deg, #ff5722, #ff9800, #ffeb3b, #8bc34a, #00bcd4, #3f51b5, #9c27b0)',
+                    color: '#fff',
+                    backgroundSize: '200% 200%',
+                    animation: 'gradient-animation 5s ease infinite',
+                  }}
+                >
+                  Play
+                </Button>
+              </Grid>
+            )}
             <Grid item sx={{ marginTop: '15px', width: '100%' }}>
               <Typography variant="body1" className="game-description" sx={{ fontSize: '0.9rem', color: '#ccc', textAlign: 'center' }}>
                 Join the Drop Game and earn rewards! The more you play, the more tickets you earn. Click 'Play' to start your adventure.
