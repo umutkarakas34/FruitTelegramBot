@@ -4,6 +4,7 @@ const userController = require('../controllers/user');
 const authenticateUser = require('../middleware/authenticateUser');
 
 router.get('/profile', userController.login);
+router.get('/get-user-id', userController.getUserId);
 router.get('/tasks', userController.getTasks);
 router.post('/create-gamelog', userController.createGameLog);
 router.post('/increase-ticket', userController.increaseTicket);

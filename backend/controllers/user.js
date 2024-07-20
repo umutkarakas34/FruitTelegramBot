@@ -247,7 +247,16 @@ const getReferrals = async (req, res) => {
         return res.status(500).json({ message: err.message });
     }
 }
+const getUserId = async (req, res) => {
+    const { telegramId } = req.body;
+    try {
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
 
+        return res.status(200).json(user);
+    } catch (err) {
+        return res.status(500).json({ messagea: err.message });
+    }
+}
 const claim = async (req, res) => {
     try {
         const { userId } = req.body;
@@ -351,4 +360,4 @@ const claimFarming = async (req, res) => {
     }
 };
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals };
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId };

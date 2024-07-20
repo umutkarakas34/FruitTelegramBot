@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { GiKatana } from 'react-icons/gi';
@@ -22,22 +22,25 @@ const Home = () => {
   const [userData, setUserData] = useState(null);
   const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
   const timerRef = useRef(null);
+  const navigate = useNavigate(); // useNavigate hook'unu kullanarak yönlendirme
 
   const location = useLocation(); // useLocation hook'unu kullanarak query parametrelerini alıyoruz
 
   useEffect(() => {
     startTimer();
-    const cachedUserData = getUserDataFromCache();
-    if (cachedUserData) {
-      setUserData(cachedUserData);
-      setPoints(cachedUserData.token);
-      setUsername(cachedUserData.username);
-      setTicket(cachedUserData.ticket);
-    } else {
-      fetchUserData(); // Kullanıcı verilerini çek
-    }
-    return () => clearInterval(timerRef.current);
-  }, []);
+    const params = new URLSearchParams(location.search);
+    const telegramId = params.get('telegram_id');
+    const username = params.get('username');
+    const firstname = params.get('firstname');
+    const lastname = params.get('lastname');
+    const referralCode = params.get('referralCode');
+
+    fetchUserData(telegramId, username, firstname, lastname, referralCode);
+
+    return () => {
+      clearInterval(timerRef.current);
+    };
+  }, [location.search]);
 
   const startTimer = () => {
     timerRef.current = setInterval(() => {
@@ -55,19 +58,12 @@ const Home = () => {
     }, 1000);
   };
 
-  const fetchUserData = async () => {
-    const params = new URLSearchParams(location.search); // URL'den query parametrelerini alıyoruz
-    const telegramId = params.get('telegram_id');
-    const username = params.get('username');
-    const firstname = params.get('firstname');
-    const lastname = params.get('lastname');
-    const referralCode = params.get('referralCode');
-
+  const fetchUserData = async (telegramId, username, firstname, lastname, referralCode) => {
     try {
       // profile route'una istek at
       const response = await api.get(`/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`);
       console.log(response);
-      localStorage.setItem('userData', JSON.stringify(response)); // Verileri localStorage'a kaydet
+      localStorage.setItem('userData', JSON.stringify({ telegramId: 0 })); // Verileri localStorage'a kaydet
       setPoints(response.token);
       setUserData(response);
       setUsername(response.username);
@@ -77,15 +73,12 @@ const Home = () => {
     }
   };
 
-  const getUserDataFromCache = () => {
-    const userData = localStorage.getItem('userData');
-    return userData ? JSON.parse(userData) : null;
-  };
-
   const handlePlayClick = async (event) => {
     try {
       const response = await api.post('/user/increase-ticket', { userId: userData.id });
       console.log(response);
+      setTicket(response.ticket);
+      navigate('/game');
     } catch (error) {
       console.error('Error increasing ticket:', error);
     }
@@ -144,12 +137,12 @@ const Home = () => {
               sx={{
                 width: '50px', // İkonun boyutu büyütüldü
                 height: '60px', // İkonun boyutu büyütüldü
-                marginRight: '8px',
+                marginRight: '-6px',
                 position: 'relative',
                 top: '-8px', // İkonu yukarı kaydırmak için
               }}
             />
-            <Typography variant="h4">{points.toFixed(3)}</Typography>
+            <Typography variant="h4">{points.toFixed(2)}</Typography>
           </Box>
         </Box>
         <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>

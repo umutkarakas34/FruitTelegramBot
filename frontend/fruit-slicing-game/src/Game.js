@@ -5,6 +5,7 @@ import useImage from 'use-image';
 import Fruit from './Fruit';
 import { Container } from '@mui/material';
 import './Game.css';
+import api from './api/api'; // API işlemleri için
 
 const Game = () => {
     const navigate = useNavigate();
@@ -21,6 +22,7 @@ const Game = () => {
     const [addedTimeImage] = useImage('/images/added_time.png');
     const [addedTimeEffect, setAddedTimeEffect] = useState({ visible: false, x: 0, y: 0, opacity: 1 });
     const startTime = useMemo(() => Date.now(), []);
+    const [userId, setUserId] = useState(null); // user_id için state ekleyin
 
     const fruitIcons = useMemo(() => [
         'apple',
@@ -53,6 +55,24 @@ const Game = () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    // user_id'yi almak için useEffect kullanın
+    useEffect(() => {
+        const getUserIdFromTelegramId = async () => {
+            const userData = JSON.parse(localStorage.getItem('userData')); // localStorage'dan telegram_id'yi alın
+            if (userData && userData.telegramId) {
+                try {
+                    const response = await api.get('/user/get-user-id', { params: { telegramId: userData.telegramId } });
+                    console.log(response.data.id + ' asfgjajgj')
+                    setUserId(response.data.id);
+                } catch (error) {
+                    console.error('Error fetching user ID:', error);
+                }
+            }
+        };
+
+        getUserIdFromTelegramId();
+    }, []); // Boş dependency array ile sadece component mount edildiğinde çalışır
 
     useEffect(() => {
         if (gameOver || timeUp) return;
@@ -111,16 +131,28 @@ const Game = () => {
     useEffect(() => {
         if (gameOver || timeUp) {
             const gameTime = Math.floor((Date.now() - startTime) / 1000);
-            console.log({
+            // console.log({
+            //     game_time: gameTime,
+            //     game_score: score,
+            //     game_bomb_clicked: bombsClicked,
+            //     game_slice_numbers: sliceNumbers,
+            //     hourglass_clicks: hourglassClicks,
+            //     user_id: userId
+            // });
+
+            // Post işlemi
+            createGameLog({
                 game_time: gameTime,
                 game_score: score,
                 game_bomb_clicked: bombsClicked,
                 game_slice_numbers: sliceNumbers,
-                hourglass_clicks: hourglassClicks
+                hourglass_clicks: hourglassClicks,
+                user_id: userId
             });
+
             navigate('/reward', { state: { score } });
         }
-    }, [gameOver, timeUp, score, navigate, bombsClicked, sliceNumbers, hourglassClicks, startTime]);
+    }, [gameOver, timeUp, score, navigate, bombsClicked, sliceNumbers, hourglassClicks, startTime, userId]); // userId'yi dependency array'e ekleyin
 
     const handleSlice = (isBomb, isHour, x, y) => {
         setSliceNumbers((count) => count + 1);
@@ -152,7 +184,7 @@ const Game = () => {
                 setAddedTimeEffect({ visible: false, x: 0, y: 0, opacity: 1 });
             }, 150);
         } else {
-            // setScore((score) => score + 100);
+            setScore((score) => score + 5);
         }
     };
 
@@ -171,6 +203,15 @@ const Game = () => {
         setTimeLeft(30);
         setGameOver(false);
         setTimeUp(false);
+    };
+
+    const createGameLog = async (gameData) => {
+        try {
+            const response = await api.post('/user/create-gamelog', gameData);
+            // console.log('Game log created:', response);
+        } catch (error) {
+            console.error('Error creating game log:', error);
+        }
     };
 
     const renderBombs = () => {
