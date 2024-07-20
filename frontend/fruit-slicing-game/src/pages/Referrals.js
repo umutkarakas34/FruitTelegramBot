@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, Paper, Button, Avatar } from '@mui/material';
-import Footer from '../components/Footer';
+import { Container, Box, Typography, Paper, Button, Avatar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { GiKatana } from 'react-icons/gi';
+import Footer from '../components/Footer';
 import api from '../api/api';
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [referrals, setReferrals] = useState([]);
+  const [level1Count, setLevel1Count] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [referralLink, setReferralLink] = useState('');
 
   const handleScroll = () => {
     if (window.pageYOffset > 300) {
@@ -23,12 +26,32 @@ const Referrals = () => {
   const fetchReferrals = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem('userData'));
-      console.log(userData);
       const response = await api.get('/user/referrals', { userId: userData.id });
-      setReferrals(response);
+      setReferrals(response.level1Referrals);
+      setLevel1Count(response.refCount);
+      setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.myReferralCode}`);
     } catch (error) {
       console.error('Error fetching referrals:', error);
     }
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    alert('Referral link copied to clipboard!');
+  };
+
+  const handleSendLink = () => {
+    const telegramMessage = `Join me on our platform and let's earn together! Use my invite link to join the fun: ${referralLink}`;
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(telegramMessage)}`;
+    window.open(telegramUrl, '_blank');
   };
 
   useEffect(() => {
@@ -38,6 +61,8 @@ const Referrals = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const remainingInvites = 10 - level1Count;
 
   return (
     <Container
@@ -108,12 +133,18 @@ const Referrals = () => {
             Earn 10% from your buddies' points, plus an extra 2.5% from their referrals!
           </Typography>
         </Paper>
+        <Typography variant="h6" sx={{ color: '#fff', fontSize: '1.2rem', mb: 2 }}>
+          Total Level 1 Referrals: {level1Count}
+        </Typography>
         {referrals.length > 0 ? (
           referrals.map((referral) => (
             <Paper
               key={referral.id}
               elevation={3}
               sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 p: 2,
                 width: '80vw',
                 maxWidth: 600,
@@ -123,36 +154,74 @@ const Referrals = () => {
               }}
             >
               <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                Referral ID: {referral.id}
+                @{referral.username}
               </Typography>
               <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                User ID: {referral.user_id}
+                Sub Referrals: {referral.subRefCount}
               </Typography>
             </Paper>
           ))
         ) : (
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            No referrals found.
-          </Typography>
+          <Paper
+            elevation={3}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              p: 2,
+              width: '80vw',
+              maxWidth: 600,
+              backgroundColor: '#1c1c1c',
+              color: '#fff',
+              mb: 2,
+            }}
+          >
+            <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+              No referrals found.
+            </Typography>
+          </Paper>
         )}
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            mt: 1,
-            width: '80vw',
-            maxWidth: 600,
-            backgroundColor: '#d3d3d3',
-            color: '#fff',
-            fontSize: '1rem',
-            padding: '30px 30px',
-            '&:hover': {
-              backgroundColor: '#c0c0c0',
-            },
-          }}
-        >
-          Invite a fren (10 left)
-        </Button>
+        {remainingInvites > 0 ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleClickOpen}
+            sx={{
+              mt: 1,
+              width: '80vw',
+              maxWidth: 600,
+              backgroundColor: '#d3d3d3',
+              color: '#fff',
+              fontSize: '1rem',
+              padding: '30px 30px',
+              '&:hover': {
+                backgroundColor: '#c0c0c0',
+              },
+            }}
+          >
+            Invite a fren ({remainingInvites} left)
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            disabled
+            sx={{
+              mt: 1,
+              width: '80vw',
+              maxWidth: 600,
+              backgroundColor: '#d3d3d3',
+              color: '#fff',
+              fontSize: '1rem',
+              padding: '30px 30px',
+              '&:hover': {
+                backgroundColor: '#c0c0c0',
+              },
+            }}
+          >
+            Invite limit reached
+          </Button>
+        )}
       </Box>
       {showScrollButton && (
         <Button
@@ -172,6 +241,56 @@ const Referrals = () => {
         </Button>
       )}
       <Footer sx={{ flexShrink: 0 }} />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            backgroundColor: '#121212',
+            color: '#fff',
+            padding: '20px',
+            borderRadius: '10px',
+          },
+        }}
+      >
+        <DialogTitle>Invite a fren</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: '#fff' }}>
+            Use the options below to invite your friends and earn rewards!
+          </DialogContentText>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Button
+              onClick={handleSendLink}
+              sx={{
+                backgroundColor: '#1a73e8',
+                color: '#fff',
+                margin: '0 10px',
+                '&:hover': {
+                  backgroundColor: '#135ab6',
+                },
+              }}
+            >
+              Send
+            </Button>
+            <Button
+              onClick={handleCopyLink}
+              sx={{
+                backgroundColor: '#34a853',
+                color: '#fff',
+                margin: '0 10px',
+                '&:hover': {
+                  backgroundColor: '#2a8c42',
+                },
+              }}
+            >
+              Copy link
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} sx={{ color: '#fff' }}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
