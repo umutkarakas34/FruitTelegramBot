@@ -155,11 +155,11 @@ const Home = () => {
         <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
           <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Drop Game</Typography>
+              <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Slice Game</Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1rem', textAlign: 'right' }}>
-                <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> {tickets}
+              <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1.6rem', textAlign: 'right' }}>
+                <GiKatana style={{ marginRight: '5px', fontSize: '1.2rem' }} /> {tickets}
               </Typography>
             </Grid>
           </Grid>
@@ -186,7 +186,7 @@ const Home = () => {
             )}
             <Grid item sx={{ marginTop: '15px', width: '100%' }}>
               <Typography variant="body1" className="game-description" sx={{ fontSize: '0.9rem', color: '#ccc', textAlign: 'center' }}>
-                Join the Drop Game and earn rewards! The more you play, the more tickets you earn. Click 'Play' to start your adventure.
+                Join the Slice Game and earn katanas! The more you play, the more katanas you earn. Click 'Play' to start your adventure.
               </Typography>
             </Grid>
             <Grid item sx={{ marginTop: '15px', width: '100%' }}>
