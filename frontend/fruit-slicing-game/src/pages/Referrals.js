@@ -3,6 +3,8 @@ import { Container, Box, Typography, Paper, Button, Avatar, Dialog, DialogAction
 import { GiKatana } from 'react-icons/gi';
 import Footer from '../components/Footer';
 import api from '../api/api';
+import { FaPeopleGroup } from "react-icons/fa6";
+
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -96,13 +98,14 @@ const Referrals = () => {
               mb: 2,
               width: 80,
               height: 80,
-              // backgroundColor: 'white',
-              color: 'white',
-              fontSize: '2rem',
+               backgroundColor: '#fff',
+              color: 'orange',
+              fontSize: '4rem',
               margin: '0 auto' // Avatarı ortalamak için
             }}
-            src="/images/referrals.png"
           >
+            <FaPeopleGroup></FaPeopleGroup>
+
           </Avatar>
           <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem' }}>Invite frens. Earn points</Typography>
         </Box>
