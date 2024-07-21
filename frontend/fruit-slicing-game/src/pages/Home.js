@@ -84,6 +84,7 @@ const Home = () => {
         const newTimeRemaining = prev - 1;
         setPointsEarned((prevPointsEarned) => prevPointsEarned + pointsPerSecond);
         setProgress((newTimeRemaining / initialTime) * 100);
+        setPointsEarned((newTimeRemaining / initialTime) * 43.2)
         return newTimeRemaining;
       });
     }, 1000);
@@ -174,29 +175,6 @@ const Home = () => {
     }
   };
 
-  const handleStartClick = async (event) => {
-    const buttonRect = event.target.getBoundingClientRect();
-
-    confetti({
-      particleCount: 100,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: (buttonRect.left + buttonRect.width / 2) / window.innerWidth,
-        y: (buttonRect.top + buttonRect.height / 2) / window.innerHeight,
-      }
-    });
-
-    setPointsEarned(0);
-
-    setAlertOpen(true);
-    setTimeout(() => setAlertOpen(false), 3000);
-
-    clearInterval(timerRef.current);
-    setTimeRemaining(initialTime);
-    setProgress(100);
-    startTimer();
-  };
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
