@@ -195,6 +195,7 @@ const Referrals = () => {
               width: '80vw',
               maxWidth: 600,
               backgroundColor: '#f06f24',
+              fontWeight: "bold",
               color: '#fff',
               fontSize: '1rem',
               padding: '20px 30px',

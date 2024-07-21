@@ -105,7 +105,7 @@ const Game = () => {
 
     useEffect(() => {
         if (score > 0 && score % 10 === 0) {
-            setSpeed((prevSpeed) => prevSpeed + 0.2);
+            setSpeed((prevSpeed) => prevSpeed + 0.5);
         }
     }, [score]);
 
