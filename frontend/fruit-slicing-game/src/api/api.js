@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API
-const BASE_URL = 'https://a4771f1c19de3127e15a067f2bc6a22d.serveo.net'; // Buraya kendi API URL'nizi ekleyin
+const BASE_URL = 'https://00dd6fea47e0e653a5cbb79d10a20782.serveo.net'; // Buraya kendi API URL'nizi ekleyin
 
 // Create an instance of axios
 const api = axios.create({

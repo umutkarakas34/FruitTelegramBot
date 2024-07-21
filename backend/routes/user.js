@@ -10,9 +10,11 @@ router.post('/create-gamelog', userController.createGameLog);
 router.post('/increase-ticket', userController.increaseTicket);
 router.get('/referrals', userController.getReferrals)
 router.post('/claim-ref', userController.claim);
+router.post('/add-tokens', userController.addToken);
 
 router.post('/start-farming', userController.startFarming);
 router.post('/claim-farming', userController.claimFarming);
+router.post('/farming-status', userController.farmingStatus);
 
 
 module.exports = router;

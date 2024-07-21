@@ -66,7 +66,7 @@ bot.start(async (ctx) => {
     const referralCode = ctx.startPayload;
 
     const url = `https://99ab-188-132-191-150.ngrok-free.app/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
-    const url1 = `https://614c-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
+    const url1 = `https://da63-188-132-191-150.ngrok-free.app/?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`;
     await sendMessageToUser(ctx.from.id, 'Play butonuna tıklayın:', {
         reply_markup: {
             inline_keyboard: [

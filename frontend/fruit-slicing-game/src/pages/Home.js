@@ -21,13 +21,15 @@ const Home = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
+  const [isFarming, setIsFarming] = useState(false);
+  const [farmingClaimable, setFarmingClaimable] = useState(false);
   const timerRef = useRef(null);
+  const fetchUserDataIntervalRef = useRef(null);
   const navigate = useNavigate(); // useNavigate hook'unu kullanarak yönlendirme
 
   const location = useLocation(); // useLocation hook'unu kullanarak query parametrelerini alıyoruz
 
   useEffect(() => {
-    startTimer();
     const params = new URLSearchParams(location.search);
     const telegramId = params.get('telegram_id');
     const username = params.get('username');
@@ -35,19 +37,48 @@ const Home = () => {
     const lastname = params.get('lastname');
     const referralCode = params.get('referralCode');
 
-    fetchUserData(telegramId, username, firstname, lastname, referralCode);
+    if (telegramId && username) {
+      fetchUserData(telegramId, username, firstname, lastname, referralCode);
+      startFetchUserDataInterval(telegramId, username, firstname, lastname, referralCode);
+      checkFarmingStatus(telegramId);
+    } else {
+      const storedTelegramId = localStorage.getItem('telegramId');
+      if (storedTelegramId) {
+        fetchUserId(storedTelegramId);
+        checkFarmingStatus(storedTelegramId);
+      }
+    }
 
     return () => {
       clearInterval(timerRef.current);
+      clearInterval(fetchUserDataIntervalRef.current);
     };
   }, [location.search]);
 
-  const startTimer = () => {
+  const startTimer = (startTime) => {
+    const initialTime = 43200; // 12 hours in seconds
+    const currentTime = new Date();
+    const elapsed = Math.floor((currentTime - startTime) / 1000); // Geçen süreyi saniye cinsinden hesapla
+    const timeLeft = initialTime - elapsed;
+
+    if (timeLeft <= 0) {
+      setTimeRemaining(0);
+      setProgress(0);
+      setIsFarming(false);
+      setFarmingClaimable(true);
+      return;
+    }
+
+    setTimeRemaining(timeLeft);
+    setProgress((timeLeft / initialTime) * 100);
+
     timerRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
           setProgress(0);
+          setIsFarming(false);
+          setFarmingClaimable(true);
           return 0;
         }
         const newTimeRemaining = prev - 1;
@@ -58,12 +89,16 @@ const Home = () => {
     }, 1000);
   };
 
+  const startFetchUserDataInterval = (telegramId, username, firstname, lastname, referralCode) => {
+    fetchUserDataIntervalRef.current = setInterval(() => {
+      fetchUserData(telegramId, username, firstname, lastname, referralCode);
+    }, 300);
+  };
+
   const fetchUserData = async (telegramId, username, firstname, lastname, referralCode) => {
     try {
-      // profile route'una istek at
       const response = await api.get(`/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`);
-      console.log(response);
-      localStorage.setItem('userData', JSON.stringify({ telegramId: 0 })); // Verileri localStorage'a kaydet
+      localStorage.setItem('telegramId', telegramId);
       setPoints(response.token);
       setUserData(response);
       setUsername(response.username);
@@ -73,10 +108,67 @@ const Home = () => {
     }
   };
 
+  const fetchUserId = async (telegramId) => {
+    try {
+      console.log(telegramId);
+      const userData = await api.get(`/user/get-user-id`, { telegramId });
+      setPoints(userData.token);
+      setUserData(userData);
+      setUsername(userData.username);
+      setTicket(userData.ticket);
+      startFetchUserDataInterval(userData.telegram_id, userData.username, userData.firstname, userData.lastname, userData.referralCode);
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
+    }
+  };
+
+
+  const checkFarmingStatus = async (telegramId) => {
+    try {
+      const response = await api.post('/user/farming-status', { telegramId });
+
+      if (response.isFarming) {
+        // Gelen tarih saat formatını düzeltiyoruz
+        const startTime = new Date(response.data.start_time.replace(' ', 'T') + 'Z');
+        startTimer(startTime);
+        setIsFarming(true);
+      } else {
+        setIsFarming(false);
+      }
+    } catch (error) {
+      console.error('Error fetching farming status:', error);
+    }
+  };
+
+
+  const handleStartFarming = async () => {
+    try {
+      const telegramId = localStorage.getItem('telegramId');
+      const response = await api.post('/user/start-farming', { telegramId });
+      setIsFarming(true);
+      setTimeRemaining(initialTime);
+      setProgress(100);
+      startTimer(new Date());
+    } catch (error) {
+      console.error('Error starting farming:', error);
+    }
+  };
+
+  const handleClaimFarming = async () => {
+    try {
+      const telegramId = localStorage.getItem('telegramId');
+      const response = await api.post('/user/claim-farming', { telegramId });
+      setPoints(response.token); // Kullanıcının toplam token miktarını güncelle
+      setIsFarming(false);
+      setFarmingClaimable(false);
+    } catch (error) {
+      console.error('Error claiming farming:', error);
+    }
+  };
+
   const handlePlayClick = async (event) => {
     try {
       const response = await api.post('/user/increase-ticket', { userId: userData.id });
-      console.log(response);
       setTicket(response.ticket);
       navigate('/game');
     } catch (error) {
@@ -233,7 +325,7 @@ const Home = () => {
                 fontWeight: 'bold'
               }}>{formatTime(timeRemaining)}</Typography>
             )}
-            {timeRemaining === 0 && (
+            {!isFarming && !farmingClaimable && timeRemaining !== 0 && (
               <Button
                 variant="contained"
                 sx={{
@@ -251,9 +343,32 @@ const Home = () => {
                     backgroundColor: '#fff',
                   }
                 }}
-                onClick={handleStartClick}
+                onClick={handleStartFarming}
               >
-                Start
+                Start Farming
+              </Button>
+            )}
+            {farmingClaimable && (
+              <Button
+                variant="contained"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  backgroundColor: '#fff',
+                  color: '#000',
+                  borderRadius: '10px',
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem',
+                  '&:hover': {
+                    backgroundColor: '#fff',
+                  }
+                }}
+                onClick={handleClaimFarming}
+              >
+                Claim Tokens
               </Button>
             )}
             <Typography className="points-per-second" sx={{
@@ -267,17 +382,9 @@ const Home = () => {
             }}>+{pointsEarned.toFixed(3)}</Typography>
           </Box>
         </Box>
+
       </Box>
       <Footer sx={{ flexShrink: 0 }} />
-      <Snackbar
-        open={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <MuiAlert onClose={() => setAlertOpen(false)} severity="info" sx={{ backgroundColor: '#000', color: '#fff', fontSize: '0.875rem' }}>
-          Meyvelere karşı dikkatli olun!
-        </MuiAlert>
-      </Snackbar>
     </Container>
   );
 };

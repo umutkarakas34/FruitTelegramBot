@@ -248,7 +248,7 @@ const getReferrals = async (req, res) => {
     }
 }
 const getUserId = async (req, res) => {
-    const { telegramId } = req.body;
+    const { telegramId } = req.query;
     try {
         const user = await User.findOne({ where: { telegram_id: telegramId } });
 
@@ -289,10 +289,10 @@ const claim = async (req, res) => {
 };
 const startFarming = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { telegramId } = req.body;
 
         // Kullanıcıyı bul
-        const user = await User.findByPk(userId);
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -300,7 +300,7 @@ const startFarming = async (req, res) => {
 
         // Yeni bir farming kaydı oluştur
         const newFarming = await Farming.create({
-            user_id: userId,
+            user_id: user.id,
             start_time: new Date(),
             end_time: null,
             is_active: true
@@ -317,11 +317,10 @@ const startFarming = async (req, res) => {
 };
 const claimFarming = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { telegramId } = req.body;
         const farmingTokens = 72;
 
-        // Kullanıcıyı bul
-        const user = await User.findByPk(userId);
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -330,7 +329,7 @@ const claimFarming = async (req, res) => {
         // Aktif farming kaydını bul
         const farming = await Farming.findOne({
             where: {
-                user_id: userId,
+                user_id: user.id,
                 is_active: true
             }
         });
@@ -359,5 +358,56 @@ const claimFarming = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while claiming the farming process' });
     }
 };
+const farmingStatus = async (req, res) => {
+    try {
+        const { telegramId } = req.body;
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId };
+        // Kullanıcıyı bul
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Aktif farming kaydını bul
+        const farming = await Farming.findOne({
+            where: {
+                user_id: user.id,
+                is_active: true
+            }
+        });
+
+        if (!farming) {
+            return res.status(200).json({ isFarming: false, message: 'No active farming process found' });
+        }
+
+        // Farming durumunu ve başlangıç zamanını döndür
+        return res.status(200).json({ isFarming: true, startTime: farming.start_time });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while checking the farming status' });
+    }
+};
+const addToken = async (req, res) => {
+    const { userId, score } = req.body;
+
+    try {
+        // Kullanıcıyı veritabanında bul
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Kullanıcının token miktarını güncelle
+        user.token += score;
+
+        // Değişiklikleri veritabanına kaydet
+        await user.save();
+
+        return res.status(200).json({ message: 'Tokens added successfully', tokens: user.tokens });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error adding tokens', error: error.message });
+    }
+};
+
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus };

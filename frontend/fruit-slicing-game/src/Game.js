@@ -59,12 +59,12 @@ const Game = () => {
     // user_id'yi almak için useEffect kullanın
     useEffect(() => {
         const getUserIdFromTelegramId = async () => {
-            const userData = JSON.parse(localStorage.getItem('userData')); // localStorage'dan telegram_id'yi alın
-            if (userData && userData.telegramId) {
+            const telegramId = JSON.parse(localStorage.getItem('telegramId')); // localStorage'dan telegram_id'yi alın
+            if (telegramId) {
                 try {
-                    const response = await api.get('/user/get-user-id', { params: { telegramId: userData.telegramId } });
-                    console.log(response.data.id + ' asfgjajgj')
-                    setUserId(response.data.id);
+                    const response = await api.get('/user/get-user-id', { telegramId });
+                    console.log(response.id)
+                    setUserId(response.id);
                 } catch (error) {
                     console.error('Error fetching user ID:', error);
                 }
@@ -150,6 +150,9 @@ const Game = () => {
                 user_id: userId
             });
 
+            addScoreToUserTokens(userId, score); // Kullanıcının token adedine oyun skorunu ekleyin
+
+
             navigate('/reward', { state: { score } });
         }
     }, [gameOver, timeUp, score, navigate, bombsClicked, sliceNumbers, hourglassClicks, startTime, userId]); // userId'yi dependency array'e ekleyin
@@ -211,6 +214,15 @@ const Game = () => {
             // console.log('Game log created:', response);
         } catch (error) {
             console.error('Error creating game log:', error);
+        }
+    };
+
+    const addScoreToUserTokens = async (userId, score) => {
+        try {
+            const response = await api.post('/user/add-tokens', { userId, score });
+            // console.log('Tokens added:', response);
+        } catch (error) {
+            console.error('Error adding tokens:', error);
         }
     };
 
