@@ -76,7 +76,7 @@ const Referrals = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingY: '30px',
+        paddingY: '50px',
       }}
     >
       <Box
@@ -90,6 +90,7 @@ const Referrals = () => {
           flex: '1 1 auto',
           width: '100%', // Tam genişlikte olması için
           paddingBottom: '80px',
+          paddingY: "30px"
         }}
       >
         <Box sx={{ width: '80vw', maxWidth: 600, textAlign: 'center', mb: 2 }}>
@@ -98,8 +99,8 @@ const Referrals = () => {
               mb: 2,
               width: 80,
               height: 80,
-               backgroundColor: '#fff',
-              color: 'orange',
+              backgroundColor: '#fff',
+              color: '#f06f24',
               fontSize: '4rem',
               margin: '0 auto' // Avatarı ortalamak için
             }}
@@ -107,7 +108,7 @@ const Referrals = () => {
             <FaPeopleGroup></FaPeopleGroup>
 
           </Avatar>
-          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem' }}>Invite frens. Earn points</Typography>
+          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem',padding:"20px" }}>Invite frens. Earn points</Typography>
         </Box>
         <Paper
           elevation={3}
@@ -193,10 +194,10 @@ const Referrals = () => {
               mt: 1,
               width: '80vw',
               maxWidth: 600,
-              backgroundColor: '#d3d3d3',
+              backgroundColor: '#f06f24',
               color: '#fff',
               fontSize: '1rem',
-              padding: '30px 30px',
+              padding: '20px 30px',
               '&:hover': {
                 backgroundColor: '#c0c0c0',
               },
