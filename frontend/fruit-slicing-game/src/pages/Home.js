@@ -110,7 +110,6 @@ const Home = () => {
 
   const fetchUserId = async (telegramId) => {
     try {
-      console.log(telegramId);
       const userData = await api.get(`/user/get-user-id`, { telegramId });
       setPoints(userData.token);
       setUserData(userData);
@@ -128,8 +127,7 @@ const Home = () => {
       const response = await api.post('/user/farming-status', { telegramId });
 
       if (response.isFarming) {
-        // Gelen tarih saat formatını düzeltiyoruz
-        const startTime = new Date(response.data.start_time.replace(' ', 'T') + 'Z');
+        const startTime = new Date(response.startTime);
         startTimer(startTime);
         setIsFarming(true);
       } else {
@@ -147,7 +145,7 @@ const Home = () => {
       const response = await api.post('/user/start-farming', { telegramId });
       setIsFarming(true);
       setTimeRemaining(initialTime);
-      setProgress(100);
+      setProgress(0);
       startTimer(new Date());
     } catch (error) {
       console.error('Error starting farming:', error);
