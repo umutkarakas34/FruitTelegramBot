@@ -318,7 +318,7 @@ const startFarming = async (req, res) => {
 const claimFarming = async (req, res) => {
     try {
         const { telegramId } = req.body;
-        const farmingTokens = 72;
+        const farmingTokens = 43.2;
 
         const user = await User.findOne({ where: { telegram_id: telegramId } });
 
