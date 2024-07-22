@@ -340,6 +340,10 @@ const claimFarming = async (req, res) => {
 
         const now = new Date();
         const startTime = farming.start_time;
+        console.log(now);
+        console.log(startTime);
+
+        console.log(now - startTime)
 
         if ((now - startTime) < 12 * 60 * 60 * 1000) {
             return res.status(400).json({ error: 'You can only claim after 12 hours of farming' });
