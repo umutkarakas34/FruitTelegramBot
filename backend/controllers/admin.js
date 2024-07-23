@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
 const Task = require('../models/task');
 
-
-
 const login = async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -39,7 +37,6 @@ const createTask = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 // Tüm task'ları getirme
 const getTasks = async (req, res) => {
     try {
@@ -49,7 +46,6 @@ const getTasks = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 // Belirli bir task'ı ID ile getirme
 const getTaskById = async (req, res) => {
     try {
@@ -62,7 +58,6 @@ const getTaskById = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 // Task güncelleme
 const updateTask = async (req, res) => {
     const { task_title, task_image, task_description } = req.body;
@@ -80,7 +75,6 @@ const updateTask = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 // Task silme
 const deleteTask = async (req, res) => {
     try {
@@ -94,7 +88,6 @@ const deleteTask = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
 const createBlog = async (req, res) => {
     try {
         const { title, image, content, admin_id } = req.body;
@@ -104,7 +97,6 @@ const createBlog = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Tüm blogları getirme
 const getBlogs = async (req, res) => {
     try {
@@ -114,7 +106,6 @@ const getBlogs = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Belirli bir blogu ID ile getirme
 const getBlogById = async (req, res) => {
     try {
@@ -127,7 +118,6 @@ const getBlogById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Blog güncelleme
 const updateBlog = async (req, res) => {
     try {
@@ -145,7 +135,6 @@ const updateBlog = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
 // Blog silme
 const deleteBlog = async (req, res) => {
     try {
