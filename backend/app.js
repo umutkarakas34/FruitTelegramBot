@@ -6,6 +6,7 @@ const adminRouter = require('./routes/admin');
 const userRouter = require('./routes/user');
 const sequelize = require('./utility/db');
 const startBot = require('./bot');
+const UserTask = require('./models/userTask');
 
 
 const app = express();
@@ -22,6 +23,11 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use('/admin', adminRouter);
 app.use('/user', userRouter);
+
+app.get('/user/get-ip', (req, res) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    res.json({ ip });
+});
 
 app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda çalışıyor`);

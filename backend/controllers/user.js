@@ -9,6 +9,7 @@ const DailyCheckin = require('../models/dailyCheckin');
 const Game = require('../models/game');
 const Farming = require('../models/farming');
 const { message } = require('telegraf/filters');
+const UserTask = require('../models/userTask');
 
 
 function generateReferralCode() {
@@ -556,4 +557,61 @@ const checkInStatus = async (req, res) => {
     return res.status(200).json({ message: canCheckin });
 };
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn };
+const completeTask = async (req, res) => {
+    const { telegramId, task_id } = req.body;
+
+    try {
+        // Kullanıcıyı telegramId ile bul
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Kullanıcının görevi tamamladığını kaydet
+        await UserTask.create({
+            user_id: user.id,
+            task_id: task_id,
+            completed: true,
+            completed_at: new Date()
+        });
+
+        res.status(200).json({ message: 'Task completed successfully' });
+    } catch (error) {
+        console.error('Error completing task:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+const userTasks = async (req, res) => {
+    const { telegramId } = req.query;
+
+    try {
+
+        const user = await User.findOne({ where: { telegram_id: telegramId } })
+        const tasks = await Task.findAll({
+            attributes: ['id', 'task_title', 'task_image', 'task_description']
+        });
+
+        // Kullanıcının tamamladığı görevleri al
+        const userTasks = await UserTask.findAll({
+            where: { user_id: user.id }
+        });
+
+        // Görevlerin tamamlanma durumunu kontrol et
+        const tasksWithCompletionStatus = tasks.map(task => {
+            const userTask = userTasks.find(ut => ut.task_id === task.id);
+            return {
+                ...task.dataValues,
+                completed: !!userTask, // Görev tamamlandıysa true, değilse false
+                completed_at: userTask ? userTask.completed_at : null
+            };
+        });
+
+        res.json(tasksWithCompletionStatus);
+    } catch (error) {
+        console.error('Error fetching user tasks:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn, completeTask, userTasks };

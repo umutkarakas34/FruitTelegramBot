@@ -4,6 +4,7 @@ import { GiKatana } from 'react-icons/gi';
 import Footer from '../components/Footer';
 import api from '../api/api';
 import { FaPeopleGroup } from "react-icons/fa6";
+import { decryptData } from '../utils/encryption'; // Import decrypt function
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -26,11 +27,16 @@ const Referrals = () => {
 
   const fetchReferrals = async () => {
     try {
-      const telegramId = localStorage.getItem('telegramId');
-      if (!telegramId) {
-        throw new Error('Telegram ID not found');
+      const encryptedTelegramData = localStorage.getItem('sessionData');
+      if (!encryptedTelegramData) {
+        throw new Error('Telegram data not found');
       }
-      const response = await api.get('/user/referrals', { telegramId: telegramId });
+      const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
+      const decryptedTelegramId = decryptedTelegramData.distinct_id;
+
+
+      const response = await api.get('/user/referrals', { telegramId: decryptedTelegramId });
+
       setReferrals(response.data.level1Referrals); // response.data.level1Referrals olmalı
       setLevel1Count(response.data.refCount); // response.data.refCount olmalı
       setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.data.myReferralCode}`); // response.data.myReferralCode olmalı
@@ -107,7 +113,7 @@ const Referrals = () => {
               margin: '0 auto' // Avatarı ortalamak için
             }}
           >
-            <FaPeopleGroup></FaPeopleGroup>
+            <FaPeopleGroup />
           </Avatar>
           <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem', padding: "20px" }}>Invite frens. Earn points</Typography>
         </Box>

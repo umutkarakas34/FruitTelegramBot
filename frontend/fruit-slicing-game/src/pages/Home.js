@@ -1,3 +1,4 @@
+// src/pages/Home.js
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, CircularProgress } from '@mui/material';
@@ -6,6 +7,8 @@ import Footer from '../components/Footer';
 import { ReactComponent as Logo } from '../logo1.svg';
 import '../style/Home.css';
 import api from '../api/api';
+import { encryptData, decryptData } from '../utils/encryption'; // Import encryption functions
+import { generateUUID } from '../utils/uuid'; // Import UUID generator
 
 const Home = () => {
   const initialTime = 43200; // 12 hours in seconds
@@ -35,16 +38,56 @@ const Home = () => {
     const referralCode = params.get('referralCode');
 
     if (telegramId && username) {
+      const encryptedTelegramId = encryptData(telegramId);
+      const complexData = {
+        user_metadata: {
+          created_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+          preferences: {
+            theme: 'dark',
+            notifications: true,
+          },
+        },
+        session_info: {
+          sessionId: generateUUID(),
+          device_id: navigator.userAgent,
+          login_time: Date.now(),
+          ip_address: '', // Daha sonra fetchIpAddress ile doldurulabilir
+        },
+        feature_flags: {
+          new_dashboard: true,
+          beta_features: ['feature1', 'feature2'],
+        },
+        tracking_data: {
+          heatmaps_enabled: false,
+          session_recording_enabled: false,
+          exception_capture_enabled: false,
+          web_vitals_enabled: false,
+        },
+        analytics: {
+          user_state: 'active',
+          device_metrics: {
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
+            browser: navigator.appName,
+            browser_version: navigator.appVersion,
+          },
+        },
+        distinct_id: telegramId, // Encrypted data should be the telegramId directly
+      };
+
+      localStorage.setItem('sessionData', encryptData(JSON.stringify(complexData)));
       fetchUserData(telegramId, username, firstname, lastname, referralCode);
       startFetchUserDataInterval(telegramId, username, firstname, lastname, referralCode);
       checkFarmingStatus(telegramId);
       checkInStatus(telegramId);
     } else {
-      const storedTelegramId = localStorage.getItem('telegramId');
-      if (storedTelegramId) {
-        fetchUserId(storedTelegramId);
-        checkFarmingStatus(storedTelegramId);
-        checkInStatus(storedTelegramId);
+      const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+      if (storedEncryptedTelegramData) {
+        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+        const decryptedTelegramId = decryptedTelegramData.distinct_id;
+        fetchUserId(decryptedTelegramId);
+        checkFarmingStatus(decryptedTelegramId);
+        checkInStatus(decryptedTelegramId);
       }
     }
 
@@ -61,9 +104,10 @@ const Home = () => {
         navigate('/daily-rewards');
       } else {
         setLoading(false);
+        return;
       }
     } catch (error) {
-      setLoading(false); // İçerik yüklendiğinde loading durumunu false yap
+      setLoading(false);
     }
   };
 
@@ -105,7 +149,7 @@ const Home = () => {
   const startFetchUserDataInterval = (telegramId, username, firstname, lastname, referralCode) => {
     fetchUserDataIntervalRef.current = setInterval(() => {
       fetchUserData(telegramId, username, firstname, lastname, referralCode);
-    }, 1000);
+    }, 5000);
   };
 
   const fetchUserData = async (telegramId, username, firstname, lastname, referralCode) => {
@@ -117,7 +161,7 @@ const Home = () => {
         lastname: lastname,
         referralCode: referralCode,
       });
-      localStorage.setItem('telegramId', telegramId);
+
       setPoints(response.data.token);
       setUserData(response.data);
       setUsername(response.data.username);
@@ -164,8 +208,10 @@ const Home = () => {
 
   const handleStartFarming = async () => {
     try {
-      const telegramId = localStorage.getItem('telegramId');
-      const response = await api.post('/user/start-farming', { telegramId });
+      const encryptedTelegramData = localStorage.getItem('sessionData');
+      const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
+      const decryptedTelegramId = decryptData(decryptedTelegramData.distinct_id);
+      const response = await api.post('/user/start-farming', { telegramId: decryptedTelegramId });
       setIsFarming(true);
       setTimeRemaining(initialTime);
       setProgress(0);
@@ -177,8 +223,10 @@ const Home = () => {
 
   const handleClaimFarming = async () => {
     try {
-      const telegramId = localStorage.getItem('telegramId');
-      const response = await api.post('/user/claim-farming', { telegramId });
+      const encryptedTelegramData = localStorage.getItem('sessionData');
+      const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
+      const decryptedTelegramId = decryptData(decryptedTelegramData.distinct_id);
+      const response = await api.post('/user/claim-farming', { telegramId: decryptedTelegramId });
       setPoints(response.data.user.token); // Kullanıcının toplam token miktarını güncelle
       setIsFarming(false);
       setFarmingClaimable(false);
@@ -204,7 +252,6 @@ const Home = () => {
     const s = seconds % 60;
     return `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
   };
-
 
   return (
     <Container

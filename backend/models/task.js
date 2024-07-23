@@ -21,6 +21,7 @@ const Task = sequelize.define('Task', {
         allowNull: false
     },
     task_link: Sequelize.STRING,
+    task_reward: Sequelize.INTEGER,
     admin_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

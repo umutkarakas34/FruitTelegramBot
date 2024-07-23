@@ -14,7 +14,7 @@ const Footer = () => {
   return (
     <Box className="footer" display="flex" justifyContent="space-around" alignItems="center">
       <IconButton color="inherit" component={Link} to="/home" className={getActiveClass('/home')}>
-        <HomeOutlinedIcon className={location.pathname === '/home' ? 'active-icon' : ''} />
+        <HomeOutlinedIcon className={location.pathname === '/home' || '/' ? 'active-icon' : ''} />
         <Typography variant="caption">Home</Typography>
       </IconButton>
       <IconButton color="inherit" component={Link} to="/task" className={getActiveClass('/task')}>

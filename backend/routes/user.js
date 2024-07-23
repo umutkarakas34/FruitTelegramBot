@@ -20,4 +20,7 @@ router.post('/checkin', userController.checkIn);
 router.post('/checkin-status', userController.checkInStatus);
 router.post('/get-checkin', userController.getCheckIn);
 
+router.post('/complete-task', userController.completeTask);
+router.get('/user-tasks', userController.userTasks);
+
 module.exports = router;

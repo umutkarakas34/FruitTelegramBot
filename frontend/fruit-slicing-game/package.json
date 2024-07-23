@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
     "canvas-confetti": "^1.9.3",
+    "crypto-js": "^4.2.0",
     "konva": "^9.3.13",
     "mui": "^0.0.1",
     "react": "^18.3.1",
