@@ -22,5 +22,7 @@ router.post('/get-checkin', userController.getCheckIn);
 
 router.post('/complete-task', userController.completeTask);
 router.get('/user-tasks', userController.userTasks);
+router.get('/statistics', userController.getStatistics);
+
 
 module.exports = router;

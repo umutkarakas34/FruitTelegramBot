@@ -524,7 +524,6 @@ const getCheckIn = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-
 const checkInStatus = async (req, res) => {
     const { telegramId } = req.body;
     const user = await User.findOne({ where: { telegram_id: telegramId } });
@@ -556,7 +555,6 @@ const checkInStatus = async (req, res) => {
 
     return res.status(200).json({ message: canCheckin });
 };
-
 const completeTask = async (req, res) => {
     const { telegramId, task_id } = req.body;
 
@@ -568,6 +566,13 @@ const completeTask = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
+        // Görevi bul ve ödülü belirle
+        const task = await Task.findByPk(task_id);
+
+        if (!task) {
+            return res.status(404).json({ message: 'Task not found' });
+        }
+
         // Kullanıcının görevi tamamladığını kaydet
         await UserTask.create({
             user_id: user.id,
@@ -575,6 +580,10 @@ const completeTask = async (req, res) => {
             completed: true,
             completed_at: new Date()
         });
+
+        // Kullanıcı token adedine task_reward ekle
+        user.token += task.task_reward;
+        await user.save();
 
         res.status(200).json({ message: 'Task completed successfully' });
     } catch (error) {
@@ -613,5 +622,22 @@ const userTasks = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+const getStatistics = async (req, res) => {
+    try {
+        // Toplam kayıtlı kullanıcı adedini al
+        const totalUsers = await User.count();
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn, completeTask, userTasks };
+        // Toplam token adedini al
+        const totalTokens = await User.sum('token');
+
+        res.status(200).json({
+            totalUsers,
+            totalTokens
+        });
+    } catch (error) {
+        console.error('Error fetching statistics:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn, completeTask, userTasks, getStatistics };

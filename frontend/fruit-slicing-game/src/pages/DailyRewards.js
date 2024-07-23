@@ -5,6 +5,7 @@ import FlashOnIcon from '@mui/icons-material/FlashOn';
 import { GiKatana } from 'react-icons/gi';
 import { ReactComponent as Logo } from '../logo1.svg';
 import api from '../api/api';
+import { encryptData, decryptData } from '../utils/encryption'; // Import encryption functions
 
 const DailyRewards = () => {
   const navigate = useNavigate();
@@ -15,7 +16,13 @@ const DailyRewards = () => {
 
   useEffect(() => {
     const fetchCheckinData = async () => {
-      const telegramId = localStorage.getItem('telegramId');
+      const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+      let telegramId;
+
+      if (storedEncryptedTelegramData) {
+        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+        telegramId = decryptedTelegramData.distinct_id;
+      }
       setLoading(true);
       try {
         const response = await api.post('/user/get-checkin', { telegramId });
@@ -34,7 +41,14 @@ const DailyRewards = () => {
   }, []);
 
   const handleContinue = async () => {
-    const telegramId = localStorage.getItem('telegramId');
+    const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+    let telegramId;
+
+    if (storedEncryptedTelegramData) {
+      const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+      telegramId = decryptedTelegramData.distinct_id;
+    }
+
     setLoading(true);
     try {
       await api.post('/user/checkin', { telegramId });

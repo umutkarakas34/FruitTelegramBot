@@ -72,7 +72,7 @@ const Home = () => {
             browser_version: navigator.appVersion,
           },
         },
-        distinct_id: telegramId, // Encrypted data should be the telegramId directly
+        distinct_id: encryptedTelegramId, // Encrypted data should be the telegramId directly
       };
 
       localStorage.setItem('sessionData', encryptData(JSON.stringify(complexData)));
@@ -192,8 +192,9 @@ const Home = () => {
 
   const checkFarmingStatus = async (telegramId) => {
     try {
+      console.log('checkFarmingStatus - telegramId:', telegramId); // Eklenen satır
       const response = await api.post('/user/farming-status', { telegramId });
-
+      console.log(response);
       if (response.data.isFarming) {
         const startTime = new Date(response.data.startTime);
         startTimer(startTime);
@@ -202,7 +203,7 @@ const Home = () => {
         setIsFarming(false);
       }
     } catch (error) {
-
+      console.error('Error checking farming status:', error);
     }
   };
 

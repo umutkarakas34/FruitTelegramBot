@@ -9,7 +9,8 @@ import ErrorScreen from './components/Error';
 import ErrorBoundary from './components/ErrorBoundary';
 import DailyRewards from './pages/DailyRewards';
 import RewardPage from './pages/RewardPage';
-import Footer from './components/Footer'; // Footer bileşeni eklendi
+import Footer from './components/Footer';
+import Statistics from './pages/Statistics';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 console.log = function () { };
@@ -63,6 +64,7 @@ function App() {
             <Route path="/referrals" element={<Referrals />} />
             <Route path="/reward" element={<RewardPage />} />
             <Route path="/daily-rewards" element={<DailyRewards />} />
+            <Route path="/statistics" element={<Statistics />} /> {/* Yeni rota */}
             <Route path="*" element={<ErrorScreen />} />
           </Routes>
         </div>
