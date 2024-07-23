@@ -41,11 +41,13 @@ const Home = () => {
       fetchUserData(telegramId, username, firstname, lastname, referralCode);
       startFetchUserDataInterval(telegramId, username, firstname, lastname, referralCode);
       checkFarmingStatus(telegramId);
+      checkInStatus(telegramId);
     } else {
       const storedTelegramId = localStorage.getItem('telegramId');
       if (storedTelegramId) {
         fetchUserId(storedTelegramId);
         checkFarmingStatus(storedTelegramId);
+        checkInStatus(storedTelegramId);
       }
     }
 
@@ -54,6 +56,19 @@ const Home = () => {
       clearInterval(fetchUserDataIntervalRef.current);
     };
   }, [location.search]);
+
+  const checkInStatus = async (telegramId) => {
+    try {
+      const response = await api.post('/user/checkin-status', { telegramId });
+      if (response.data.message === false) {
+        navigate('/daily-rewards');
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      setLoading(false); // İçerik yüklendiğinde loading durumunu false yap
+    }
+  };
 
   const startTimer = (startTime) => {
     const initialTime = 43200; // 12 hours in seconds
@@ -70,7 +85,6 @@ const Home = () => {
     }
 
     setTimeRemaining(timeLeft);
-    console.log(elapsed);
     setProgress((timeLeft / initialTime) * 100);
     setPointsEarned((elapsed * pointsPerSecond)); // Başlangıç puanını ayarla
 
@@ -91,23 +105,27 @@ const Home = () => {
     }, 1000);
   };
 
-
   const startFetchUserDataInterval = (telegramId, username, firstname, lastname, referralCode) => {
     fetchUserDataIntervalRef.current = setInterval(() => {
       fetchUserData(telegramId, username, firstname, lastname, referralCode);
-    }, 300);
+    }, 1000);
   };
 
   const fetchUserData = async (telegramId, username, firstname, lastname, referralCode) => {
     try {
-      const response = await api.get(`/user/profile?telegram_id=${telegramId}&username=${username}&firstname=${firstname}&lastname=${lastname}&referralCode=${referralCode}`);
+      const response = await api.get(`/user/profile`, {
+        telegram_id: telegramId,
+        username: username,
+        firstname: firstname,
+        lastname: lastname,
+        referralCode: referralCode,
+      });
       localStorage.setItem('telegramId', telegramId);
-      setPoints(response.token);
-      setUserData(response);
-      setUsername(response.username);
-      setTicket(response.ticket);
+      setPoints(response.data.token);
+      setUserData(response.data);
+      setUsername(response.data.username);
+      setTicket(response.data.ticket);
     } catch (error) {
-      console.error('Error fetching user data:', error);
     } finally {
       setLoading(false); // İçerik yüklendiğinde loading durumunu false yap
     }
@@ -115,34 +133,37 @@ const Home = () => {
 
   const fetchUserId = async (telegramId) => {
     try {
-      const userData = await api.get(`/user/get-user-id`, { telegramId });
-      setPoints(userData.token);
-      setUserData(userData);
-      setUsername(userData.username);
-      setTicket(userData.ticket);
-      startFetchUserDataInterval(userData.telegram_id, userData.username, userData.firstname, userData.lastname, userData.referralCode);
+      const response = await api.get(`/user/get-user-id`, { telegramId });
+      setPoints(response.data.token);
+      setUserData(response.data);
+      setUsername(response.data.username);
+      setTicket(response.data.ticket);
+      startFetchUserDataInterval(
+        response.data.telegram_id,
+        response.data.username,
+        response.data.firstname,
+        response.data.lastname,
+        response.data.referralCode
+      );
     } catch (error) {
-      console.error('Error fetching user ID:', error);
     }
   };
-
 
   const checkFarmingStatus = async (telegramId) => {
     try {
       const response = await api.post('/user/farming-status', { telegramId });
 
-      if (response.isFarming) {
-        const startTime = new Date(response.startTime);
+      if (response.data.isFarming) {
+        const startTime = new Date(response.data.startTime);
         startTimer(startTime);
         setIsFarming(true);
       } else {
         setIsFarming(false);
       }
     } catch (error) {
-      console.error('Error fetching farming status:', error);
+
     }
   };
-
 
   const handleStartFarming = async () => {
     try {
@@ -153,7 +174,7 @@ const Home = () => {
       setProgress(0);
       startTimer(new Date());
     } catch (error) {
-      console.error('Error starting farming:', error);
+
     }
   };
 
@@ -161,26 +182,24 @@ const Home = () => {
     try {
       const telegramId = localStorage.getItem('telegramId');
       const response = await api.post('/user/claim-farming', { telegramId });
-      setPoints(response.user.token); // Kullanıcının toplam token miktarını güncelle
+      setPoints(response.data.user.token); // Kullanıcının toplam token miktarını güncelle
       setIsFarming(false);
       setFarmingClaimable(false);
       setTimeRemaining(initialTime);
       setProgress(0);
     } catch (error) {
-      console.error('Error claiming farming:', error);
     }
   };
 
   const handlePlayClick = async (event) => {
     try {
       const response = await api.post('/user/increase-ticket', { userId: userData.id });
-      setTicket(response.ticket);
+      setTicket(response.data.ticket);
       navigate('/game');
     } catch (error) {
       console.error('Error increasing ticket:', error);
     }
   };
-
 
   const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
@@ -189,8 +208,11 @@ const Home = () => {
     return `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
   };
 
+
   return (
-    <Container maxWidth={false} className="home-container"
+    <Container
+      maxWidth={false}
+      className="home-container"
       sx={{
         height: '100vh',
         display: 'flex',
@@ -200,15 +222,25 @@ const Home = () => {
         color: '#fff',
         overflowY: 'auto',
         paddingY: '0px',
-      }}>
+      }}
+    >
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <CircularProgress color="inherit" />
         </Box>
       ) : (
-        <Box className="main-content" display="flex" flexDirection="column" alignItems="center" mt={10} sx={{ overflowY: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}>
+        <Box
+          className="main-content"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          mt={10}
+          sx={{ overflowY: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}
+        >
           <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
-            <Box className="profile-icon" mb={2}>X</Box>
+            <Box className="profile-icon" mb={2}>
+              X
+            </Box>
             <Typography variant="h6">@{username}</Typography>
             <Box display="flex" alignItems="center">
               <Box
@@ -224,10 +256,16 @@ const Home = () => {
               <Typography variant="h4">{points.toFixed(2)}</Typography>
             </Box>
           </Box>
-          <Paper elevation={3} className="game-card" sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}>
+          <Paper
+            elevation={3}
+            className="game-card"
+            sx={{ p: 2, mb: 3, borderRadius: '20px', width: '100%', maxWidth: '600px' }}
+          >
             <Grid container direction="row" alignItems="center" justifyContent="space-between">
               <Grid item>
-                <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>Slice Game</Typography>
+                <Typography variant="h5" className="game-title" sx={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'left' }}>
+                  Slice Game
+                </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="body2" className="game-tickets" sx={{ fontSize: '1.6rem', textAlign: 'right' }}>
@@ -271,7 +309,7 @@ const Home = () => {
                     textDecoration: 'none',
                     '&:hover': {
                       textDecoration: 'none',
-                    }
+                    },
                   }}
                 >
                   Learn More
@@ -281,36 +319,57 @@ const Home = () => {
           </Paper>
 
           <Box className="farming-info" sx={{ width: '100%', textAlign: 'center', mb: 3, maxWidth: '600px' }}>
-            <Box sx={{ position: 'relative', width: '100%', height: '50px', backgroundColor: '#3a3a3a', borderRadius: '10px', overflow: 'hidden' }}>
-              <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                height: '100%',
-                width: `${progress}%`,
-                backgroundColor: timeRemaining === 0 ? '#fff' : '#808080',
-                borderRadius: '10px',
-                transition: 'width 1s linear'
-              }}></Box>
-              <Typography className="farming-text" sx={{
-                position: 'absolute',
+            <Box
+              sx={{
+                position: 'relative',
                 width: '100%',
-                textAlign: 'center',
-                lineHeight: '50px',
-                color: timeRemaining === 0 ? '#000' : 'rgba(255, 255, 255, 0.5)',
-                fontWeight: 'bold',
-                fontSize: '0.875rem'
-              }}>{timeRemaining === 0 ? '' : 'Farming'}</Typography>
-              {timeRemaining !== 0 && (
-                <Typography className="timer" sx={{
+                height: '50px',
+                backgroundColor: '#3a3a3a',
+                borderRadius: '10px',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                sx={{
                   position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold'
-                }}>{formatTime(timeRemaining)}</Typography>
+                  top: 0,
+                  left: 0,
+                  height: '100%',
+                  width: `${progress}%`,
+                  backgroundColor: timeRemaining === 0 ? '#fff' : '#808080',
+                  borderRadius: '10px',
+                  transition: 'width 1s linear',
+                }}
+              ></Box>
+              <Typography
+                className="farming-text"
+                sx={{
+                  position: 'absolute',
+                  width: '100%',
+                  textAlign: 'center',
+                  lineHeight: '50px',
+                  color: timeRemaining === 0 ? '#000' : 'rgba(255, 255, 255, 0.5)',
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {timeRemaining === 0 ? '' : 'Farming'}
+              </Typography>
+              {timeRemaining !== 0 && (
+                <Typography
+                  className="timer"
+                  sx={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {formatTime(timeRemaining)}
+                </Typography>
               )}
               {!isFarming && !farmingClaimable && timeRemaining !== 0 && (
                 <Button
@@ -328,7 +387,7 @@ const Home = () => {
                     fontSize: '0.875rem',
                     '&:hover': {
                       backgroundColor: '#fff',
-                    }
+                    },
                   }}
                   onClick={handleStartFarming}
                 >
@@ -351,7 +410,7 @@ const Home = () => {
                     fontSize: '0.875rem',
                     '&:hover': {
                       backgroundColor: '#e67f19',
-                    }
+                    },
                   }}
                   onClick={handleClaimFarming}
                 >
@@ -359,15 +418,20 @@ const Home = () => {
                 </Button>
               )}
               {!farmingClaimable && (
-                <Typography className="points-per-second" sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '10px',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold'
-                }}>+{pointsEarned.toFixed(3)}</Typography>
+                <Typography
+                  className="points-per-second"
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '10px',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  +{pointsEarned.toFixed(3)}
+                </Typography>
               )}
             </Box>
           </Box>
@@ -376,7 +440,6 @@ const Home = () => {
       <Footer sx={{ flexShrink: 0 }} />
     </Container>
   );
-
 };
 
 export default Home;

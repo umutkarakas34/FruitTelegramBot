@@ -16,5 +16,8 @@ router.post('/start-farming', userController.startFarming);
 router.post('/claim-farming', userController.claimFarming);
 router.post('/farming-status', userController.farmingStatus);
 
+router.post('/checkin', userController.checkIn);
+router.post('/checkin-status', userController.checkInStatus);
+router.post('/get-checkin', userController.getCheckIn);
 
 module.exports = router;

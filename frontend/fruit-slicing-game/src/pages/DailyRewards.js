@@ -1,15 +1,49 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
-import { GiKatana } from 'react-icons/gi'; // Katana ikonu
-import { ReactComponent as Logo } from '../logo1.svg'; // SVG dosyasını import et
+import { GiKatana } from 'react-icons/gi';
+import { ReactComponent as Logo } from '../logo1.svg';
+import api from '../api/api';
 
 const DailyRewards = () => {
   const navigate = useNavigate();
+  const [checkin, setCheckin] = useState(null);
+  const [loading, setLoading] = useState(true); // Initially set to true to show loading
+  const [points, setPoints] = useState(0);
+  const [tickets, setTickets] = useState(0);
 
-  const handleContinue = () => {
-    navigate('/home');
+  useEffect(() => {
+    const fetchCheckinData = async () => {
+      const telegramId = localStorage.getItem('telegramId');
+      setLoading(true);
+      try {
+        const response = await api.post('/user/get-checkin', { telegramId });
+        const checkinData = response.data;
+        setCheckin(checkinData.checkin_series);
+        setPoints(checkinData.point);
+        setTickets(checkinData.ticket);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching check-in data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchCheckinData();
+  }, []);
+
+  const handleContinue = async () => {
+    const telegramId = localStorage.getItem('telegramId');
+    setLoading(true);
+    try {
+      await api.post('/user/checkin', { telegramId });
+      setLoading(false);
+      navigate('/home');
+    } catch (error) {
+      console.error('Error claiming daily rewards:', error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -22,137 +56,138 @@ const DailyRewards = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'auto', // Kaydırma eklendi
+        overflow: 'auto',
         padding: 0,
         backgroundColor: '#000',
         color: '#fff',
       }}
     >
-      <FlashOnIcon
-        sx={{
-          fontSize: '80px',
-          color: '#ff0',
-          animation: 'flash 1.5s infinite',
-          marginBottom: '20px',
-          '@keyframes flash': {
-            '0%, 50%, 100%': { opacity: 1 },
-            '25%, 75%': { opacity: 0.5 },
-          },
-        }}
-      />
-      <Box
-        sx={{
-          marginBottom: '40px',
-        }}
-      >
-        <Typography variant="h4" sx={{ fontSize: '24px', fontWeight: 'bold' }}>
-          Your daily rewards
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '20px',
-          marginBottom: '20px',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '20px',
-            background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
-            borderRadius: '10px',
-            width: '150px',
-          }}
-        >
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress color="inherit" />
+        </Box>
+      ) : (
+        <>
+          <FlashOnIcon
+            sx={{
+              fontSize: '80px',
+              color: '#ff0',
+              animation: 'flash 1.5s infinite',
+              marginBottom: '20px',
+              '@keyframes flash': {
+                '0%, 50%, 100%': { opacity: 1 },
+                '25%, 75%': { opacity: 0.5 },
+              },
+            }}
+          />
+          <Box sx={{ marginBottom: '40px' }}>
+            <Typography variant="h4" sx={{ fontSize: '24px', fontWeight: 'bold' }}>
+              Your daily rewards
+            </Typography>
+          </Box>
           <Box
             sx={{
               display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
-              gap: '8px'
-              , // İkon ve sayı arasında boşluk
+              gap: '20px',
+              marginBottom: '20px',
             }}
           >
             <Box
-              component={Logo}
               sx={{
-                width: '30px', // İkonun boyutu küçültüldü
-                height: '30px', // İkonun boyutu küçültüldü
-                color: '#fff',
-                
                 position: 'relative',
-                top: '-5px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '20px',
+                background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
+                borderRadius: '10px',
+                width: '150px',
               }}
-            />
-            <Typography variant="h6">20</Typography>
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <Box
+                  component={Logo}
+                  sx={{
+                    width: '30px',
+                    height: '30px',
+                    position: 'relative',
+                    top: '-5px',
+                  }}
+                />
+                <Typography variant="h6">{points}</Typography>
+              </Box>
+              <Typography variant="body2">Fruit Points</Typography>
+            </Box>
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '20px',
+                background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
+                borderRadius: '10px',
+                width: '150px',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <GiKatana
+                  style={{
+                    fontSize: '30px',
+                    color: '#fff',
+                  }}
+                />
+                <Typography variant="h6">{tickets}</Typography>
+              </Box>
+              <Typography variant="body2">Play Passes</Typography>
+            </Box>
           </Box>
-          <Typography variant="body2">Fruit Points</Typography>
-        </Box>
-        <Box
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '20px',
-            background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
-            borderRadius: '10px',
-            width: '150px',
-          }}
-        >
-          <Box
+          <Typography variant="body1" sx={{ marginBottom: '60px', fontSize: '14px' }}>
+            Come back tomorrow for check-in day {checkin}<br />
+            Tip: Skipping a day resets your check-in.
+          </Typography>
+          <Button
+            onClick={handleContinue}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px', // İkon ve sayı arasında boşluk
+              backgroundColor: '#fff',
+              color: '#000',
+              padding: '15px 40px',
+              textTransform: 'none',
+              fontSize: '16px',
+              border: 'none',
+              borderRadius: '5px',
+              width: '20%',
+              '&:hover': {
+                backgroundColor: '#ddd',
+              },
             }}
           >
-            <GiKatana
-              style={{
-                fontSize: '30px', // Katana ikonunun boyutu
-                color: '#fff', // İkonun rengi kaldırıldı
-              }}
-            />
-            <Typography variant="h6">2</Typography>
-          </Box>
-          <Typography variant="body2">Play Passes</Typography>
-        </Box>
-      </Box>
-      <Typography variant="body1" sx={{ marginBottom: '60px', fontSize: '14px' }}>
-        Come back tomorrow for check-in day 3<br />
-        Tip: Skipping a day resets your check-in.
-      </Typography>
-      <Button
-        onClick={handleContinue}
-        sx={{
-          backgroundColor: '#fff',
-          color: '#000',
-          padding: '15px 40px',
-          textTransform: 'none',
-          fontSize: '16px',
-          border: 'none',
-          borderRadius: '5px',
-          width: '20%',
-          '&:hover': {
-            backgroundColor: '#ddd',
-          },
-        }}
-      >
-        Continue
-      </Button>
-      <style>
-        {`
-          @keyframes flash {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0.5; }
-          }
-        `}
-      </style>
+            Continue
+          </Button>
+          <style>
+            {`
+              @keyframes flash {
+                0%, 50%, 100% { opacity: 1; }
+                25%, 75% { opacity: 0.5; }
+              }
+            `}
+          </style>
+        </>
+      )}
     </Box>
   );
 };

@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import './App.css';
 import Game from './Game';
 import Home from './pages/Home';
@@ -11,7 +12,6 @@ import DailyRewards from './pages/DailyRewards';
 import RewardPage from './pages/RewardPage';
 import Footer from './components/Footer'; // Footer bileşeni eklendi
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 
 function App() {
   const location = useLocation();
@@ -30,8 +30,7 @@ function App() {
           window.Telegram.WebApp.ready();
 
           // Web App tam ekran yap
-          // window.Telegram.WebApp.expand();
-
+          window.Telegram.WebApp.expand();
         } else {
           console.error('Telegram Web App is not available');
         }

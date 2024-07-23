@@ -99,7 +99,7 @@ const login = async (req, res) => {
 
         if (user) {
             // Check-in işlemi
-            await handleDailyCheckin(user.id);
+            // await handleDailyCheckin(user.id);
 
             const refCount = await User.count({ where: { referred_by: user.id } });
             const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: user.id } });
@@ -143,7 +143,7 @@ const login = async (req, res) => {
                 }
 
                 // Check-in işlemi
-                await handleDailyCheckin(newUser.id);
+                // await handleDailyCheckin(newUser.id);
                 const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: newUser.id } });
 
                 return res.status(200).json({ id: newUser.id, username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
@@ -158,7 +158,7 @@ const login = async (req, res) => {
                 });
 
                 // Check-in işlemi
-                await handleDailyCheckin(newUser.id);
+                // await handleDailyCheckin(newUser.id);
                 const dailyCheckinCount = await DailyCheckin.findOne({ where: { user_id: newUser.id } });
 
                 return res.status(200).json({ id: newUser.id, username: newUser.username, token: newUser.token, ticket: newUser.ticket, ref_earning: newUser.ref_earning, refCount: 0, DailyCheckinCount: 1 });
@@ -340,10 +340,6 @@ const claimFarming = async (req, res) => {
 
         const now = new Date();
         const startTime = farming.start_time;
-        console.log(now);
-        console.log(startTime);
-
-        console.log(now - startTime)
 
         if ((now - startTime) < 12 * 60 * 60 * 1000) {
             return res.status(400).json({ error: 'You can only claim after 12 hours of farming' });
@@ -413,5 +409,151 @@ const addToken = async (req, res) => {
         return res.status(500).json({ message: 'Error adding tokens', error: error.message });
     }
 };
+const checkIn = async (req, res) => {
+    const { telegramId } = req.body;
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus };
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const USER = await User.findOne({ where: { telegram_id: telegramId } });
+
+        if (!USER) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let checkin = await DailyCheckin.findOne({ where: { user_id: USER.id, checkin_date: today } });
+
+        if (checkin) {
+            return res.status(400).json({ message: 'Already checked in today' });
+        }
+
+        // En son check-in tarihini al
+        const lastCheckin = await DailyCheckin.findOne({ where: { user_id: USER.id }, order: [['checkin_date', 'DESC']] });
+
+        let checkinSeries = 1;
+        if (lastCheckin) {
+            const lastCheckinDate = new Date(lastCheckin.checkin_date);
+            const differenceInTime = new Date(today).getTime() - lastCheckinDate.getTime();
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+            if (differenceInDays === 1) {
+                checkinSeries = lastCheckin.checkin_series + 1;
+            } else {
+                checkinSeries = 1;
+            }
+            lastCheckin.destroy();
+        }
+
+        // Yeni check-in kaydı oluştur
+        checkin = await DailyCheckin.create({
+            user_id: USER.id,
+            checkin_date: today,
+            checkin_series: checkinSeries
+        });
+
+        // Kullanıcıya ödül ver
+        let tokensToAdd = 10;
+        let ticketsToAdd = 1;
+
+        if (checkinSeries <= 7) {
+            tokensToAdd = checkinSeries * 10;
+            ticketsToAdd = checkinSeries;
+        } else {
+            tokensToAdd = 70;
+            ticketsToAdd = 7;
+        }
+
+        USER.token += tokensToAdd;
+        USER.ticket += ticketsToAdd;
+        await USER.save();
+
+        return res.status(200).json({ message: 'Checked in successfully', checkin });
+
+    } catch (error) {
+        console.error('Error during daily check-in:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+const getCheckIn = async (req, res) => {
+    try {
+        const { telegramId } = req.body;
+
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const dailyCheckin = await DailyCheckin.findOne({ where: { user_id: user.id }, order: [['checkin_date', 'DESC']] });
+
+        if (!dailyCheckin) {
+            return res.status(200).json({
+                point: 10,
+                ticket: 1,
+                checkin_series: 1
+            });
+        }
+
+        const now = new Date();
+        const lastCheckinDate = new Date(dailyCheckin.checkin_date);
+        const differenceInDays = Math.floor((now - lastCheckinDate) / (1000 * 60 * 60 * 24));
+
+        if (differenceInDays > 1) {
+            return res.status(200).json({
+                point: 10,
+                ticket: 1,
+                checkin_series: 2
+            });
+        }
+
+        if ((dailyCheckin.checkin_series + 1) <= 7) {
+            return res.status(200).json({
+                point: (dailyCheckin.checkin_series + 1) * 10,
+                ticket: (dailyCheckin.checkin_series + 1),
+                checkin_series: dailyCheckin.checkin_series + 2
+            });
+        }
+
+        return res.status(200).json({
+            point: 70,
+            ticket: 7,
+            checkin_series: dailyCheckin.checkin_series + 2
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+const checkInStatus = async (req, res) => {
+    const { telegramId } = req.body;
+    const user = await User.findOne({ where: { telegram_id: telegramId } });
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    const now = new Date();
+    const check = await DailyCheckin.findOne({ where: { user_id: user.id } });
+
+    if (!check) {
+        return res.status(200).json({ message: false });
+    }
+
+    const lastCheckin = new Date(check.checkin_date);
+
+    // Gün farkı hesaplama
+    const dayDiff = Math.floor((now - lastCheckin) / (1000 * 60 * 60 * 24));
+
+    if (dayDiff < 1) {
+        return res.status(200).json({ message: true });
+    }
+
+    // Aynı gün kontrolü
+    const canCheckin = now.getFullYear() !== lastCheckin.getFullYear() ||
+        now.getMonth() !== lastCheckin.getMonth() ||
+        now.getDate() === lastCheckin.getDate();
+
+    return res.status(200).json({ message: canCheckin });
+};
+
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn };

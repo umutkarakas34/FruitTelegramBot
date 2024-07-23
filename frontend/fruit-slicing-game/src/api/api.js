@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API
-const BASE_URL = 'https://f7a401fc802623c930ce5dd7cfb6e75e.serveo.net'; // Buraya kendi API URL'nizi ekleyin
+const BASE_URL = 'https://0ef94d589d72171e352da1cc50d196df.serveo.net'; // Buraya kendi API URL'nizi ekleyin
 
 // Create an instance of axios
 const api = axios.create({
@@ -17,7 +17,7 @@ const apiMethods = {
     get: async (endpoint, params = {}) => {
         try {
             const response = await api.get(endpoint, { params });
-            return response.data;
+            return response;
         } catch (error) {
             console.error('GET request error:', error);
             throw error;
@@ -28,7 +28,7 @@ const apiMethods = {
     post: async (endpoint, data) => {
         try {
             const response = await api.post(endpoint, data);
-            return response.data;
+            return response;
         } catch (error) {
             console.error('POST request error:', error);
             throw error;
@@ -39,7 +39,7 @@ const apiMethods = {
     put: async (endpoint, data) => {
         try {
             const response = await api.put(endpoint, data);
-            return response.data;
+            return response;
         } catch (error) {
             console.error('PUT request error:', error);
             throw error;
@@ -50,7 +50,7 @@ const apiMethods = {
     delete: async (endpoint) => {
         try {
             const response = await api.delete(endpoint);
-            return response.data;
+            return response;
         } catch (error) {
             console.error('DELETE request error:', error);
             throw error;
