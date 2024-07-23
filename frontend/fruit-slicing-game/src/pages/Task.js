@@ -11,13 +11,13 @@ const Tasks = () => {
     { id: 5, title: 'Invite 10 frens', progress: '0/10 frens', reward: '+200 BP', avatar: '👨‍👩‍👧‍👦' },
     { id: 6, title: 'Pokras Lampas Quest', progress: '3/3 tasks', reward: '+300 BP', avatar: '🖌️' },
     { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
-    { id: 7, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 8, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 9, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 10, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 11, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 12, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 13, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
+    { id: 14, title: 'Join Trending Apps', progress: '', reward: '+200 BP', avatar: '📲' },
   ];
 
   return (

@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, Button, Grid, Paper, CircularProgress } from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
 import { GiKatana } from 'react-icons/gi';
-import confetti from 'canvas-confetti';
-import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ReactComponent as Logo } from '../logo1.svg';
 import '../style/Home.css';

@@ -225,11 +225,11 @@ const increaseTicket = async (req, res) => {
     }
 };
 const getReferrals = async (req, res) => {
-    const { userId } = req.query;
+    const { telegramId } = req.query;
     try {
-        const level1Refs = await User.findAll({ where: { referred_by: userId } });
-        const user = await User.findByPk(userId);
-        // Alt referansların sayısını almak için kullanıcıların bir listesini oluşturalım
+        const usr = await User.findOne({ where: { telegram_id: telegramId } });
+        const level1Refs = await User.findAll({ where: { referred_by: usr.id } });
+        const user = await User.findByPk(usr.id);
         const referralsWithCount = await Promise.all(level1Refs.map(async (ref) => {
             const subRefCount = await User.count({ where: { referred_by: ref.id } });
             return {
@@ -489,7 +489,7 @@ const getCheckIn = async (req, res) => {
             return res.status(200).json({
                 point: 10,
                 ticket: 1,
-                checkin_series: 1
+                checkin_series: 2
             });
         }
 

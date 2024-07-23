@@ -5,7 +5,6 @@ import Footer from '../components/Footer';
 import api from '../api/api';
 import { FaPeopleGroup } from "react-icons/fa6";
 
-
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [referrals, setReferrals] = useState([]);
@@ -27,11 +26,14 @@ const Referrals = () => {
 
   const fetchReferrals = async () => {
     try {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      const response = await api.get('/user/referrals', { userId: userData.id });
-      setReferrals(response.level1Referrals);
-      setLevel1Count(response.refCount);
-      setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.myReferralCode}`);
+      const telegramId = localStorage.getItem('telegramId');
+      if (!telegramId) {
+        throw new Error('Telegram ID not found');
+      }
+      const response = await api.get('/user/referrals', { telegramId: telegramId });
+      setReferrals(response.data.level1Referrals); // response.data.level1Referrals olmalı
+      setLevel1Count(response.data.refCount); // response.data.refCount olmalı
+      setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.data.myReferralCode}`); // response.data.myReferralCode olmalı
     } catch (error) {
       console.error('Error fetching referrals:', error);
     }
@@ -106,9 +108,8 @@ const Referrals = () => {
             }}
           >
             <FaPeopleGroup></FaPeopleGroup>
-
           </Avatar>
-          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem',padding:"20px" }}>Invite frens. Earn points</Typography>
+          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem', padding: "20px" }}>Invite frens. Earn points</Typography>
         </Box>
         <Paper
           elevation={3}
