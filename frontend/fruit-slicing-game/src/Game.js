@@ -8,7 +8,6 @@ import './Game.css';
 import api from './api/api'; // API işlemleri için
 import { encryptData, decryptData } from './utils/encryption'; // Import encryption functions
 
-
 const Game = () => {
     const navigate = useNavigate();
     const [fruits, setFruits] = useState([]);
@@ -62,17 +61,15 @@ const Game = () => {
     useEffect(() => {
         const getUserIdFromTelegramId = async () => {
             const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+
             const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
             const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
-            console.log(telegramId)
-            if (telegramId) {
-                try {
-                    const response = await api.get('/user/get-user-id', { telegramId });
-                    console.log(response.id)
-                    setUserId(response.id);
-                } catch (error) {
-                    console.error('Error fetching user ID:', error);
-                }
+
+            try {
+                const response = await api.get(`/user/get-user-id`, { telegramId });
+                setUserId(response.data.id);
+            } catch (error) {
+                console.error('Error fetching user ID:', error);
             }
         };
 
@@ -110,7 +107,7 @@ const Game = () => {
 
     useEffect(() => {
         if (score > 0 && score % 10 === 0) {
-            setSpeed((prevSpeed) => prevSpeed + 0.5);
+            setSpeed((prevSpeed) => prevSpeed + 0.25);
         }
     }, [score]);
 
@@ -136,27 +133,23 @@ const Game = () => {
     useEffect(() => {
         if (gameOver || timeUp) {
             const gameTime = Math.floor((Date.now() - startTime) / 1000);
-            // console.log({
-            //     game_time: gameTime,
-            //     game_score: score,
-            //     game_bomb_clicked: bombsClicked,
-            //     game_slice_numbers: sliceNumbers,
-            //     hourglass_clicks: hourglassClicks,
-            //     user_id: userId
-            // });
 
             // Post işlemi
-            createGameLog({
-                game_time: gameTime,
-                game_score: score,
-                game_bomb_clicked: bombsClicked,
-                game_slice_numbers: sliceNumbers,
-                hourglass_clicks: hourglassClicks,
-                user_id: userId
-            });
+            if (userId) {
+                console.log('Creating game log with userId:', userId);
+                createGameLog({
+                    game_time: gameTime,
+                    game_score: score,
+                    game_bomb_clicked: bombsClicked,
+                    game_slice_numbers: sliceNumbers,
+                    hourglass_clicks: hourglassClicks,
+                    user_id: userId
+                });
 
-            addScoreToUserTokens(userId, score); // Kullanıcının token adedine oyun skorunu ekleyin
-
+                addScoreToUserTokens(userId, score); // Kullanıcının token adedine oyun skorunu ekleyin
+            } else {
+                console.error('userId is null, cannot create game log or add tokens');
+            }
 
             navigate('/reward', { state: { score } });
         }
@@ -215,19 +208,20 @@ const Game = () => {
 
     const createGameLog = async (gameData) => {
         try {
+            console.log('Sending game data:', gameData); // Hata ayıklama için log ekleyin
             const response = await api.post('/user/create-gamelog', gameData);
-            // console.log('Game log created:', response);
+            console.log('Game log created:', response.data); // Başarılı yanıtı loglayın
         } catch (error) {
-            console.error('Error creating game log:', error);
+            console.error('Error creating game log:', error.response ? error.response.data : error.message);
         }
     };
 
     const addScoreToUserTokens = async (userId, score) => {
         try {
             const response = await api.post('/user/add-tokens', { userId, score });
-            // console.log('Tokens added:', response);
+            console.log('Tokens added:', response.data); // Başarılı yanıtı loglayın
         } catch (error) {
-            console.error('Error adding tokens:', error);
+            console.error('Error adding tokens:', error.response ? error.response.data : error.message);
         }
     };
 
@@ -300,7 +294,6 @@ const Game = () => {
                                 fill="white"
                             />
                         )}
-
                     </Layer>
                 </Stage>
             </div>

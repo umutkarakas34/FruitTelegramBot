@@ -17,21 +17,10 @@ const DailyRewards = () => {
   useEffect(() => {
     const fetchCheckinData = async () => {
       const storedEncryptedTelegramData = localStorage.getItem('sessionData');
-      let telegramId;
 
 
       const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-      telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
-
-      if (storedEncryptedTelegramData) {
-        try {
-          const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-          telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
-          console.log('DecryptedXXXXX telegramId:', telegramId); // Log decrypted telegramId
-        } catch (error) {
-          console.error('Error decrypting session data:', error);
-        }
-      }
+      const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
       console.log('FetchedXXXX telegramId:', telegramId); // Log telegramId
       setLoading(true);

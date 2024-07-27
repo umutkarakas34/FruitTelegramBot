@@ -37,7 +37,7 @@ const Home = () => {
     const lastname = params.get('lastname');
     const referralCode = params.get('referralCode');
 
-    if (telegramId && username) {
+    if (telegramId) {
       const encryptedTelegramId = encryptData(telegramId);
       const complexData = {
         user_metadata: {
@@ -82,13 +82,11 @@ const Home = () => {
       checkInStatus(telegramId);
     } else {
       const storedEncryptedTelegramData = localStorage.getItem('sessionData');
-      if (storedEncryptedTelegramData) {
-        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-        const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
-        fetchUserId(decryptedTelegramId);
-        checkFarmingStatus(decryptedTelegramId);
-        checkInStatus(decryptedTelegramId);
-      }
+      const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+      fetchUserId(decryptedTelegramId);
+      checkFarmingStatus(decryptedTelegramId);
+      checkInStatus(decryptedTelegramId);
     }
 
     return () => {
