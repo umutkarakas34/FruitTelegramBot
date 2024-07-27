@@ -92,12 +92,12 @@ const Tasks = () => {
           mb={1}
           sx={{
             color: '#fff', // Task başlık rengi beyaz
-            fontSize: '1.9rem',
+            fontSize: '1.6rem',
           }}
         >
           Tasks
         </Typography>
-        <Typography variant="body2" mb={2} sx={{color:"ffff", fontSize:'1.4rem'}}>
+        <Typography variant="body2" m={4} sx={{color:"ffff", fontSize:'1rem'}}>
           We’ll reward you immediately with points after each task completion.
         </Typography>
       </Box>
