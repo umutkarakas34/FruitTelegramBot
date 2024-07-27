@@ -32,7 +32,7 @@ const Referrals = () => {
         throw new Error('Telegram data not found');
       }
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
-      const decryptedTelegramId = decryptedTelegramData.distinct_id;
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
       const response = await api.get('/user/referrals', { telegramId: decryptedTelegramId });
 

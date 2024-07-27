@@ -177,7 +177,7 @@ const Game = () => {
             });
         } else if (isHour) {
             setHourglassClicks((count) => count + 1);
-            setTimeLeft((prevTime) => prevTime + 2);
+            setTimeLeft((prevTime) => prevTime + 1);
             // Show and animate the added time effect
             setAddedTimeEffect({ visible: true, x, y, opacity: 1 });
             setTimeout(() => {

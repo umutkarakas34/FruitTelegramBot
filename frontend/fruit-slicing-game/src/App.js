@@ -13,7 +13,7 @@ import Footer from './components/Footer';
 import Statistics from './pages/Statistics';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-console.log = function () { };
+// console.log = function () { };
 console.warn = function () { };
 console.error = function () { };
 
