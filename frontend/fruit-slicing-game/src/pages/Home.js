@@ -211,7 +211,7 @@ const Home = () => {
     try {
       const encryptedTelegramData = localStorage.getItem('sessionData');
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
-      const decryptedTelegramId = decryptData(decryptedTelegramData.distinct_id);
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
       const response = await api.post('/user/start-farming', { telegramId: decryptedTelegramId });
       setIsFarming(true);
       setTimeRemaining(initialTime);
@@ -226,7 +226,7 @@ const Home = () => {
     try {
       const encryptedTelegramData = localStorage.getItem('sessionData');
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
-      const decryptedTelegramId = decryptData(decryptedTelegramData.distinct_id);
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
       const response = await api.post('/user/claim-farming', { telegramId: decryptedTelegramId });
       setPoints(response.data.user.token); // Kullanıcının toplam token miktarını güncelle
       setIsFarming(false);
