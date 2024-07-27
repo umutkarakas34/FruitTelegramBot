@@ -6,6 +6,8 @@ import Fruit from './Fruit';
 import { Container } from '@mui/material';
 import './Game.css';
 import api from './api/api'; // API işlemleri için
+import { encryptData, decryptData } from './utils/encryption'; // Import encryption functions
+
 
 const Game = () => {
     const navigate = useNavigate();
@@ -59,7 +61,10 @@ const Game = () => {
     // user_id'yi almak için useEffect kullanın
     useEffect(() => {
         const getUserIdFromTelegramId = async () => {
-            const telegramId = JSON.parse(localStorage.getItem('telegramId')); // localStorage'dan telegram_id'yi alın
+            const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+            const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+            const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+            console.log(telegramId)
             if (telegramId) {
                 try {
                     const response = await api.get('/user/get-user-id', { telegramId });
