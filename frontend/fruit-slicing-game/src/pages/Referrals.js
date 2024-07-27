@@ -84,7 +84,8 @@ const Referrals = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingY: '50px',
+        paddingY: '30px',
+        paddingX: '40px',
       }}
     >
       <Box
