@@ -19,6 +19,10 @@ const DailyRewards = () => {
       const storedEncryptedTelegramData = localStorage.getItem('sessionData');
       let telegramId;
 
+
+      const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+      telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+
       if (storedEncryptedTelegramData) {
         try {
           const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
