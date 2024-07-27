@@ -84,7 +84,7 @@ const Home = () => {
       const storedEncryptedTelegramData = localStorage.getItem('sessionData');
       if (storedEncryptedTelegramData) {
         const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-        const decryptedTelegramId = decryptedTelegramData.distinct_id;
+        const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
         fetchUserId(decryptedTelegramId);
         checkFarmingStatus(decryptedTelegramId);
         checkInStatus(decryptedTelegramId);
