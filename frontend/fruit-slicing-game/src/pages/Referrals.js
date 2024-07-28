@@ -32,8 +32,7 @@ const Referrals = () => {
         throw new Error('Telegram data not found');
       }
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
-      const decryptedTelegramId = decryptedTelegramData.distinct_id;
-
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
       const response = await api.get('/user/referrals', { telegramId: decryptedTelegramId });
 
@@ -84,7 +83,8 @@ const Referrals = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingY: '50px',
+        paddingY: '30px',
+        paddingX: '10px',
       }}
     >
       <Box
@@ -135,14 +135,11 @@ const Referrals = () => {
             <strong>Share Your Magic Link</strong><br />
             Unlock a <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> Play Pass for Each Fren!
           </Typography>
-          <Typography variant="body1" mb={2}>
-            <strong>Your Friends Join the Fruit Crypto Adventure</strong><br />
-            Let them start farming points and reaping rewards!
-          </Typography>
           <Typography variant="body1">
             <strong>Boost Your Earnings</strong><br />
             Earn 10% from your buddies' points, plus an extra 2.5% from their referrals!
           </Typography>
+        
         </Paper>
         <Typography variant="h6" sx={{ color: '#fff', fontSize: '1.2rem', mb: 2 }}>
           Total Level 1 Referrals: {level1Count}
@@ -192,20 +189,30 @@ const Referrals = () => {
             </Typography>
           </Paper>
         )}
+      </Box>
+      <Box
+        sx={{
+          position: 'fixed',
+          bottom: 80,
+          width: '80vw',
+          maxWidth: 600,
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}
+      >
         {remainingInvites > 0 ? (
           <Button
             variant="contained"
             color="primary"
             onClick={handleClickOpen}
             sx={{
-              mt: 1,
-              width: '80vw',
-              maxWidth: 600,
               backgroundColor: '#f06f24',
               fontWeight: "bold",
               color: '#fff',
               fontSize: '1rem',
-              padding: '20px 30px',
+              margin:"10px",
+              padding: '20px 20px',
               '&:hover': {
                 backgroundColor: '#c0c0c0',
               },
@@ -219,9 +226,6 @@ const Referrals = () => {
             color="primary"
             disabled
             sx={{
-              mt: 1,
-              width: '80vw',
-              maxWidth: 600,
               backgroundColor: '#d3d3d3',
               color: '#fff',
               fontSize: '1rem',
@@ -276,7 +280,7 @@ const Referrals = () => {
               sx={{
                 backgroundColor: '#1a73e8',
                 color: '#fff',
-                margin: '0 10px',
+                margin: '0 0px',
                 '&:hover': {
                   backgroundColor: '#135ab6',
                 },

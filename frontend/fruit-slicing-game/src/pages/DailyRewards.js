@@ -17,15 +17,16 @@ const DailyRewards = () => {
   useEffect(() => {
     const fetchCheckinData = async () => {
       const storedEncryptedTelegramData = localStorage.getItem('sessionData');
-      let telegramId;
 
-      if (storedEncryptedTelegramData) {
-        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-        telegramId = decryptedTelegramData.distinct_id;
-      }
+
+      const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+      const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+
+      console.log('FetchedXXXX telegramId:', telegramId); // Log telegramId
       setLoading(true);
       try {
         const response = await api.post('/user/get-checkin', { telegramId });
+        console.log('API response:', response);
         const checkinData = response.data;
         setCheckin(checkinData.checkin_series);
         setPoints(checkinData.point);
@@ -45,20 +46,26 @@ const DailyRewards = () => {
     let telegramId;
 
     if (storedEncryptedTelegramData) {
-      const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
-      telegramId = decryptedTelegramData.distinct_id;
+      try {
+        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+        telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+        console.log('Decrypted telegramId:', telegramId); // Log decrypted telegramId
+      } catch (error) {
+        console.error('Error decrypting session data:', error);
+      }
     }
 
+    console.log('Continuing with telegramId:', telegramId); // Log telegramId
     setLoading(true);
     try {
-      await api.post('/user/checkin', { telegramId });
-      setLoading(false);
+      const response = await api.post('/user/checkin', { telegramId });
       navigate('/home');
     } catch (error) {
       console.error('Error claiming daily rewards:', error);
       setLoading(false);
     }
   };
+
 
   return (
     <Box
