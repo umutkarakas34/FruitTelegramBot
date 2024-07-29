@@ -89,7 +89,7 @@ const RewardPage = () => {
         }}
       >
         <Typography
-          variant="h3"
+          variant="h4"
           sx={{ color: "#e36200", fontWeight: "bold", marginBottom: "20px" }}
         >
           {getMessage()}

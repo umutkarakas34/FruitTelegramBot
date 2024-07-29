@@ -76,7 +76,7 @@ const Referrals = () => {
   return (
     <Container
       sx={{
-        height: '100vh',
+        height: '60vh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
