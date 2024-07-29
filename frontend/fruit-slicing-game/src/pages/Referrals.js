@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, Paper, Button, Avatar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Container, Box, Typography, Paper, Button, Avatar, Slide, IconButton, Snackbar, Alert } from '@mui/material';
 import { GiKatana } from 'react-icons/gi';
 import Footer from '../components/Footer';
 import api from '../api/api';
 import { FaPeopleGroup } from "react-icons/fa6";
 import { decryptData } from '../utils/encryption'; // Import decrypt function
+import CloseIcon from '@mui/icons-material/Close';
+import '../style/Referrals.css'; // CSS dosyasını içe aktarın
 
 const Referrals = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [referrals, setReferrals] = useState([]);
   const [level1Count, setLevel1Count] = useState(0);
   const [open, setOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [referralLink, setReferralLink] = useState('');
+  const [totalPoints, setTotalPoints] = useState(0);
 
   const handleScroll = () => {
     if (window.pageYOffset > 300) {
@@ -34,13 +38,37 @@ const Referrals = () => {
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
       const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
-      const response = await api.get('/user/referrals', { telegramId: decryptedTelegramId });
+      const response = await api.get('/user/referrals', { params: { telegramId: decryptedTelegramId } });
 
       setReferrals(response.data.level1Referrals); // response.data.level1Referrals olmalı
       setLevel1Count(response.data.refCount); // response.data.refCount olmalı
       setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.data.myReferralCode}`); // response.data.myReferralCode olmalı
+
+      // Toplam puanı hesapla
+      const totalPoints = response.data.level1Referrals.reduce((acc, referral) => acc + referral.points, 0);
+      setTotalPoints(totalPoints);
+
+      // Puanları post et
+      await postTotalPoints(totalPoints);
+
     } catch (error) {
       console.error('Error fetching referrals:', error);
+    }
+  };
+
+  const postTotalPoints = async (points) => {
+    try {
+      const encryptedTelegramData = localStorage.getItem('sessionData');
+      if (!encryptedTelegramData) {
+        throw new Error('Telegram data not found');
+      }
+      const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
+      const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+
+      await api.post('/user/update-points', { telegramId: decryptedTelegramId, points });
+
+    } catch (error) {
+      console.error('Error posting total points:', error);
     }
   };
 
@@ -52,9 +80,13 @@ const Referrals = () => {
     setOpen(false);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
-    alert('Referral link copied to clipboard!');
+    setSnackbarOpen(true);
   };
 
   const handleSendLink = () => {
@@ -66,6 +98,27 @@ const Referrals = () => {
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     fetchReferrals();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = window.innerHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight || scrollTop === 0) {
+        document.body.classList.add('bounce');
+        setTimeout(() => {
+          document.body.classList.remove('bounce');
+        }, 500);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -139,36 +192,43 @@ const Referrals = () => {
             <strong>Boost Your Earnings</strong><br />
             Earn 10% from your buddies' points, plus an extra 2.5% from their referrals!
           </Typography>
-        
         </Paper>
         <Typography variant="h6" sx={{ color: '#fff', fontSize: '1.2rem', mb: 2 }}>
           Total Level 1 Referrals: {level1Count}
         </Typography>
         {referrals.length > 0 ? (
-          referrals.map((referral) => (
-            <Paper
-              key={referral.id}
-              elevation={3}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                p: 2,
-                width: '80vw',
-                maxWidth: 600,
-                backgroundColor: '#1c1c1c',
-                color: '#fff',
-                mb: 2,
-              }}
-            >
-              <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                @{referral.username}
-              </Typography>
-              <Typography variant="body1" sx={{ fontSize: '1rem' }}>
-                Sub Referrals: {referral.subRefCount}
-              </Typography>
-            </Paper>
-          ))
+          <>
+            <Typography variant="h6" sx={{ color: '#fff', fontSize: '1.2rem', mb: 2 }}>
+              Total Points Earned: {totalPoints}
+            </Typography>
+            {referrals.map((referral) => (
+              <Paper
+                key={referral.id}
+                elevation={3}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  p: 2,
+                  width: '80vw',
+                  maxWidth: 600,
+                  backgroundColor: '#1c1c1c',
+                  color: '#fff',
+                  mb: 2,
+                }}
+              >
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                  @{referral.username}
+                </Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                  Sub Referrals: {referral.subRefCount}
+                </Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}>
+                  Points: {referral.points}
+                </Typography>
+              </Paper>
+            ))}
+          </>
         ) : (
           <Paper
             elevation={3}
@@ -193,7 +253,7 @@ const Referrals = () => {
       <Box
         sx={{
           position: 'fixed',
-          bottom: 80,
+          bottom: 120,
           width: '80vw',
           maxWidth: 600,
           display: 'flex',
@@ -211,7 +271,7 @@ const Referrals = () => {
               fontWeight: "bold",
               color: '#fff',
               fontSize: '1rem',
-              margin:"10px",
+              margin: "10px",
               padding: '20px 20px',
               '&:hover': {
                 backgroundColor: '#c0c0c0',
@@ -257,56 +317,74 @@ const Referrals = () => {
         </Button>
       )}
       <Footer sx={{ flexShrink: 0 }} />
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          style: {
-            backgroundColor: '#121212',
-            color: '#fff',
-            padding: '20px',
-            borderRadius: '10px',
-          },
-        }}
-      >
-        <DialogTitle>Invite a fren</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ color: '#fff' }}>
-            Use the options below to invite your friends and earn rewards!
-          </DialogContentText>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <Button
-              onClick={handleSendLink}
-              sx={{
-                backgroundColor: '#1a73e8',
-                color: '#fff',
-                margin: '0 0px',
-                '&:hover': {
-                  backgroundColor: '#135ab6',
-                },
-              }}
-            >
-              Send
-            </Button>
-            <Button
-              onClick={handleCopyLink}
-              sx={{
-                backgroundColor: '#34a853',
-                color: '#fff',
-                margin: '0 10px',
-                '&:hover': {
-                  backgroundColor: '#2a8c42',
-                },
-              }}
-            >
-              Copy link
-            </Button>
+      {open && (
+        <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '50%', // Yükseklik ayarlanabilir
+              bgcolor: '#1e1e1e', // Daha açık renk
+              color: '#fff',
+              borderTopLeftRadius: '10px',
+              borderTopRightRadius: '10px',
+              p: 2,
+              zIndex: 1300,
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center' }}>Invite a fren</Typography>
+              <IconButton onClick={handleClose} sx={{ color: '#fff' }}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body1" sx={{ color: '#fff', textAlign: 'center' }}>
+                Use the options below to invite your friends and earn rewards!
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                <Button
+                  onClick={handleSendLink}
+                  sx={{
+                    backgroundColor: '#2c2c2c', // Daha açık renk
+                    color: '#fff',
+                    margin: '10px 0',
+                    padding: '17px',
+                    width: '90%', // Butonların genişliği
+                    '&:hover': {
+                      backgroundColor: '#3d3d3d',
+                    },
+                  }}
+                >
+                  Send
+                </Button>
+                <Button
+                  onClick={handleCopyLink}
+                  sx={{
+                    backgroundColor: '#2c2c2c', // Daha açık renk
+                    color: '#fff',
+                    margin: '10px 0',
+                    padding: '17px',
+                    width: '90%', // Butonların genişliği
+                    '&:hover': {
+                      backgroundColor: '#3d3d3d',
+                    },
+                  }}
+                >
+                  Copy link
+                </Button>
+              </Box>
+            </Box>
           </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} sx={{ color: '#fff' }}>Close</Button>
-        </DialogActions>
-      </Dialog>
+        </Slide>
+      )}
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%', backgroundColor: '#333', color: '#fff' }}>
+          Referral link copied to clipboard!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

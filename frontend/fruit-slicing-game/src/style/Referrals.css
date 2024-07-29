@@ -1,108 +1,14 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #121212;
-  color: #fff;
-  overflow-x: hidden; /* Yatay kaydırma çubuğunu gizler */
-  height: 100vh;
-  width: 100vw;
-}
+/* styles.css */
 
-.container {
-  width: 100%; /* Sayfanın genişliğini %100 yapar */
-  max-width: 1200px; /* Maksimum genişlik sınırı koyar */
-  margin: 0 auto; /* Ortalar */
-  padding: 0; /* İç kenar boşlukları ekler */
-}
-
-.referrals-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Footer'ın aşağıda kalmasını sağlar */
-  padding-top: 60px; /* Navbar için yer ayırma */
-}
-
-.header-title {
-  background: linear-gradient(90deg, #ff5722, #ff9800, #ffeb3b, #8bc34a, #00bcd4, #3f51b5, #9c27b0);
-  background-clip: text;
-  color: transparent;
-  animation: gradient-animation 5s ease infinite;
-  background-size: 200% 200%;
-  font-size: 2rem; /* Büyük font boyutu */
-}
-
-.referral-card {
-  background: linear-gradient(145deg, #4a4a4a, #2a2a2a); /* Gri ile siyah rengi arasında geçiş */
-  background-size: 200% 200%; /* Animasyon için gerekli */
-  animation: gradient-animation 5s ease infinite; /* Animasyon ekleniyor */
-  color: #fff;
-  width: 100%; /* Kartların genişliğini %100 yapıyoruz */
-  padding: 30px; /* Daha fazla padding */
-}
-
-.referral-avatar {
-  background-color: #007bff;
-  color: white;
-  width: 80px; /* Daha büyük avatar */
-  height: 80px; /* Daha büyük avatar */
-  font-size: 2rem; /* Daha büyük font boyutu */
-}
-
-.MuiIconButton-root {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.MuiIconButton-root svg {
-  font-size: 30px; /* Daha büyük icon boyutu */
-}
-
-.MuiIconButton-root .MuiTypography-caption {
-  margin-top: 5px;
-  font-size: 1rem; /* Daha büyük font boyutu */
-}
-
-.invite-button {
-  background-color: #d3d3d3 !important; /* Açık gri renkte buton */
-  color: #fff !important; /* Beyaz yazı */
-  font-size: 1rem !important;
-  padding: 30px 30px !important; /* Daha fazla padding */
-}
-
-@media (max-width: 600px) {
-  .header-title {
-    font-size: 1.5rem;
-  }
-
-  .referral-card {
-    padding: 16px; /* Daha küçük padding */
-  }
-
-  .MuiIconButton-root svg {
-    font-size: 24px;
-  }
-
-  .MuiIconButton-root .MuiTypography-caption {
-    font-size: 0.8rem;
-  }
-
-  .invite-button {
-    font-size: 0.8rem !important;
-    padding: 8px 16px !important; /* Daha küçük padding */
-  }
-}
-
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 50%;
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
-    background-position: 100% 50%;
+    transform: translateY(-10px);
   }
-  100% {
-    background-position: 0% 50%;
-  }
+}
+
+.bounce {
+  animation: bounce 0.5s;
 }

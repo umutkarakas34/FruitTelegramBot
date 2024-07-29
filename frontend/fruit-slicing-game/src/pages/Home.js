@@ -28,6 +28,7 @@ const Home = () => {
   const fetchUserDataIntervalRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -252,10 +253,36 @@ const Home = () => {
     return `${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (containerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+        if (scrollTop + clientHeight >= scrollHeight || scrollTop === 0) {
+          // Sayfanın sonuna veya başına gelindiğinde sallanma efekti ekleyin
+          containerRef.current.classList.add('bounce');
+          setTimeout(() => {
+            containerRef.current.classList.remove('bounce');
+          }, 500); // Animasyon süresiyle eşleşmeli
+        }
+      }
+    };
+
+    if (containerRef.current) {
+      containerRef.current.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
   return (
     <Container
       maxWidth={false}
       className="home-container"
+      ref={containerRef}
       sx={{
         height: '100vh',
         display: 'flex',
