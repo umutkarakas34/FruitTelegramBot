@@ -1,33 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, Typography, Paper, Button, Avatar, Slide, IconButton, Snackbar, Alert } from '@mui/material';
-import { GiKatana } from 'react-icons/gi';
+import { FaPeopleGroup } from 'react-icons/fa6';
 import Footer from '../components/Footer';
 import api from '../api/api';
-import { FaPeopleGroup } from "react-icons/fa6";
-import { decryptData } from '../utils/encryption'; // Import decrypt function
+import { decryptData } from '../utils/encryption';
 import CloseIcon from '@mui/icons-material/Close';
-import '../style/Referrals.css'; // CSS dosyasını içe aktarın
+import '../style/Referrals.css';
 
 const Referrals = () => {
-  const [showScrollButton, setShowScrollButton] = useState(false);
   const [referrals, setReferrals] = useState([]);
   const [level1Count, setLevel1Count] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [referralLink, setReferralLink] = useState('');
-  const [totalPoints, setTotalPoints] = useState(0);
-
-  const handleScroll = () => {
-    if (window.pageYOffset > 300) {
-      setShowScrollButton(true);
-    } else {
-      setShowScrollButton(false);
-    }
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   const fetchReferrals = async () => {
     try {
@@ -40,17 +26,14 @@ const Referrals = () => {
 
       const response = await api.get('/user/referrals', { params: { telegramId: decryptedTelegramId } });
 
-      setReferrals(response.data.level1Referrals); // response.data.level1Referrals olmalı
-      setLevel1Count(response.data.refCount); // response.data.refCount olmalı
-      setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.data.myReferralCode}`); // response.data.myReferralCode olmalı
+      setReferrals(response.data.level1Referrals);
+      setLevel1Count(response.data.refCount);
+      setReferralLink(`https://t.me/testbot_gamegamebot?start=${response.data.myReferralCode}`);
 
-      // Toplam puanı hesapla
       const totalPoints = response.data.level1Referrals.reduce((acc, referral) => acc + referral.points, 0);
       setTotalPoints(totalPoints);
 
-      // Puanları post et
       await postTotalPoints(totalPoints);
-
     } catch (error) {
       console.error('Error fetching referrals:', error);
     }
@@ -66,7 +49,6 @@ const Referrals = () => {
       const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
       await api.post('/user/claim-ref', { telegramId: decryptedTelegramId, points });
-
     } catch (error) {
       console.error('Error posting total points:', error);
     }
@@ -96,32 +78,7 @@ const Referrals = () => {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
     fetchReferrals();
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = window.innerHeight;
-
-      if (scrollTop + clientHeight >= scrollHeight || scrollTop === 0) {
-        document.body.classList.add('bounce');
-        setTimeout(() => {
-          document.body.classList.remove('bounce');
-        }, 500);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
   }, []);
 
   const remainingInvites = 10 - level1Count;
@@ -149,9 +106,9 @@ const Referrals = () => {
           justifyContent: 'flex-start',
           overflowY: 'auto',
           flex: '1 1 auto',
-          width: '100%', // Tam genişlikte olması için
+          width: '100%',
           paddingBottom: '80px',
-          paddingY: "30px"
+          paddingY: '30px',
         }}
       >
         <Box sx={{ width: '80vw', maxWidth: 600, textAlign: 'center', mb: 2 }}>
@@ -163,12 +120,14 @@ const Referrals = () => {
               backgroundColor: '#fff',
               color: '#f06f24',
               fontSize: '4rem',
-              margin: '0 auto' // Avatarı ortalamak için
+              margin: '0 auto',
             }}
           >
             <FaPeopleGroup />
           </Avatar>
-          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem', padding: "20px" }}>Invite frens. Earn points</Typography>
+          <Typography variant="h5" sx={{ color: '#fff', fontSize: '1.2rem', padding: '20px' }}>
+            Invite frens. Earn points
+          </Typography>
         </Box>
         <Paper
           elevation={3}
@@ -186,7 +145,7 @@ const Referrals = () => {
         >
           <Typography variant="body1" mb={2}>
             <strong>Share Your Magic Link</strong><br />
-            Unlock a <GiKatana style={{ marginRight: '5px', fontSize: '1.5rem' }} /> Play Pass for Each Fren!
+            Unlock a Play Pass for Each Fren!
           </Typography>
           <Typography variant="body1">
             <strong>Boost Your Earnings</strong><br />
@@ -268,10 +227,10 @@ const Referrals = () => {
             onClick={handleClickOpen}
             sx={{
               backgroundColor: '#f06f24',
-              fontWeight: "bold",
+              fontWeight: 'bold',
               color: '#fff',
               fontSize: '1rem',
-              margin: "10px",
+              margin: '10px',
               padding: '20px 20px',
               '&:hover': {
                 backgroundColor: '#c0c0c0',
@@ -299,23 +258,6 @@ const Referrals = () => {
           </Button>
         )}
       </Box>
-      {showScrollButton && (
-        <Button
-          onClick={scrollToTop}
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            right: 16,
-            backgroundColor: 'primary.main',
-            color: '#fff',
-            '&:hover': {
-              backgroundColor: 'primary.dark',
-            },
-          }}
-        >
-          Scroll to Top
-        </Button>
-      )}
       <Footer sx={{ flexShrink: 0 }} />
       {open && (
         <Slide direction="up" in={open} mountOnEnter unmountOnExit>
@@ -325,8 +267,8 @@ const Referrals = () => {
               bottom: 0,
               left: 0,
               right: 0,
-              height: '50%', // Yükseklik ayarlanabilir
-              bgcolor: '#1e1e1e', // Daha açık renk
+              height: '50%',
+              bgcolor: '#1e1e1e',
               color: '#fff',
               borderTopLeftRadius: '10px',
               borderTopRightRadius: '10px',
@@ -348,11 +290,11 @@ const Referrals = () => {
                 <Button
                   onClick={handleSendLink}
                   sx={{
-                    backgroundColor: '#2c2c2c', // Daha açık renk
+                    backgroundColor: '#2c2c2c',
                     color: '#fff',
                     margin: '10px 0',
                     padding: '17px',
-                    width: '90%', // Butonların genişliği
+                    width: '90%',
                     '&:hover': {
                       backgroundColor: '#3d3d3d',
                     },
@@ -363,11 +305,11 @@ const Referrals = () => {
                 <Button
                   onClick={handleCopyLink}
                   sx={{
-                    backgroundColor: '#2c2c2c', // Daha açık renk
+                    backgroundColor: '#2c2c2c',
                     color: '#fff',
                     margin: '10px 0',
                     padding: '17px',
-                    width: '90%', // Butonların genişliği
+                    width: '90%',
                     '&:hover': {
                       backgroundColor: '#3d3d3d',
                     },
