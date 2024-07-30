@@ -65,7 +65,7 @@ const Referrals = () => {
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
       const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
-      await api.post('/user/update-points', { telegramId: decryptedTelegramId, points });
+      await api.post('/user/claim-ref', { telegramId: decryptedTelegramId, points });
 
     } catch (error) {
       console.error('Error posting total points:', error);

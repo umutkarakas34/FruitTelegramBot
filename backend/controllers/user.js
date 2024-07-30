@@ -288,6 +288,22 @@ const claim = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while claiming the referral earnings' });
     }
 };
+const getReferralTokens = async (req, res) => {
+    try {
+        const { telegramId } = req.body;
+
+        // Kullanıcıyı bul
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while claiming the referral earnings' });
+    }
+};
 const startFarming = async (req, res) => {
     try {
         const { telegramId } = req.body;
@@ -640,4 +656,4 @@ const getStatistics = async (req, res) => {
     }
 };
 
-module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn, completeTask, userTasks, getStatistics };
+module.exports = { login, getTasks, createGameLog, increaseTicket, claim, startFarming, claimFarming, getReferrals, getUserId, addToken, farmingStatus, checkIn, checkInStatus, getCheckIn, completeTask, userTasks, getStatistics, getReferralTokens };
