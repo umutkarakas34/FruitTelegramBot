@@ -20,7 +20,6 @@ router.post('/claim-ref', userController.claim);
 router.get('/get-referral-tokens', userController.getReferralTokens);
 
 
-
 //FARMING
 router.post('/start-farming', userController.startFarming);
 router.post('/claim-farming', userController.claimFarming);

@@ -24,7 +24,7 @@ const Referrals = () => {
       const decryptedTelegramData = JSON.parse(decryptData(encryptedTelegramData));
       const decryptedTelegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
-      const response = await api.get('/user/referrals', { params: { telegramId: decryptedTelegramId } });
+      const response = await api.get('/user/referrals', { telegramId: decryptedTelegramId });
 
       setReferrals(response.data.level1Referrals);
       setLevel1Count(response.data.refCount);
