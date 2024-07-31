@@ -1,14 +1,11 @@
-/* styles.css */
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
+@keyframes color-change {
+  0% {
+    background-position: 0% 50%;
   }
   50% {
-    transform: translateY(-10px);
+    background-position: 100% 50%;
   }
-}
-
-.bounce {
-  animation: bounce 0.5s;
+  100% {
+    background-position: 0% 50%;
+  }
 }
