@@ -1,7 +1,6 @@
-// src/pages/Home.js
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Container, Box, Typography, Button, Grid, Paper, CircularProgress } from '@mui/material';
+import { Container, Box, Typography, Button, Grid, Paper, CircularProgress, Avatar } from '@mui/material';
 import { GiKatana } from 'react-icons/gi';
 import Footer from '../components/Footer';
 import { ReactComponent as Logo } from '../logo1.svg';
@@ -308,17 +307,17 @@ const Home = () => {
           sx={{ overflowY: 'auto', flex: '1 1 auto', paddingBottom: '80px' }}
         >
           <Box className="profile" display="flex" flexDirection="column" alignItems="center" mb={3}>
-            <Box className="profile-icon" mb={2}>
-              X
-            </Box>
-            <Typography variant="h6">@{username}</Typography>
-            <Box display="flex" alignItems="center">
+            <Avatar sx={{ width: 80, height: 80, fontSize: '2rem', bgcolor: '#f06f24', color: '#fff', marginBottom: '20px' }}>
+              {username.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography variant="h6" mb={2}>@{username}</Typography>
+            <Box display="flex" alignItems="center" mb={2}>
               <Box
                 component={Logo}
                 sx={{
                   width: '50px', // İkonun boyutu büyütüldü
                   height: '60px', // İkonun boyutu büyütüldü
-                  marginRight: '-6px',
+                  marginRight: '10px', // İkon ile yazı arasındaki boşluk artırıldı
                   position: 'relative',
                   top: '-8px', // İkonu yukarı kaydırmak için
                 }}

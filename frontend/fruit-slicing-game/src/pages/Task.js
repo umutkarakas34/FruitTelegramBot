@@ -77,32 +77,6 @@ const Tasks = () => {
     >
       <Box
         sx={{
-          position: 'sticky',
-          top: 0,
-          backgroundColor: '#121212',
-          width: '100%',
-          zIndex: 1,
-          textAlign: 'center',
-          padding: '10px 0',
-          marginBottom: '20px', // Başlık ve üst kısım arasında boşluk bırakmak için
-        }}
-      >
-        <Typography
-          variant="h5"
-          mb={1}
-          sx={{
-            color: '#fff', // Task başlık rengi beyaz
-            fontSize: '1.6rem',
-          }}
-        >
-          Tasks
-        </Typography>
-        <Typography variant="body2" m={4} sx={{color:"ffff", fontSize:'1rem'}}>
-          We’ll reward you immediately with points after each task completion.
-        </Typography>
-      </Box>
-      <Box
-        sx={{
           mt: 2,
           display: 'flex',
           flexDirection: 'column',
@@ -114,6 +88,32 @@ const Tasks = () => {
           paddingBottom: '80px',
         }}
       >
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: '#121212',
+            width: '100%',
+            zIndex: 1,
+            textAlign: 'center',
+            padding: '10px 0',
+            marginBottom: '20px', // Başlık ve üst kısım arasında boşluk bırakmak için
+          }}
+        >
+          <Typography
+            variant="h5"
+            mb={1}
+            sx={{
+              color: '#fff', // Task başlık rengi beyaz
+              fontSize: '1.6rem',
+            }}
+          >
+            Tasks
+          </Typography>
+          <Typography variant="body2" m={4} sx={{color:"ffff", fontSize:'1rem'}}>
+            We’ll reward you immediately with points after each task completion.
+          </Typography>
+        </Box>
         {tasks.length > 0 ? (
           tasks.map((task) => (
             <Paper
@@ -121,18 +121,18 @@ const Tasks = () => {
               elevation={3}
               sx={{
                 p: 1,
-                mb: 1,
-                width: '80vw',
-                maxWidth: 600,
+                mb: 2,
+                width: '90vw', // Genişliği artırdık
+                maxWidth: 800, // Maksimum genişlik ayarlandı
                 backgroundColor: '#1c1c1c',
                 background: 'linear-gradient(145deg, #4a4a4a, #2a2a2a)',
                 backgroundSize: '200% 200%',
                 animation: 'gradient-animation 5s ease infinite',
                 color: '#fff',
-                padding: '10px',
+                padding: '20px', // İçerik boşluğunu artırdık
               }}
             >
-              <Grid container alignItems="center" spacing={1}>
+              <Grid container alignItems="center" spacing={2}> {/* Boşluğu artırdık */}
                 <Grid item>
                   <Avatar sx={{ backgroundColor: '#808080', color: 'white', width: 40, height: 40, fontSize: '1.2rem' }}>
                     {task.task_image}
@@ -140,10 +140,10 @@ const Tasks = () => {
                 </Grid>
                 <Grid item xs>
                   <Box display="flex" flexDirection="column">
-                    <Typography variant="h6" sx={{ color: '#fff', fontSize: '0.8rem' }}>
+                    <Typography variant="h6" sx={{ color: '#fff', fontSize: '0.9rem' }}> {/* Yazı boyutunu artırdık */}
                       {task.task_title}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.7rem' }}>
+                    <Typography variant="body2" sx={{ color: '#fff', fontSize: '0.8rem' }}> {/* Yazı boyutunu artırdık */}
                       {task.task_description}
                     </Typography>
                   </Box>
@@ -153,8 +153,8 @@ const Tasks = () => {
                     sx={{
                       backgroundColor: task.completed ? 'inherit' : '#f06f24',
                       color: task.completed ? '#4CAF50' : '#fff',
-                      fontSize: '0.7rem',
-                      padding: '5px 10px',
+                      fontSize: '0.8rem', // Yazı boyutunu artırdık
+                      padding: '6px 12px', // Buton boyutunu artırdık
                       display: 'flex',
                       alignItems: 'center',
                     }} // Daha güzel bir yeşil ton ekleyin
@@ -180,7 +180,7 @@ const Tasks = () => {
   );
 };
 
-export default Tasks;
+export default Tasks;
 
 
 //DENEME TASK KISMINI SCROLUN İÇİNE ALIYOR 

@@ -27,17 +27,3 @@
 .active-icon {
   color: rgba(255, 255, 255, 0.9); /* Aktif ikonların rengi */
 }
-/* styles.css */
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.bounce {
-  animation: bounce 0.5s;
-}

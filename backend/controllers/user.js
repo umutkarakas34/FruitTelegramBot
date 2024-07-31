@@ -125,8 +125,7 @@ const login = async (req, res) => {
                     first_name: firstname,
                     last_name: lastname,
                     referral_code: newReferralCode,
-                    referred_by: referringUser.id,
-                    ref_earning_claim_date: new Date()
+                    referred_by: referringUser.id
                 });
 
                 await Referral.create({
@@ -156,8 +155,7 @@ const login = async (req, res) => {
                     first_name: firstname,
                     last_name: lastname,
                     referral_code: newReferralCode,
-                    referred_by: null,
-                    ref_earning_claim_date: new Date()
+                    referred_by: null
                 });
 
                 // Check-in işlemi
@@ -262,10 +260,10 @@ const getUserId = async (req, res) => {
 }
 const claim = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { telegramId } = req.body;
 
         // Kullanıcıyı bul
-        const user = await User.findByPk(userId);
+        const user = await User.findOne({ where: { telegram_id: telegramId } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -290,9 +288,14 @@ const claim = async (req, res) => {
         res.status(500).json({ error: 'An error occurred while claiming the referral earnings' });
     }
 };
+
 const getReferralTokens = async (req, res) => {
     try {
-        const { telegramId } = req.body;
+        const { telegramId } = req.query; // query yerine body kullanıyorsanız req.body olarak değiştirin
+
+        if (!telegramId) {
+            return res.status(400).json({ error: 'Telegram ID is required' });
+        }
 
         // Kullanıcıyı bul
         const user = await User.findOne({ where: { telegram_id: telegramId } });
@@ -303,10 +306,13 @@ const getReferralTokens = async (req, res) => {
 
         res.status(200).json(user);
     } catch (error) {
+        console.error('Error occurred while claiming the referral earnings:', error);
         res.status(500).json({ error: 'An error occurred while claiming the referral earnings' });
     }
 };
+
 const startFarming = async (req, res) => {
+    
     try {
         const { telegramId } = req.body;
 
@@ -407,6 +413,7 @@ const farmingStatus = async (req, res) => {
     }
 };
 const addToken = async (req, res) => {
+
     const { userId, score } = req.body;
 
     try {

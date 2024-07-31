@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Stage, Layer, Text as KonvaText, Image as KonvaImage } from 'react-konva';
 import useImage from 'use-image';
 import Fruit from './Fruit';
-import { Container } from '@mui/material';
+import { Container, Box, CircularProgress } from '@mui/material';
 import './Game.css';
 import api from './api/api'; // API işlemleri için
 import { encryptData, decryptData } from './utils/encryption'; // Import encryption functions
@@ -24,6 +24,7 @@ const Game = () => {
     const [addedTimeEffect, setAddedTimeEffect] = useState({ visible: false, x: 0, y: 0, opacity: 1 });
     const startTime = useMemo(() => Date.now(), []);
     const [userId, setUserId] = useState(null); // user_id için state ekleyin
+    const [loading, setLoading] = useState(true); // loading state ekleyin
 
     const fruitIcons = useMemo(() => [
         'apple',
@@ -68,8 +69,10 @@ const Game = () => {
             try {
                 const response = await api.get(`/user/get-user-id`, { telegramId });
                 setUserId(response.data.id);
+                setLoading(false); // User ID alındığında loading'i false yap
             } catch (error) {
                 console.error('Error fetching user ID:', error);
+                setLoading(false); // Hata durumunda da loading'i false yap
             }
         };
 
@@ -242,6 +245,14 @@ const Game = () => {
         const seconds = time % 60;
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
+
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress color="inherit" />
+            </Box>
+        );
+    }
 
     return (
         <Container className="game-page">
