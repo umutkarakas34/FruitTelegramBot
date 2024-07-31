@@ -13,8 +13,8 @@ const ErrorScreen = () => {
 
   return (
     <Box className="error-screen" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-      <Typography variant="h4" className="error-message">Bir şeyler ters gitti</Typography>
-      <Typography variant="body1" className="error-submessage">Sorunu çözmek için çalışıyoruz</Typography>
+      <Typography variant="h4" className="error-message">Something went wrong</Typography>
+      <Typography variant="body1" className="error-submessage">We are working to fix the issue</Typography>
       <IconButton 
         color="primary" 
         onClick={handleRefresh} 
