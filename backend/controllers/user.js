@@ -194,18 +194,6 @@ const createGameLog = async (req, res) => {
             user_id
         });
 
-        const level1referral = await Referrals.findOne({ where: { user_id: user_id, referral_level: 1 } });
-        const level2referral = await Referrals.findOne({ where: { user_id: user_id, referral_level: 2 } });
-
-        if (level1referral) {
-            const user = await User.findByPk(level1referral.referred_user_id);
-            user.ref_earning += game_score * 0.1;
-        }
-        if (level2referral) {
-            const user = await User.findByPk(level2referral.referred_user_id);
-            user.ref_earning += game_score * 0.025;
-        }
-
         // Başarılı olursa, oluşturulan oyun kaydını geri döndür
         res.status(201).json(newGame);
     } catch (error) {
@@ -440,6 +428,20 @@ const addToken = async (req, res) => {
 
         // Kullanıcının token miktarını güncelle
         user.token += score;
+
+        const level1referral = await Referral.findOne({ where: { user_id: userId, referral_level: 1 } });
+        const level2referral = await Referral.findOne({ where: { user_id: userId, referral_level: 2 } });
+
+        if (level1referral) {
+            const user = await User.findByPk(level1referral.referred_user_id);
+            user.ref_earning += score * 0.1;
+            user.save();
+        }
+        if (level2referral) {
+            const user = await User.findByPk(level2referral.referred_user_id);
+            user.ref_earning += score * 0.025;
+            user.save();
+        }
 
         // Değişiklikleri veritabanına kaydet
         await user.save();

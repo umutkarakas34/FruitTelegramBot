@@ -62,7 +62,6 @@ const Game = () => {
     useEffect(() => {
         const getUserIdFromTelegramId = async () => {
             const storedEncryptedTelegramData = localStorage.getItem('sessionData');
-
             const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
             const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
 
@@ -154,7 +153,7 @@ const Game = () => {
                 console.error('userId is null, cannot create game log or add tokens');
             }
 
-            navigate('/reward', { state: { score } });
+            navigate('/reward', { state: { score, userId } });
         }
     }, [gameOver, timeUp, score, navigate, bombsClicked, sliceNumbers, hourglassClicks, startTime, userId]); // userId'yi dependency array'e ekleyin
 

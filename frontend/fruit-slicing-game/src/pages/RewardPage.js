@@ -1,13 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import confetti from "canvas-confetti";
 import { ReactComponent as Logo } from "../logo1.svg";
+import { encryptData, decryptData } from '../utils/encryption'; // Import encryption functions
+import api from '../api/api';
+
 
 const RewardPage = () => {
+  const [tickets, setTicket] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
-  const { score } = location.state || { score: 0 };
+  const { score, userId } = location.state || { score: 0, userId: 0 };
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -43,11 +47,34 @@ const RewardPage = () => {
     }, 250);
   }, []);
 
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedEncryptedTelegramData = localStorage.getItem('sessionData');
+        const decryptedTelegramData = JSON.parse(decryptData(storedEncryptedTelegramData));
+        const telegramId = JSON.parse(decryptData(decryptedTelegramData.distinct_id));
+        const response = await api.get(`/user/get-user-id`, { telegramId });
+        setTicket(response.data.ticket);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleHome = () => {
     navigate("/home");
   };
-  const handlePlayAgain = () => {
-    navigate("/game");
+  const handlePlayAgain = async () => {
+    try {
+      const response = await api.post("/user/increase-ticket", { userId });
+      console.log("Ticket increased:", response.data);
+      navigate("/game");
+    } catch (error) {
+      console.error("Error increasing ticket:", error.response ? error.response.data : error.message);
+    }
   };
 
   const getMessage = () => {
@@ -94,7 +121,7 @@ const RewardPage = () => {
         >
           {getMessage()}
         </Typography>
- 
+
         <Box display="flex" alignItems="center" justifyContent="center" mb={2}>
           <Typography
             variant="h3"
@@ -102,7 +129,7 @@ const RewardPage = () => {
           >
             {score}
           </Typography>
-          
+
           <Box
             component={Logo}
             sx={{
@@ -113,7 +140,7 @@ const RewardPage = () => {
               top: "-13px", // İkonu yukarı kaydırmak için
             }}
           />
-          
+
         </Box>
         <Typography
           variant="body1"
@@ -127,31 +154,33 @@ const RewardPage = () => {
             flexDirection: "column",
             gap: "15px",
             alignItems: "center",
-            marginTop:"80px"
+            marginTop: "80px"
           }}
         >
-          <Button
-            onClick={handlePlayAgain}
-            sx={{
-              backgroundColor: "#e36200",
-              color: "#fff",
-              padding: "15px 30px",
-              textTransform: "none",
-              fontSize: "20px",
-              fontWeight: "bold",
-              border: "2px solid #673ab7",
-              borderRadius: "5px",
-              boxShadow: "none",
-              minWidth: "200px", // Eşit genişlik
-              minHeight: "50px", // Eşit yükseklik
-              "&:hover": {
-                backgroundColor: "#000000",
+          {tickets > 0 && (
+            <Button
+              onClick={handlePlayAgain}
+              sx={{
+                backgroundColor: "#e36200",
+                color: "#fff",
+                padding: "15px 30px",
+                textTransform: "none",
+                fontSize: "20px",
+                fontWeight: "bold",
+                border: "2px solid #673ab7",
+                borderRadius: "5px",
                 boxShadow: "none",
-              },
-            }}
-          >
-            Play Again
-          </Button>
+                minWidth: "200px", // Eşit genişlik
+                minHeight: "50px", // Eşit yükseklik
+                "&:hover": {
+                  backgroundColor: "#000000",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              Play Again
+            </Button>
+          )}
           <Button
             onClick={handleHome}
             sx={{
