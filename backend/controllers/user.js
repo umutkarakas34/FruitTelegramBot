@@ -125,7 +125,8 @@ const login = async (req, res) => {
                     first_name: firstname,
                     last_name: lastname,
                     referral_code: newReferralCode,
-                    referred_by: referringUser.id
+                    referred_by: referringUser.id,
+                    ref_earning: 0
                 });
 
                 await Referral.create({
@@ -155,7 +156,8 @@ const login = async (req, res) => {
                     first_name: firstname,
                     last_name: lastname,
                     referral_code: newReferralCode,
-                    referred_by: null
+                    referred_by: null,
+                    ref_earning: 0
                 });
 
                 // Check-in işlemi
@@ -191,6 +193,18 @@ const createGameLog = async (req, res) => {
             hourglass_clicks,
             user_id
         });
+
+        const level1referral = await Referrals.findOne({ where: { user_id: user_id, referral_level: 1 } });
+        const level2referral = await Referrals.findOne({ where: { user_id: user_id, referral_level: 2 } });
+
+        if (level1referral) {
+            const user = await User.findByPk(level1referral.referred_user_id);
+            user.ref_earning += game_score * 0.1;
+        }
+        if (level2referral) {
+            const user = await User.findByPk(level2referral.referred_user_id);
+            user.ref_earning += game_score * 0.025;
+        }
 
         // Başarılı olursa, oluşturulan oyun kaydını geri döndür
         res.status(201).json(newGame);
@@ -312,7 +326,7 @@ const getReferralTokens = async (req, res) => {
 };
 
 const startFarming = async (req, res) => {
-    
+
     try {
         const { telegramId } = req.body;
 

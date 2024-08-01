@@ -251,7 +251,7 @@ const Referrals = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   mb: 2,
-                  fontSize: '1.5rem',
+                  fontSize: '1.2rem',
                   fontWeight: 'bold',
                   background: 'linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3)',
                   backgroundSize: '200% 200%',
@@ -260,9 +260,9 @@ const Referrals = () => {
                   animation: 'color-change 2s infinite',
                 }}
               >
-                <GiKatana style={{ marginRight: '10px', fontSize: '2rem' }} />
+                <GiKatana style={{ marginRight: '2%', fontSize: '2rem', }} />
                 CONGRATULATIONS
-                <GiKatana style={{ marginLeft: '10px', fontSize: '2rem', transform: 'scaleX(-1)' }} />
+                <GiKatana style={{ marginLeft: '2%', fontSize: '2rem', transform: 'scaleX(-1)' }} />
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
                 <Logo style={{ width: '3rem', height: '3rem', marginRight: '0px', marginTop: '-15px' }} />
@@ -296,6 +296,7 @@ const Referrals = () => {
                     },
                     position: 'relative',
                     color: '#fff',
+                    visibility: refEarning === 0 ? 'hidden' : 'visible',
                   }}
                   disabled={remainingTime !== 'Claim Now'}
                   onClick={handleClaimNowClick}
