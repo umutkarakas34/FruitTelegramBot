@@ -72,7 +72,7 @@ const Tasks = () => {
         backgroundColor: '#121212',
         color: '#fff',
         overflow: 'hidden',
-        paddingY: '60px',
+        paddingY: '3px', // Yatay boşluğu 30px olarak ayarladık
       }}
     >
       <Box
@@ -85,7 +85,7 @@ const Tasks = () => {
           overflowY: 'auto',
           flex: '1 1 auto',
           width: '100%', // Tam genişlikte olması için
-          paddingBottom: '80px',
+          paddingBottom: '60px', // Alt boşluğu 60px olarak ayarladık
         }}
       >
         <Box
@@ -96,8 +96,8 @@ const Tasks = () => {
             width: '100%',
             zIndex: 1,
             textAlign: 'center',
-            padding: '10px 0',
-            marginBottom: '20px', // Başlık ve üst kısım arasında boşluk bırakmak için
+            padding: '5px 0',
+            marginBottom: '0px', // Başlık ve üst kısım arasında boşluk bırakmak için
           }}
         >
           <Typography
@@ -110,7 +110,7 @@ const Tasks = () => {
           >
             Tasks
           </Typography>
-          <Typography variant="body2" m={4} sx={{color:"ffff", fontSize:'1rem'}}>
+          <Typography variant="body2" m={2} sx={{ color: "#fff", fontSize: '1rem' }}>
             We’ll reward you immediately with points after each task completion.
           </Typography>
         </Box>
@@ -130,6 +130,7 @@ const Tasks = () => {
                 animation: 'gradient-animation 5s ease infinite',
                 color: '#fff',
                 padding: '20px', // İçerik boşluğunu artırdık
+                marginTop: '2px', // Kartlar arası boşluk
               }}
             >
               <Grid container alignItems="center" spacing={2}> {/* Boşluğu artırdık */}

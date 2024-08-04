@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for the API
-const BASE_URL = 'http://localhost:5000'; // Buraya kendi API URL'nizi ekleyin
+const BASE_URL = 'http://localhost:5000/'; // Buraya kendi API URL'nizi ekleyin
 
 // Create an instance of axios
 const api = axios.create({

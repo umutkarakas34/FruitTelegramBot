@@ -31,16 +31,11 @@ function App() {
     script.onload = script.onreadystatechange = () => {
       if (!script.readyState || /loaded|complete/.test(script.readyState)) {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+          // Web App hazır
+          window.Telegram.WebApp.ready();
 
           // Web App tam ekran yap
           window.Telegram.WebApp.expand();
-
-          // Web App hazır
-          window.Telegram.WebApp.ready();
-          if (!sessionStorage.getItem('reloaded')) {
-            sessionStorage.setItem('reloaded', 'true');
-            window.location.reload();
-          }
           setIsTelegramWebApp(true);
         } else {
           setIsTelegramWebApp(false);
