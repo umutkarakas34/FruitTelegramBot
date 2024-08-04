@@ -331,22 +331,24 @@ const Referrals = () => {
             </>
           )}
         </Paper>
-        <Typography
-          variant="body2"
-          sx={{
-            fontSize: '0.875rem',
-            background: 'linear-gradient(90deg, #000000, #ffffff)',
-            backgroundSize: '200% 200%',
-            backgroundClip: 'text',
-            textFillColor: 'transparent',
-            animation: 'color-change 5s infinite',
-            mb: 4,
-            textAlign: 'center'
-          }}
-        >
-          Invite Your Friends and Earn Extra Points! <br />
-          Get 10% from your friends and 2.5% from their referrals. Enjoy the benefits
-        </Typography>
+        {referrals.length > 0 && (
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: '0.875rem',
+              background: 'linear-gradient(90deg, #000000, #ffffff)',
+              backgroundSize: '200% 200%',
+              backgroundClip: 'text',
+              textFillColor: 'transparent',
+              animation: 'color-change 5s infinite',
+              mb: 4,
+              textAlign: 'center'
+            }}
+          >
+            Invite Your Friends and Earn Extra Points! <br />
+            Get 10% from your friends and 2.5% from their referrals. Enjoy the benefits
+          </Typography>
+        )}
         {referrals.length > 0 && (
           <>
             <Typography variant="h6" sx={{ color: '#fff', fontSize: '1.2rem', mb: 2 }}>

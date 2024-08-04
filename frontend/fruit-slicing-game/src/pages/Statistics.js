@@ -86,7 +86,7 @@ const Statistics = () => {
                             textAlign: 'center',
                         }}
                     >
-                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#8bc34a' }}>Total Tokens</Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#8bc34a' }}>Fruit Points</Typography>
                         <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>{statistics.totalTokens.toFixed(2)}</Typography>
                     </Paper>
                 </Grid>

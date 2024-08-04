@@ -126,7 +126,8 @@ const login = async (req, res) => {
                     last_name: lastname,
                     referral_code: newReferralCode,
                     referred_by: referringUser.id,
-                    ref_earning: 0
+                    ref_earning: 0,
+                    ref_earning_claim_date: new Date()
                 });
 
                 await Referral.create({
@@ -157,7 +158,8 @@ const login = async (req, res) => {
                     last_name: lastname,
                     referral_code: newReferralCode,
                     referred_by: null,
-                    ref_earning: 0
+                    ref_earning: 0,
+                    ref_earning_claim_date: new Date()
                 });
 
                 // Check-in işlemi

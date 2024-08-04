@@ -30,21 +30,31 @@ const Footer = () => {
     return location.pathname === path ? 'active' : '';
   };
 
+  useEffect(() => {
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+      link.addEventListener('dragstart', (event) => {
+        event.preventDefault();
+      });
+    });
+  }, []);
+
+
   return (
     <Box className="footer" display="flex" justifyContent="space-around" alignItems="center">
-      <IconButton color="inherit" component={Link} to="/home" className={getActiveClass('/home')}>
+      <IconButton color="inherit" component={Link} to="/home" className={getActiveClass('/home')} draggable="false">
         <HomeOutlinedIcon className={location.pathname === '/home' || '/' ? 'active-icon' : ''} />
         <Typography variant="caption">Home</Typography>
       </IconButton>
-      <IconButton color="inherit" component={Link} to="/task" className={getActiveClass('/task')}>
+      <IconButton color="inherit" component={Link} to="/task" className={getActiveClass('/task')} draggable="false">
         <TasksOutlinedIcon className={location.pathname === '/task' ? 'active-icon' : ''} />
         <Typography variant="caption">Tasks</Typography>
       </IconButton>
-      <IconButton color="inherit" component={Link} to="/referrals" className={getActiveClass('/referrals')}>
+      <IconButton color="inherit" component={Link} to="/referrals" className={getActiveClass('/referrals')} draggable="false">
         <FriendsOutlinedIcon className={location.pathname === '/referrals' ? 'active-icon' : ''} />
         <Typography variant="caption">Friends</Typography>
       </IconButton>
-      <IconButton color="inherit" component={Link} to="/statistics" className={getActiveClass('/statistics')}>
+      <IconButton color="inherit" component={Link} to="/statistics" className={getActiveClass('/statistics')} draggable="false">
         <AnalyticsIcon className={location.pathname === '/statistics' ? 'active-icon' : ''} />
         <Typography variant="caption">Statistics</Typography>
       </IconButton>
