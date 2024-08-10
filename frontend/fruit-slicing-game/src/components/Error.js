@@ -13,8 +13,8 @@ const ErrorScreen = () => {
 
   return (
     <Box className="error-screen" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-      <Typography variant="h4" className="error-message">Something went wrong</Typography>
-      <Typography variant="body1" className="error-submessage">We are working to fix the issue</Typography>
+      <Typography variant="h4" className="error-message">An Unexpected Error Occurred</Typography>
+      <Typography variant="body1" className="error-submessage">We're sorry for the inconvenience. Please try again later.</Typography>
       <IconButton 
         color="primary" 
         onClick={handleRefresh} 

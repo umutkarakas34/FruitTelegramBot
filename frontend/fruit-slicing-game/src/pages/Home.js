@@ -371,8 +371,9 @@ const Home = () => {
               <Grid item sx={{ marginTop: '15px', width: '100%' }}>
                 <Typography
                   variant="body2"
-                  component={Link}
-                  to="/learn-more"
+                  component="a"
+                  href=" https://fruitcrypto.app/ "
+                  target="_blank" 
                   sx={{
                     color: '#fff',
                     textDecoration: 'none',

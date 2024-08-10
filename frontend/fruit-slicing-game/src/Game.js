@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Stage, Layer, Text as KonvaText, Image as KonvaImage } from 'react-konva';
 import useImage from 'use-image';
 import Fruit from './Fruit';
-import { Container, Box, CircularProgress } from '@mui/material';
+import { Container, Box } from '@mui/material';
+import Loading from './pages/Loading'; // Loading bileşenini import edin
 import './Game.css';
 import api from './api/api'; // API işlemleri için
 import { encryptData, decryptData } from './utils/encryption'; // Import encryption functions
@@ -246,11 +247,7 @@ const Game = () => {
     };
 
     if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <CircularProgress color="inherit" />
-            </Box>
-        );
+        return <Loading />; // Loading bileşenini kullanın
     }
 
     return (
