@@ -3,6 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
 const Task = require('../models/task');
+const Game = require('../models/game');
+const { message } = require('telegraf/filters');
+const User = require('../models/user');
+const DailyCheckin = require('../models/dailyCheckin');
+const Farming = require('../models/farming');
+const Referral = require('../models/referral');
 
 const login = async (req, res) => {
     const { username, password } = req.body;
@@ -24,14 +30,26 @@ const login = async (req, res) => {
     }
 }
 const createTask = async (req, res) => {
-    const { task_title, task_image, task_description } = req.body;
+    const { task_title, task_description } = req.body;
+
     try {
         const task = await Task.create({
             task_title,
-            task_image,
             task_description,
             admin_id: req.user.id
         });
+
+        if (req.files && req.files.length > 0) {
+            // Tüm resimleri TaskImages modeline kaydet
+            const imagePromises = req.files.map(file => {
+                return TaskImages.create({
+                    image_url: file.path,
+                    task_id: task.id
+                });
+            });
+            await Promise.all(imagePromises);
+        }
+
         res.status(201).json(task);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -40,7 +58,11 @@ const createTask = async (req, res) => {
 // Tüm task'ları getirme
 const getTasks = async (req, res) => {
     try {
-        const tasks = await Task.findAll();
+        const tasks = await Task.findAll({
+            include: {
+                model: Admin
+            }
+        });
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -148,7 +170,80 @@ const deleteBlog = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const getGames = async (req, res) => {
+    try {
+        const games = await Game.findAll({
+            include: {
+                model: User
+            }
+        })
 
+        return res.status(200).json(games);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll()
+
+        return res.status(200).json(users);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getDailyCheckins = async (req, res) => {
+    try {
+        const dailycheckins = await DailyCheckin.findAll({
+            include: {
+                model: User
+            }
+        })
+
+        return res.status(200).json(dailycheckins);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getFarmings = async (req, res) => {
+    try {
+        const farmings = await Farming.findAll({
+            include: {
+                model: User
+            }
+        })
+
+        return res.status(200).json(farmings);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getUserReferrals = async (req, res) => {
+    try {
+        const userReferrals = await Referral.findAll({
+            attributes: [
+                'user_id',
+                [Sequelize.fn('COUNT', Sequelize.col('user_id')), 'referral_count']
+            ],
+            include: {
+                model: User,
+                attributes: ['id', 'username', 'email'] // Kullanıcı bilgilerini getirmek için
+            },
+            where: {
+                referral_level: 1 // Yalnızca referral_level 1 olanları çek
+            },
+            group: ['user_id', 'User.id'] // Hem user_id hem de User modelinden id'yi grupluyoruz
+        });
+
+        return res.status(200).json(userReferrals);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 module.exports = {
     login,
     createTask,
@@ -160,5 +255,10 @@ module.exports = {
     getBlogs,
     getBlogById,
     updateBlog,
-    deleteBlog
-}
+    deleteBlog,
+    getGames,
+    getUsers,
+    getDailyCheckins,
+    getFarmings,
+    getUserReferrals
+};
