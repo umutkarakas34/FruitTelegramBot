@@ -9,6 +9,7 @@ const User = require('../models/user');
 const DailyCheckin = require('../models/dailyCheckin');
 const Farming = require('../models/farming');
 const Referral = require('../models/referral');
+const { Sequelize } = require('sequelize');
 
 const login = async (req, res) => {
     const { username, password } = req.body;
@@ -23,12 +24,14 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: admin.id, username: admin.username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
     } catch (err) {
+        console.error('Error during login:', err);
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 const createTask = async (req, res) => {
     const { task_title, task_description } = req.body;
 
@@ -88,15 +91,26 @@ const updateTask = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        task.task_title = task_title;
-        task.task_image = task_image;
-        task.task_description = task_description;
+
+        // Gelen verileri kontrol et ve sadece dolu olanları güncelle
+        if (task_title !== undefined) {
+            task.task_title = task_title;
+        }
+        if (task_image !== undefined) {
+            task.task_image = task_image;
+        }
+        if (task_description !== undefined) {
+            task.task_description = task_description;
+        }
+
         await task.save();
         res.status(200).json(task);
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error updating task:', err); // Hata mesajını logla
+        res.status(500).json({ message: err.message }); // Detaylı hata mesajı döndür
     }
 };
+
 // Task silme
 const deleteTask = async (req, res) => {
     try {
@@ -105,9 +119,10 @@ const deleteTask = async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
         await task.destroy();
-        res.status(204).json();
+        res.status(204).json(); // Başarılı silme işlemi için 204 No Content
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error in deleteTask:', err); // Hata detaylarını konsola yazdır
+        res.status(500).json({ message: err.message }); // Hata mesajını daha ayrıntılı döndür
     }
 };
 const createBlog = async (req, res) => {
@@ -231,12 +246,12 @@ const getUserReferrals = async (req, res) => {
             ],
             include: {
                 model: User,
-                attributes: ['id', 'username', 'email'] // Kullanıcı bilgilerini getirmek için
+                attributes: ['id', 'username'] // Kullanıcı bilgilerini getirmek için
             },
             where: {
                 referral_level: 1 // Yalnızca referral_level 1 olanları çek
             },
-            group: ['user_id', 'User.id'] // Hem user_id hem de User modelinden id'yi grupluyoruz
+            group: ['User.id'] // Hem user_id hem de User modelinden id'yi grupluyoruz
         });
 
         return res.status(200).json(userReferrals);
