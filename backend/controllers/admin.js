@@ -3,6 +3,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/admin');
 const Task = require('../models/task');
+const Game = require('../models/game');
+const { message } = require('telegraf/filters');
+const User = require('../models/user');
+const DailyCheckin = require('../models/dailyCheckin');
+const Farming = require('../models/farming');
+const Referral = require('../models/referral');
+const TaskImages = require('../models/taskImages');
+const { Sequelize } = require('sequelize');
 
 const login = async (req, res) => {
     const { username, password } = req.body;
@@ -17,30 +25,52 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: admin.id, username: admin.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: admin.id, username: admin.username, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ token });
     } catch (err) {
+        console.error('Error during login:', err);
         res.status(500).json({ message: 'Server error' });
     }
 }
+
 const createTask = async (req, res) => {
-    const { task_title, task_image, task_description } = req.body;
+    const { task_title, task_description } = req.body;
+    console.log(req.user.id);
     try {
         const task = await Task.create({
             task_title,
-            task_image,
             task_description,
             admin_id: req.user.id
         });
+       
+
+
+        if (req.files && req.files.length > 0) {
+            // Tüm resimleri TaskImages modeline kaydet
+            const imagePromises = req.files.map(file => {
+                return TaskImages.create({
+                    image_url: file.path,
+                    task_id: task.id
+                });
+            });
+            await Promise.all(imagePromises);
+        }
+
         res.status(201).json(task);
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Database error:', err); // Hata detaylarını loglayın
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
+    
 };
 // Tüm task'ları getirme
 const getTasks = async (req, res) => {
     try {
-        const tasks = await Task.findAll();
+        const tasks = await Task.findAll({
+            include: {
+                model: Admin
+            }
+        });
         res.status(200).json(tasks);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -66,15 +96,26 @@ const updateTask = async (req, res) => {
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
-        task.task_title = task_title;
-        task.task_image = task_image;
-        task.task_description = task_description;
+
+        // Gelen verileri kontrol et ve sadece dolu olanları güncelle
+        if (task_title !== undefined) {
+            task.task_title = task_title;
+        }
+        if (task_image !== undefined) {
+            task.task_image = task_image;
+        }
+        if (task_description !== undefined) {
+            task.task_description = task_description;
+        }
+
         await task.save();
         res.status(200).json(task);
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error updating task:', err); // Hata mesajını logla
+        res.status(500).json({ message: err.message }); // Detaylı hata mesajı döndür
     }
 };
+
 // Task silme
 const deleteTask = async (req, res) => {
     try {
@@ -83,9 +124,10 @@ const deleteTask = async (req, res) => {
             return res.status(404).json({ message: 'Task not found' });
         }
         await task.destroy();
-        res.status(204).json();
+        res.status(204).json(); // Başarılı silme işlemi için 204 No Content
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error in deleteTask:', err); // Hata detaylarını konsola yazdır
+        res.status(500).json({ message: err.message }); // Hata mesajını daha ayrıntılı döndür
     }
 };
 const createBlog = async (req, res) => {
@@ -148,7 +190,80 @@ const deleteBlog = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const getGames = async (req, res) => {
+    try {
+        const games = await Game.findAll({
+            include: {
+                model: User
+            }
+        })
 
+        return res.status(200).json(games);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll()
+
+        return res.status(200).json(users);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getDailyCheckins = async (req, res) => {
+    try {
+        const dailycheckins = await DailyCheckin.findAll({
+            include: {
+                model: User
+            }
+        })
+
+        return res.status(200).json(dailycheckins);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getFarmings = async (req, res) => {
+    try {
+        const farmings = await Farming.findAll({
+            include: {
+                model: User
+            }
+        })
+
+        return res.status(200).json(farmings);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message, })
+    }
+}
+const getUserReferrals = async (req, res) => {
+    try {
+        const userReferrals = await Referral.findAll({
+            attributes: [
+                'user_id',
+                [Sequelize.fn('COUNT', Sequelize.col('user_id')), 'referral_count']
+            ],
+            include: {
+                model: User,
+                attributes: ['id', 'username'] // Kullanıcı bilgilerini getirmek için
+            },
+            where: {
+                referral_level: 1 // Yalnızca referral_level 1 olanları çek
+            },
+            group: ['User.id'] // Hem user_id hem de User modelinden id'yi grupluyoruz
+        });
+
+        return res.status(200).json(userReferrals);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 module.exports = {
     login,
     createTask,
@@ -160,5 +275,10 @@ module.exports = {
     getBlogs,
     getBlogById,
     updateBlog,
-    deleteBlog
-}
+    deleteBlog,
+    getGames,
+    getUsers,
+    getDailyCheckins,
+    getFarmings,
+    getUserReferrals
+};
