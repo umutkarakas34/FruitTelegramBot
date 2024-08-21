@@ -40,7 +40,7 @@ app.listen(PORT, () => {
 startBot();
 
 // Sequelize senkronizasyonu (force: true'yi development için kullanın, production'da dikkatli olun)
-//  sequelize.sync({ force: true });
+// sequelize.sync({ force: true });
 
 // Bot'un durdurulması için sinyal işleyicileri
 process.once('SIGINT', () => startBot.stop('SIGINT'));
