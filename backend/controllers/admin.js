@@ -9,6 +9,7 @@ const User = require('../models/user');
 const DailyCheckin = require('../models/dailyCheckin');
 const Farming = require('../models/farming');
 const Referral = require('../models/referral');
+const TaskImages = require('../models/taskImages');
 const { Sequelize } = require('sequelize');
 
 const login = async (req, res) => {
@@ -34,13 +35,15 @@ const login = async (req, res) => {
 
 const createTask = async (req, res) => {
     const { task_title, task_description } = req.body;
-
+    console.log(req.user.id);
     try {
         const task = await Task.create({
             task_title,
             task_description,
             admin_id: req.user.id
         });
+       
+
 
         if (req.files && req.files.length > 0) {
             // Tüm resimleri TaskImages modeline kaydet
@@ -55,8 +58,10 @@ const createTask = async (req, res) => {
 
         res.status(201).json(task);
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.error('Database error:', err); // Hata detaylarını loglayın
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
+    
 };
 // Tüm task'ları getirme
 const getTasks = async (req, res) => {
