@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import DailyRewards from './pages/DailyRewards';
 import RewardPage from './pages/RewardPage';
 import Footer from './components/Footer';
+import QRCodePage from './pages/QRCodePage';
 import Statistics from './pages/Statistics';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
@@ -39,7 +40,7 @@ function App() {
           setIsTelegramWebApp(true);
         } else {
           setIsTelegramWebApp(false);
-          navigate('/error'); // Tarayıcıdan erişimi engellemek için hata sayfasına yönlendir
+          navigate('/qr-code'); // Tarayıcıdan erişimi engellemek için QR kod sayfasına yönlendir
         }
         setIsChecking(false);
       }
@@ -51,6 +52,14 @@ function App() {
     return () => {
       document.body.removeChild(script);
     };
+  }, [navigate]);
+
+  useEffect(() => {
+    // Kullanıcı aracısını kontrol et
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/Telegram/i.test(userAgent)) {
+      navigate('/qr-code'); // Telegram Desktop uygulamasından erişimi engellemek için yönlendir
+    }
   }, [navigate]);
 
   // Footer'ın görüneceği sayfaları belirtiyoruz
@@ -72,12 +81,13 @@ function App() {
               <Route path="/reward" element={<RewardPage />} />
               <Route path="/daily-rewards" element={<DailyRewards />} />
               <Route path="/statistics" element={<Statistics />} />
+              <Route path="/qr-code" element={<QRCodePage />} />
               <Route path="/error" element={<ErrorScreen />} />
               <Route path="*" element={<ErrorScreen />} />
             </Routes>
           </div>
         ) : (
-          <ErrorScreen />
+          <QRCodePage />
         )}
         {showFooter && <Footer />}
       </ErrorBoundary>

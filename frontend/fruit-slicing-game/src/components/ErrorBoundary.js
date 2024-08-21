@@ -8,18 +8,15 @@ class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Bir hata oluştuğunda state'i güncelle
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Hata bilgilerini bir hata raporlama servisine gönder
     console.error("ErrorBoundary caught an error", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Hata olduğunda hata ekranını göster
       return <ErrorScreen />;
     }
 

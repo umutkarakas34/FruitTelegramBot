@@ -35,7 +35,7 @@ app.listen(PORT, () => {
 
 startBot();
 
-// sequelize.sync({ force: true });
+sequelize.sync({ force: true });
 
 process.once('SIGINT', () => startBot.stop('SIGINT'));
 process.once('SIGTERM', () => startBot.stop('SIGTERM'));

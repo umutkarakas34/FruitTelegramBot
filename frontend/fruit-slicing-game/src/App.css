@@ -14,6 +14,29 @@ body, html {
   overflow: hidden;
 }
 
+
+.qr-code-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Sayfanın tamamını kaplayacak şekilde ayarlıyoruz */
+  text-align: center;
+}
+
+.qr-code-image {
+  max-width: 100%;
+  height: auto;
+  width: 200px; /* Varsayılan genişlik */
+}
+
+@media (max-width: 600px) {
+  .qr-code-image {
+    width: 150px; /* Daha küçük ekranlar için genişlik ayarı */
+  }
+}
+
+
+
 body {
   padding-bottom: env(safe-area-inset-bottom);
 }
