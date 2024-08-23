@@ -20,7 +20,7 @@ const Home = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [pointsPerSecond, setPointsPerSecond] = useState(0.001);
-  const [isFarming, setIsFarming] = useState(false);
+  const [isFarming, setIsFarming] = useState(null);
   const [farmingClaimable, setFarmingClaimable] = useState(false);
   const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
@@ -192,7 +192,7 @@ const Home = () => {
     try {
       console.log('checkFarmingStatus - telegramId:', telegramId); // Eklenen satır
       const response = await api.post('/user/farming-status', { telegramId });
-      console.log(response);
+      console.log('response' + response.data);
       if (response.data.isFarming) {
         const startTime = new Date(response.data.startTime);
         startTimer(startTime);
@@ -200,6 +200,8 @@ const Home = () => {
       } else {
         setIsFarming(false);
       }
+      console.log('isFarming' + isFarming);
+
     } catch (error) {
       console.error('Error checking farming status:', error);
     }
@@ -215,9 +217,14 @@ const Home = () => {
       setTimeRemaining(initialTime);
       setProgress(0);
       startTimer(new Date());
+
+      
     } catch (error) {
 
     }
+
+
+    
   };
 
   const handleClaimFarming = async () => {
@@ -231,6 +238,11 @@ const Home = () => {
       setFarmingClaimable(false);
       setTimeRemaining(initialTime);
       setProgress(0);
+
+
+      
+
+
     } catch (error) {
     }
   };

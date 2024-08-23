@@ -640,9 +640,7 @@ const userTasks = async (req, res) => {
     try {
 
         const user = await User.findOne({ where: { telegram_id: telegramId } })
-        const tasks = await Task.findAll({
-            attributes: ['id', 'task_title', 'task_image', 'task_description']
-        });
+        const tasks = await Task.findAll();
 
         // Kullanıcının tamamladığı görevleri al
         const userTasks = await UserTask.findAll({

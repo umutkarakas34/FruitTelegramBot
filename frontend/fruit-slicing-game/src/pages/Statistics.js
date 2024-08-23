@@ -71,7 +71,8 @@ const Statistics = () => {
                         }}
                     >
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#8bc34a' }}>Total Users</Typography>
-                        <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>{statistics.totalUsers}</Typography>
+                        {/* <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>{statistics.totalUsers}</Typography> */}
+                        <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>SOON</Typography>
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -87,8 +88,10 @@ const Statistics = () => {
                         }}
                     >
                         <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#8bc34a' }}>Fruit Points</Typography>
-                        <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>{statistics.totalTokens.toFixed(2)}</Typography>
+                        {/* <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>{statistics.totalTokens.toFixed(2)}</Typography> */}
+                        <Typography variant="h3" sx={{ color: '#fff', margin: '10px 0' }}>SOON</Typography>
                     </Paper>
+                    
                 </Grid>
             </Grid>
             <Footer sx={{ flexShrink: 0, width: '100%', marginTop: '40px' }} />
